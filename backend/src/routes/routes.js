@@ -1,9 +1,10 @@
 import express from "express";
-import multer from "multer";
+import multer from "multer"
 import path from "path";
 
 import {createCategory, deleteCategory, getCategories, updateCategory } from "../controller/category.controller.js";
 import {uploadGalleryImage,  deleteGalleryImage, editGalleryImage, getGalleryImage } from "../controller/Gallery.controller.js";
+import { deleteBannerImage, editBannerImage, getBannerImage, uploadBannerImage } from "../controller/Banner.controller.js";
 
 
 const router = express.Router()
@@ -43,11 +44,15 @@ router.delete('/api/delete-category/:id',deleteCategory)
 // =======Gallery Crud ======
 
 router.post('/api/gallery-upload',upload.single('image'), uploadGalleryImage)
-
 router.get('/api/gallery-images', getGalleryImage)
-
 router.put('/api/edit-image/:id', upload.single('image'), editGalleryImage);
-
 router.delete('/api/delete-image/:id', deleteGalleryImage);
+
+// =======Banner Images Crud ======
+
+router.post('/api/banner-upload',upload.single('bannerImage'), uploadBannerImage)
+router.get('/api/banner-images', getBannerImage)
+router.put('/api/edit-bannerImage/:id', upload.single('bannerImage'), editBannerImage);
+router.delete('/api/delete-bannerImage/:id', deleteBannerImage);
 
 export default router
