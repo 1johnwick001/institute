@@ -8,6 +8,8 @@ import SubSubCategories from '../pages/category/SubSubCategories'
 import AllCategories from '../pages/category/AllCategories'
 import Gallery from '../pages/gallery/Gallery'
 import Banner from '../pages/Banner'
+import CreateBlog from '../pages/blog/CreateBlog'
+import Blogs from '../pages/blog/Blogs'
 
 function Allroutes() {
 	return (
@@ -23,6 +25,9 @@ function Allroutes() {
 			{/* =========  Gallery Url ======== */}
 			<Route path='/gallery' element={localStorage.getItem("is_Admin_loggedIn") ? <Gallery /> : <Navigate to="/" />} />
 			<Route path='/banner' element={localStorage.getItem("is_Admin_loggedIn") ? <Banner /> : <Navigate to="/" />} />
+			{/* ==========blog section ======= */}
+			<Route path='/blogs-list' element={localStorage.getItem("is_Admin_loggedIn") ? <Blogs /> : <Navigate to="/" />} />
+			<Route path='/create-blog' element={localStorage.getItem("is_Admin_loggedIn") ? <CreateBlog /> : <Navigate to="/" />} />
 		</Routes>
 
 	)
