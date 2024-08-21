@@ -38,10 +38,14 @@ app.use(allRoutes); //routes for all general routing
 
 
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 app.get('/',(req, res) => {
     res.send('Hello from server side')
+});
+
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'Test route working!' });
 });
 
 app.listen(port, ()=>{
