@@ -16,12 +16,15 @@ function CreateBlog() {
   };
 
   const handleSubmit = async () => {
+	if (!image) {
+		alert('Please upload a blog image.');
+		return;
+	}
+
     const formData = new FormData();
     formData.append('content', content);
-
-    if (image) {
-      formData.append('blogImage', image);
-    }
+	formData.append('blogImage', image);
+    
 
     try {
       const response = await fetch(`${API_BASE_URL}/create-blog`, {
@@ -47,22 +50,27 @@ function CreateBlog() {
       <Sidebar />
       <main id="main" className="main">
         <Pagetitle page='Create Blog' />
-        <JoditEditor
-          value={content}
-          onChange={newContent => setContent(newContent)}
-        />
-        <div className="mt-3 col-md-3">
-          <label htmlFor="imageName" className="form-label">Image Name</label>
-          <input
-            id="imageName"
-            name='blogImage'
-            className="form-control"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
-        </div>
-        <button className='mt-2 btn btn-primary w-100' onClick={handleSubmit}>Submit</button>
+		<form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+
+		
+			<JoditEditor
+			value={content}
+			onChange={newContent => setContent(newContent)}
+			/>
+			<div className="mt-3 col-md-3">
+			<label htmlFor="imageName" className="form-label">Blog Image Name</label>
+			<input
+				id="imageName"
+				name='blogImage'
+				className="form-control"
+				type="file"
+				accept="image/*"
+				onChange={handleImageChange}
+				required
+			/>
+			</div>
+			<button className='mt-2 btn btn-primary w-100' type='submit'>Submit</button>
+		</form>	
       </main>
     </>
   );

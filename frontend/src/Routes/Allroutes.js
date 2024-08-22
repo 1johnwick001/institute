@@ -10,24 +10,28 @@ import Gallery from '../pages/gallery/Gallery'
 import Banner from '../pages/Banner'
 import CreateBlog from '../pages/blog/CreateBlog'
 import Blogs from '../pages/blog/Blogs'
+import EditBlog from '../pages/blog/EditBlog'
 
 function Allroutes() {
+
+	const isLoggedIn = localStorage.getItem("is_Admin_loggedIn") === 'true';
 	return (
 
 		<Routes>
 			<Route path='/' element={<Login />} />
-			<Route path='/home' element={localStorage.getItem("is_Admin_loggedIn") ? <Home /> : <Navigate to="/" />} />
+			<Route path='/home' element={isLoggedIn? <Home /> : <Navigate to="/" />} />
 			{/* =========  category Url ======== */}
-			<Route path='/all-category' element={localStorage.getItem("is_Admin_loggedIn") ? <AllCategories /> : <Navigate to="/" />} />
-			<Route path='/category' element={localStorage.getItem("is_Admin_loggedIn") ? <Categories /> : <Navigate to="/" />} />
-			<Route path='/subcategory' element={localStorage.getItem("is_Admin_loggedIn") ? <SubCategories /> : <Navigate to="/" />} />
-			<Route path='/subsubcategory' element={localStorage.getItem("is_Admin_loggedIn") ? <SubSubCategories /> : <Navigate to="/" />} />
+			<Route path='/all-category' element={isLoggedIn? <AllCategories /> : <Navigate to="/" />} />
+			<Route path='/category' element={isLoggedIn? <Categories /> : <Navigate to="/" />} />
+			<Route path='/subcategory' element={isLoggedIn? <SubCategories /> : <Navigate to="/" />} />
+			<Route path='/subsubcategory' element={isLoggedIn? <SubSubCategories /> : <Navigate to="/" />} />
 			{/* =========  Gallery Url ======== */}
-			<Route path='/gallery' element={localStorage.getItem("is_Admin_loggedIn") ? <Gallery /> : <Navigate to="/" />} />
-			<Route path='/banner' element={localStorage.getItem("is_Admin_loggedIn") ? <Banner /> : <Navigate to="/" />} />
+			<Route path='/gallery' element={isLoggedIn? <Gallery /> : <Navigate to="/" />} />
+			<Route path='/banner' element={isLoggedIn? <Banner /> : <Navigate to="/" />} />
 			{/* ==========blog section ======= */}
-			<Route path='/blogs-list' element={localStorage.getItem("is_Admin_loggedIn") ? <Blogs /> : <Navigate to="/" />} />
-			<Route path='/create-blog' element={localStorage.getItem("is_Admin_loggedIn") ? <CreateBlog /> : <Navigate to="/" />} />
+			<Route path='/blogs-list' element={isLoggedIn? <Blogs /> : <Navigate to="/" />} />
+			<Route path='/create-blog' element={isLoggedIn? <CreateBlog /> : <Navigate to="/" />} />
+			<Route path='/edit-blog/:id' element={isLoggedIn? <EditBlog /> : <Navigate to="/" />} />
 		</Routes>
 
 	)

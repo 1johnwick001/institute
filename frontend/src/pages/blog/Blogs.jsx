@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../config/Config';
-
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
+import DeleteModal from './DeleteModal';
 
 function Blogs() {
     const [blogs, setBlogs] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);  // Current page state
+    const [blogsPerPage] = useState(5);  // Number of blogs per page
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedBlogId, setSelectedBlogId] = useState(null);
     const navigate = useNavigate(); 
 
     useEffect(() => {
@@ -34,21 +38,40 @@ function Blogs() {
         return plainText.length > length ? `${plainText.substring(0, length)}...` : plainText;
     };
 
+    // Calculate the range of blogs to show on the current page
+    const indexOfLastBlog = currentPage * blogsPerPage;
+    const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+    const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
+
+    // Function to handle page change
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     // Function to handle edit
     const handleEdit = (id) => {
-        console.log(`Edit blog with id ${id}`);
-        // Implement edit functionality
+        navigate(`/edit-blog/${id}`);
     };
 
     // Function to handle delete
-    const handleDelete = (id) => {
-        console.log(`Delete blog with id ${id}`);
-        // Implement delete functionality
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/delete-blog/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                setBlogs(blogs.filter((blog) => blog._id !== id));
+                setShowDeleteModal(false); // Hide modal after delete
+            } else {
+                console.error('Error deleting blog');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     // Function to handle navigation to create blog
     const handleCreate = () => {
-        navigate('/create-blog'); // Navigate to the CreateBlog component
+        navigate('/create-blog');
     };
 
     return (
@@ -71,33 +94,56 @@ function Blogs() {
                             </tr>
                         </thead>
                         <tbody>
-                            {blogs.map((blog, index) => (
+                            {currentBlogs.map((blog, index) => (
                                 <tr key={blog._id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstBlog + index + 1}</td>
                                     <td>
-                                        {blog.images ? <img src={blog.images} alt="Blog" style={{ width: '100px' }} /> : 'No image'}
+                                        {blog.images ? <img src={blog.images} alt="Blog" style={{ width: '75px', height: '75px', borderRadius: '15px' }} /> : 'No image'}
                                     </td>
                                     <td>
-                                        <div dangerouslySetInnerHTML={{ __html: truncateContent(blog.content, 250) }} />
+                                        <div dangerouslySetInnerHTML={{ __html: truncateContent(blog.content, 180) }} />
                                     </td>
                                     <td>
                                         <button
                                             className="btn btn-warning btn-sm me-2"
                                             onClick={() => handleEdit(blog._id)}
                                         >
-                                            <i className="bi bi-pencil"></i> 
+                                            <i className="bi bi-pencil"></i>
                                         </button>
                                         <button
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleDelete(blog._id)}
+                                            onClick={() => {
+                                                setSelectedBlogId(blog._id);
+                                                setShowDeleteModal(true);
+                                            }}
                                         >
-                                            <i className="bi bi-trash"></i> 
+                                            <i className="bi bi-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {/* Pagination Controls */}
+                    <nav>
+                        <ul className="pagination">
+                            {[...Array(Math.ceil(blogs.length / blogsPerPage)).keys()].map(number => (
+                                <li key={number + 1} className={`page-item ${currentPage === number + 1 ? 'active' : ''}`}>
+                                    <a onClick={() => paginate(number + 1)} className="page-link">
+                                        {number + 1}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+
+                    {/* Delete Modal */}
+                    <DeleteModal
+                        show={showDeleteModal}
+                        onHide={() => setShowDeleteModal(false)}
+                        onDelete={handleDelete}
+                        blogId={selectedBlogId}
+                    />
                 </section>
             </main>
         </>

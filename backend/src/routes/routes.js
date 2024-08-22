@@ -5,7 +5,7 @@ import path from "path";
 import {createCategory, deleteCategory, getCategories, updateCategory } from "../controller/category.controller.js";
 import {uploadGalleryImage,  deleteGalleryImage, editGalleryImage, getGalleryImage } from "../controller/Gallery.controller.js";
 import { deleteBannerImage, editBannerImage, getBannerImage, uploadBannerImage } from "../controller/Banner.controller.js";
-import { createBlog, getBlogs } from "../controller/Blogs.controller.js";
+import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.controller.js";
 
 
 const router = express.Router()
@@ -59,6 +59,8 @@ router.delete('/api/delete-bannerImage/:id', deleteBannerImage);
 // =======Blogs Crud ======
 
 router.post('/api/create-blog', upload.single('blogImage'), createBlog )
-router.get('/api/get-blogs', getBlogs)
+router.get(`/api/get-blogs/:id?`, getBlogs)
+router.put('/api/edit-blog/:id', upload.single('blogImage') , editBlog)
+router.delete('/api/delete-blog/:id', deleteBlog)
 
 export default router
