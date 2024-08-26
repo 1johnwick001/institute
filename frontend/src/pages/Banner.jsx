@@ -3,6 +3,7 @@ import axios from 'axios';
 import Header from '../components/Header/Header';
 import Sidebar from '../components/sidebar/Sidebar';
 import Pagetitle from '../components/pagetitle/Pagetitle';
+import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../config/Config';
 
 function Banner() {
@@ -110,6 +111,47 @@ function Banner() {
         setShowEditModal(true);
     };
 
+    // column configuration for the data table
+
+    const columns = [
+        {
+            name: 'Sr. No.',
+            selector: (row, index) => index + 1,
+            sortable: true,
+        },
+        {
+            name: 'Banner Name',
+            selector: (row) => row.bannerName,
+            sortable: true,
+        },
+        {
+            name: 'Banner Image',
+            cell: (row) => (
+                <img
+                    src={row.bannerImage}
+                    alt={row.bannerName}
+                    style={{ width: '90px', height: '85px', borderRadius: '35px' }}
+                />
+            ),
+        },
+        {
+            name: 'Action',
+            cell: (row) => (
+                <>
+                    <button className="btn btn-warning btn-sm m-2" onClick={() => openEditModal(row)}>
+                        <i className="fas fa-edit"></i> Edit
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => {
+                        setSelectedImage(row);
+                        setShowDeleteModal(true);
+                    }}>
+                        <i className="fas fa-trash"></i> Delete
+                    </button>
+                </>
+            ),
+        },
+    ];
+
     return (
         <>
             <Header />
@@ -117,42 +159,47 @@ function Banner() {
             <main id="main" className="main">
                 <Pagetitle page='Banner Images' />
 
-                <section className="section">
+              <section className="section">
                     <div className="d-flex justify-content-end mb-3">
                         <button className='btn btn-primary' onClick={openAddModal}>Add Banner Image</button>
                     </div>
-                    <table className="table table-bordered table-striped table-hover">
-                        <thead className="thead-dark">
-                            <tr className='table-dark'>
-                                <th scope="col">Sr No</th>
-                                <th scope="col">Banner Name</th>
-                                <th scope="col">Banner Image</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Array.isArray(images) && images.map((image, index) => (
-                                <tr key={image._id}>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{image.bannerName}</td>
-                                    <td>
-                                        <img src={image.bannerImage} alt={image.bannerName} style={{ width: '90px', height: '90px', borderRadius: '35px' }} />
-                                    </td>
-                                    <td>
-                                        <button className="btn btn-warning btn-sm m-2" onClick={() => openEditModal(image)}>
-                                            <i className="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => {
-                                            setSelectedImage(image);
-                                            setShowDeleteModal(true);
-                                        }}>
-                                            <i className="fas fa-trash"></i> Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    {/* Integrating the Data Table */}
+                    <DataTable
+                        className='data-table'
+                        columns={columns}
+                        data={images}
+                        pagination
+                        persistTableHead
+                        highlightOnHover
+                        striped
+                        responsive
+                        customStyles={{
+                            headCells: {
+                                style: {
+                                    backgroundColor: '#343a40', // Dark background
+                                    color: '#fff', // White text
+                                    fontSize: '18px', // Font size
+                                    padding: '5px', // Padding
+                                },
+                            },
+                            
+                            rows: {
+                                style: {
+                                    backgroundColor: '#fff', // Light background for rows
+                                    color:'#343a40',
+                                    fontSize:'17px'
+                                },
+                            },
+                            pagination: {
+                                style: {
+                                    border: '1px solid #413f3f', // Border for pagination
+                                    backgroundColor: 'white',
+                                    color:'#343a40', // Background color for pagination
+                                    fontSize:'16px'
+                                },
+                            },
+                        }}
+                    />
                 </section>
 
                 {/* Add Image Modal */}

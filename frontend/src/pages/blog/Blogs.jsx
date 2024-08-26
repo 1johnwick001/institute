@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DataTable from 'react-data-table-component';  // Import DataTable
 import API_BASE_URL from '../../config/Config';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
@@ -8,8 +9,6 @@ import DeleteModal from './DeleteModal';
 
 function Blogs() {
     const [blogs, setBlogs] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);  // Current page state
-    const [blogsPerPage] = useState(5);  // Number of blogs per page
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
     const navigate = useNavigate(); 
@@ -37,14 +36,6 @@ function Blogs() {
         const plainText = content.replace(/<[^>]+>/g, ''); // Remove HTML tags
         return plainText.length > length ? `${plainText.substring(0, length)}...` : plainText;
     };
-
-    // Calculate the range of blogs to show on the current page
-    const indexOfLastBlog = currentPage * blogsPerPage;
-    const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-    const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
-
-    // Function to handle page change
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     // Function to handle edit
     const handleEdit = (id) => {
@@ -74,6 +65,49 @@ function Blogs() {
         navigate('/create-blog');
     };
 
+    // Define DataTable columns
+    const columns = [
+        {
+            name: 'Sr. No.',
+            selector: (row, index) => index + 1,
+            width: '80px',
+        },
+        {
+            name: 'Image',
+            selector: row => row.images ? <img src={row.images} alt="Blog" style={{ width: '75px', height: '75px', borderRadius: '35px' }} /> : 'No image',
+            width: '150px',
+        },
+        {
+            name: 'Content',
+            selector: row => <div dangerouslySetInnerHTML={{ __html: truncateContent(row.content, 180) }} />,
+            wrap: true,
+            grow: 2,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <>
+                    <button
+                        className="btn btn-warning btn-sm me-2"
+                        onClick={() => handleEdit(row._id)}
+                    >
+                        <i className="bi bi-pencil"></i>
+                    </button>
+                    <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => {
+                            setSelectedBlogId(row._id);
+                            setShowDeleteModal(true);
+                        }}
+                    >
+                        <i className="bi bi-trash"></i>
+                    </button>
+                </>
+            ),
+            button: true,
+        },
+    ];
+
     return (
         <>
             <Header />
@@ -84,58 +118,45 @@ function Blogs() {
                     <div className="d-flex justify-content-end mb-3">
                         <button className='btn btn-info' onClick={handleCreate}>Create Blog Post</button>
                     </div>
-                    <table className="table table-bordered table-striped table-hover">
-                        <thead className='thead-dark'>
-                            <tr className='table-dark'>
-                                <th>Sr. No.</th>
-                                <th>Image</th>
-                                <th>Content</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentBlogs.map((blog, index) => (
-                                <tr key={blog._id}>
-                                    <td>{indexOfFirstBlog + index + 1}</td>
-                                    <td>
-                                        {blog.images ? <img src={blog.images} alt="Blog" style={{ width: '75px', height: '75px', borderRadius: '15px' }} /> : 'No image'}
-                                    </td>
-                                    <td>
-                                        <div dangerouslySetInnerHTML={{ __html: truncateContent(blog.content, 180) }} />
-                                    </td>
-                                    <td>
-                                        <button
-                                            className="btn btn-warning btn-sm me-2"
-                                            onClick={() => handleEdit(blog._id)}
-                                        >
-                                            <i className="bi bi-pencil"></i>
-                                        </button>
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => {
-                                                setSelectedBlogId(blog._id);
-                                                setShowDeleteModal(true);
-                                            }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {/* Pagination Controls */}
-                    <nav>
-                        <ul className="pagination">
-                            {[...Array(Math.ceil(blogs.length / blogsPerPage)).keys()].map(number => (
-                                <li key={number + 1} className={`page-item ${currentPage === number + 1 ? 'active' : ''}`}>
-                                    <a onClick={() => paginate(number + 1)} className="page-link">
-                                        {number + 1}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+                    {/* DataTable for Blogs */}
+                    <DataTable
+                    className='data-table'
+                        columns={columns}
+                        data={blogs}
+                        pagination
+                        highlightOnHover
+                        persistTableHead
+                        responsive
+                        striped
+                        pointerOnHover
+                       customStyles={{
+                        headCells: {
+                            style: {
+                                backgroundColor: '#343a40', // Dark background
+                                color: '#fff', // White text
+                                fontSize: '18px', // Font size
+                                padding: '5px', // Padding
+                            },
+                        },
+                        
+                        rows: {
+                            style: {
+                                backgroundColor: '#fff', // Light background for rows
+                                color:'#343a40',
+                                fontSize:'17px'
+                            },
+                        },
+                        pagination: {
+                            style: {
+                                border: '1px solid #413f3f', // Border for pagination
+                                backgroundColor: 'white',
+                                color:'#343a40', // Background color for pagination
+                                fontSize:'15px'
+                            },
+                        },
+                       }}
+
+                    />
 
                     {/* Delete Modal */}
                     <DeleteModal
