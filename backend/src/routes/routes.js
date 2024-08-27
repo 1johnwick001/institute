@@ -6,6 +6,7 @@ import {createCategory, deleteCategory, getCategories, updateCategory } from "..
 import {uploadGalleryImage,  deleteGalleryImage, editGalleryImage, getGalleryImage } from "../controller/Gallery.controller.js";
 import { deleteBannerImage, editBannerImage, getBannerImage, uploadBannerImage } from "../controller/Banner.controller.js";
 import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.controller.js";
+import dashboard from "../controller/Dashboard.controller.js";
 
 
 const router = express.Router()
@@ -36,6 +37,11 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 5 }, // 5MB max file size
     fileFilter: fileFilter
 })
+
+// dashboard route
+router.get('/api/get-dashboard',dashboard)
+
+// category routes
 
 router.post('/api/create-category',createCategory)
 router.get('/api/get-categories',getCategories)

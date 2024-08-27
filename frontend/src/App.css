@@ -614,7 +614,7 @@ h6 {
 
 .card-title span {
   color: #899bbd;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 400;
 }
 
@@ -1205,6 +1205,11 @@ h6 {
 .dashboard .customers-card .card-icon {
   color: #ff771d;
   background: #ffecdf;
+}
+
+.dashboard .blogs-card .card-icon {
+  color: #03045e;
+  background: #90e0ef;
 }
 
 /* Activity */
