@@ -29,7 +29,7 @@ app.use(cors());
 app.use(cookieParser());
 
 // Serve static files from the uploads directory
-app.use('/uploads/images',express.static(path.join(path.resolve(),'uploads/images')))
+app.use('/uploads/media',express.static(path.join(path.resolve(),'uploads/media')))
 
 
 // configuring Routes

@@ -1,5 +1,5 @@
 import Category from "../model/category.model.js";
-import Image from "../model/Images.model.js";
+import Gallery from "../model/gallery.model.js";
 import Blog from "../model/Blogs.model.js";
 import BannerImage from "../model/Banner.models.js";
 
@@ -8,7 +8,7 @@ const dashboard = async (req,res) => {
 
         // fetching counts from the database
         const totalCategories = await Category.countDocuments({ parent: null });
-        const totalImages = await Image.countDocuments();
+        const totalImages = await Gallery.countDocuments();
         const totalBlogs = await Blog.countDocuments();
         const totalBannerImages = await BannerImage.countDocuments();
 

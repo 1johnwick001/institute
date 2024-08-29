@@ -3,8 +3,8 @@ import multer from "multer"
 import path from "path";
 
 import {createCategory, deleteCategory, getCategories, updateCategory } from "../controller/category.controller.js";
-import {uploadGalleryImage,  deleteGalleryImage, editGalleryImage, getGalleryImage } from "../controller/Gallery.controller.js";
-import { deleteBannerImage, editBannerImage, getBannerImage, uploadBannerImage } from "../controller/Banner.controller.js";
+import {uploadGallery,  deleteGalleryImage, editGallery, getGalleryImage } from "../controller/Gallery.controller.js";
+import { deleteBanner, editBanner, getBanner, uploadBanner } from "../controller/Banner.controller.js";
 import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.controller.js";
 import dashboard from "../controller/Dashboard.controller.js";
 
@@ -12,31 +12,32 @@ import dashboard from "../controller/Dashboard.controller.js";
 const router = express.Router()
 
 const storage = multer.diskStorage({
-    destination:(req,file,cb) => {
-        cb(null,"uploads/images")
-    },filename:(req,file,cb) => {
-        cb(null,file.fieldname + "-" + Date.now() + path.extname (file.originalname))
+    destination: (req, file, cb) => {
+      cb(null, "uploads/media")
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname))
     }
-})
-
-// File filter to accept only images
-const fileFilter = (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif/;
+  })
+  
+  // File filter to accept only images and videos
+  const fileFilter = (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|gif|mp4|mkv|avi|wmv|mov/;
     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileTypes.test(file.mimetype);
     
     if (mimetype && extname) {
-        return cb(null, true);
+      return cb(null, true);
     } else {
-        cb('Error: Images only!');
+      cb('Error: Only images and videos are allowed!');
     }
-};
-
-const upload = multer({
-    storage:storage,
-    limits: { fileSize: 1024 * 1024 * 5 }, // 5MB max file size
+  };
+  
+  const upload = multer({
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 50 }, // 5MB max file size
     fileFilter: fileFilter
-})
+  })
 
 // dashboard route
 router.get('/api/get-dashboard',dashboard)
@@ -50,17 +51,17 @@ router.delete('/api/delete-category/:id',deleteCategory)
 
 // =======Gallery Crud ======
 
-router.post('/api/gallery-upload',upload.single('image'), uploadGalleryImage)
+router.post('/api/gallery-upload',upload.single('galleryImage'), uploadGallery)
 router.get('/api/gallery-images', getGalleryImage)
-router.put('/api/edit-image/:id', upload.single('image'), editGalleryImage);
+router.put('/api/edit-gallery/:id', upload.single('galleryImage'), editGallery);
 router.delete('/api/delete-image/:id', deleteGalleryImage);
 
 // =======Banner Images Crud ======
 
-router.post('/api/banner-upload',upload.single('bannerImage'), uploadBannerImage)
-router.get('/api/banner-images', getBannerImage)
-router.put('/api/edit-bannerImage/:id', upload.single('bannerImage'), editBannerImage);
-router.delete('/api/delete-bannerImage/:id', deleteBannerImage);
+router.post('/api/banner-upload',upload.single('bannerImage'), uploadBanner)
+router.get('/api/banner', getBanner)
+router.put('/api/edit-banner/:id', upload.single('bannerImage'), editBanner);
+router.delete('/api/delete-banner/:id', deleteBanner);
 
 // =======Blogs Crud ======
 

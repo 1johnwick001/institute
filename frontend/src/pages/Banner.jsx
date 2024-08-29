@@ -11,6 +11,11 @@ function Banner() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    const [categories, setCategories] = useState([]); // State for categories
+    const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
+    const [mediaType, setMediaType] = useState('');
+    const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+
     const [images, setImages] = useState([]);
     const [bannerName, setBannerName] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
@@ -20,7 +25,7 @@ function Banner() {
     // Fetch Banner images from backend
     const fetchImages = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/banner-images`);
+            const response = await axios.get(`${API_BASE_URL}/banner`);
             console.log('API response:', response.data.data);
             setImages(Array.isArray(response.data.data) ? response.data.data : []);
         } catch (error) {
@@ -29,9 +34,32 @@ function Banner() {
         }
     };
 
+    // Fetch Categories from backend
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/get-categories`);
+            console.log('Fetched categories:', response.data.data);
+            setCategories(response.data.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            setCategories([]);
+        }
+    };
+
     useEffect(() => {
         fetchImages();
+        fetchCategories();
     }, []);
+
+    // Function to render category dropdown options recursively
+    const renderCategoryOptions = (categories) => {
+        return categories.map((category) => (
+            <React.Fragment key={category._id}>
+                <option value={category._id}>{category.name}</option>
+                {category.subcategories && renderCategoryOptions(category.subcategories)}
+            </React.Fragment>
+        ));
+    };
 
     // Handle banner image addition
     const handleAddImage = async (e) => {
@@ -39,6 +67,8 @@ function Banner() {
         const formData = new FormData();
         formData.append('bannerName', bannerName);
         formData.append('bannerImage', bannerImageFile);
+        formData.append('category', selectedCategory);
+        formData.append('mediaType', mediaType);
 
         try {
             await axios.post(`${API_BASE_URL}/banner-upload`, formData, {
@@ -48,8 +78,10 @@ function Banner() {
             setShowAddModal(false);
             setBannerName('');
             setBannerImageFile(null);
+            setSelectedCategory('');
+            setMediaType('');
         } catch (error) {
-            console.error('Error adding banner image:', error);
+            console.error('Error adding banner image/video:', error);
         }
     };
 
@@ -67,7 +99,7 @@ function Banner() {
         }
 
         try {
-            await axios.put(`${API_BASE_URL}/edit-bannerImage/${selectedImage._id}`, formData, {
+            await axios.put(`${API_BASE_URL}/edit-banner/${selectedImage._id}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             fetchImages();
@@ -89,7 +121,7 @@ function Banner() {
         }
 
         try {
-            await axios.delete(`${API_BASE_URL}/delete-bannerImage/${selectedImage._id}`);
+            await axios.delete(`${API_BASE_URL}/delete-banner/${selectedImage._id}`);
             fetchImages();
             setShowDeleteModal(false);
             setSelectedImage(null);
@@ -107,13 +139,18 @@ function Banner() {
     const openEditModal = (image) => {
         setSelectedImage(image);
         setBannerName(image.bannerName);
-        setCurrentImageUrl(image.bannerImage);
+        if (image.mediaType === 'image') {
+            setCurrentImageUrl(image.bannerImage);
+        } else if (image.mediaType === 'video') {
+            setCurrentVideoUrl(image.bannerVideo);
+        }
         setShowEditModal(true);
     };
 
     // column configuration for the data table
 
     const columns = [
+
         {
             name: 'Sr. No.',
             selector: (row, index) => index + 1,
@@ -125,20 +162,30 @@ function Banner() {
             sortable: true,
         },
         {
-            name: 'Banner Image',
+            name: 'Banner Media',
             cell: (row) => (
-                <img
-                    src={row.bannerImage}
-                    alt={row.bannerName}
-                    style={{ width: '90px', height: '85px', borderRadius: '35px' }}
-                />
+                row.mediaType === 'image' ? (
+                    <img
+                        src={row.bannerImage}
+                        alt={row.bannerName}
+                        style={{ width: '90px', height: '85px', borderRadius: '35px' }}
+                    />
+                ) : (
+                    <video
+                        src={row.bannerVideo}
+                        alt={row.bannerName}
+                        style={{ width: '90px', height: '85px', borderRadius: '35px' }}
+                    />
+                )
             ),
         },
         {
             name: 'Action',
             cell: (row) => (
                 <>
-                    <button className="btn btn-warning btn-sm m-2" onClick={() => openEditModal(row)}>
+                    <button className="btn btn-warning btn-sm m-2" onClick={() => {openEditModal(row);
+                         setMediaType(row.mediaType);
+                    }}>
                         <i className="fas fa-edit"></i> Edit
                     </button>
                     <button className="btn btn-danger btn-sm" onClick={() => {
@@ -157,11 +204,11 @@ function Banner() {
             <Header />
             <Sidebar />
             <main id="main" className="main">
-                <Pagetitle page='Banner Images' />
+                <Pagetitle page='Banner Section' />
 
-              <section className="section">
+                <section className="section">
                     <div className="d-flex justify-content-end mb-3">
-                        <button className='btn btn-primary' onClick={openAddModal}>Add Banner Image</button>
+                        <button className='btn btn-primary' onClick={openAddModal}>Add Banner</button>
                     </div>
                     {/* Integrating the Data Table */}
                     <DataTable
@@ -182,50 +229,64 @@ function Banner() {
                                     padding: '5px', // Padding
                                 },
                             },
-                            
+
                             rows: {
                                 style: {
                                     backgroundColor: '#fff', // Light background for rows
-                                    color:'#343a40',
-                                    fontSize:'17px'
+                                    color: '#343a40',
+                                    fontSize: '17px'
                                 },
                             },
                             pagination: {
                                 style: {
                                     border: '1px solid #413f3f', // Border for pagination
                                     backgroundColor: 'white',
-                                    color:'#343a40', // Background color for pagination
-                                    fontSize:'16px'
+                                    color: '#343a40', // Background color for pagination
+                                    fontSize: '16px'
                                 },
                             },
                         }}
                     />
                 </section>
 
-                {/* Add Image Modal */}
+                {/* Add Image/Video Modal */}
                 <div className={`modal fade ${showAddModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showAddModal ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header bg-info">
-                                <h5 className="modal-title">Add Banner Image</h5>
+                                <h5 className="modal-title">Add Banner Image/Video</h5>
                                 <button type="button" className="btn-close" onClick={() => setShowAddModal(false)}></button>
                             </div>
                             <div className="modal-body">
                                 <form onSubmit={handleAddImage}>
                                     <div className="mb-3">
-                                        <label htmlFor="bannerName" className="form-label">Banner Image Name</label>
+                                        <label htmlFor="category" className="form-label">Select Category</label>
+                                        <select
+                                            id="category"
+                                            className="form-control"
+                                            value={selectedCategory}
+                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                        >
+                                            <option value="">Select a category</option>
+                                            {renderCategoryOptions(categories)}
+                                        </select>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label htmlFor="bannerName" className="form-label">Banner Name</label>
                                         <input
                                             type="text"
                                             className="form-control"
                                             id="bannerName"
                                             value={bannerName}
                                             onChange={(e) => setBannerName(e.target.value)}
-                                            placeholder="Enter image name"
+                                            placeholder="Enter image/video name"
                                             required
                                         />
                                     </div>
+
                                     <div className="mb-3">
-                                        <label htmlFor="bannerImageFile" className="form-label">Banner Image File</label>
+                                        <label htmlFor="bannerImageFile" className="form-label">Banner Image/Video File</label>
                                         <input
                                             type="file"
                                             className="form-control"
@@ -234,6 +295,21 @@ function Banner() {
                                             required
                                         />
                                     </div>
+
+                                    <div className="mb-3">
+                                        <label className="form-label">Media Type</label>
+                                        <select
+                                            id="mediaType"
+                                            className="form-control"
+                                            value={mediaType}
+                                            onChange={(e) => setMediaType(e.target.value)}
+                                        >
+                                            <option value="">Select media type</option>
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
+                                    </div>
+
                                     <hr />
                                     <div>
                                         <button type="submit" className="btn btn-primary w-100">Submit</button>
@@ -269,15 +345,24 @@ function Banner() {
                                             required
                                         />
                                     </div>
+
                                     <div className="mb-3">
-                                        <label className="form-label">Current Image:</label>
-                                        {currentImageUrl && (
+                                       
+                                        <label className="form-label">Current Media:</label>
+                                        
+                                        {mediaType === 'image' && currentImageUrl ? (
                                             <img
                                                 src={currentImageUrl}
                                                 alt="Current"
                                                 style={{ maxWidth: '80px', height: '80px' }}
                                             />
-                                        )}
+                                        ) :  (
+                                            <video
+                                                src={currentVideoUrl}
+                                                style={{ maxWidth: '80px', height: '80px' }}
+                                                controls
+                                            />
+                                        ) }
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="editBannerImageFile" className="form-label">Banner Image File (optional)</label>
@@ -287,6 +372,19 @@ function Banner() {
                                             id="editBannerImageFile"
                                             onChange={(e) => setBannerImageFile(e.target.files[0])}
                                         />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label">Media Type</label>
+                                        <select
+                                            id="mediaType"
+                                            className="form-control"
+                                            value={mediaType}
+                                            onChange={(e) => setMediaType(e.target.value)}
+                                        >
+                                            <option value="">Select media type</option>
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
                                     </div>
                                     <hr />
                                     <div>
