@@ -7,9 +7,16 @@ function Sidebar() {
         <aside id='sidebar' className='sidebar'>
             <ul className='sidebar-nav' id='sidebar-nav'>
                 <li className='nav-item'>
-                    <Link className='nav-link' to="/home">
+                    <Link className='nav-link collapsed' to="/home">
                         <i className='bi bi-grid'></i>
                         <span>Dashboard</span>
+                    </Link>
+                </li>
+
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/doc-files">
+                        <i className='bi bi-file-pdf'></i>
+                        <span>Doc Files</span>
                     </Link>
                 </li>
     
@@ -20,7 +27,7 @@ function Sidebar() {
                         data-bs-target = '#category-nav'
                         data-bs-toggle='collapse'
                     >
-                        <i className='bi bi-menu-button-wide'></i>
+                        <i className='bi bi-dpad'></i>
                         <span>Category</span>
                         <i className='bi bi-chevron-down ms-auto'></i>
                     </Link>
@@ -55,18 +62,18 @@ function Sidebar() {
                     </ul>
                 </li>
     
-                <li class="nav-heading">Home Page </li>
+                
     
                 <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/gallery">
-                        <i className='bi bi-grid'></i>
+                        <i className='bi bi-floppy'></i>
                         <span>Gallery</span>
                     </Link>
                 </li>
     
                 <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/banner">
-                        <i className='bi bi-grid'></i>
+                        <i className='bi bi-flag-fill'></i>
                         <span>Banner</span>
                     </Link>
                 </li>
@@ -100,6 +107,34 @@ function Sidebar() {
                         </li>
                     </ul>
                 </li>
+
+                <li class="nav-heading">Landing Page </li>
+
+                <li className='nav-item'>
+                    <Link 
+                        to="#"
+                        className='nav-link collapsed'
+                        data-bs-target = '#home-page-nav'
+                        data-bs-toggle='collapse'
+                    >
+                        <i className='bi bi-houses'></i>
+                        <span>Home Page Section </span>
+                        <i className='bi bi-chevron-down ms-auto'></i>
+                    </Link>
+                    <ul id='home-page-nav'
+                    className='nav-content collapse'
+                    data-bs-parent = '#sidebar-nav'
+                    >
+                        <li>
+                            <Link to="/institute-banner">
+                                <i className='bi bi-circle'></i>
+                                <span>Create Institute Banners</span>
+                            </Link>
+                        </li>
+                       
+                    </ul>
+                </li>
+
             </ul>
         </aside>
       )

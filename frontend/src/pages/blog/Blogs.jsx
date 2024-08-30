@@ -78,6 +78,10 @@ function Blogs() {
             width: '150px',
         },
         {
+            name: 'Title',
+            selector: row => row.title
+        },
+        {
             name: 'Content',
             selector: row => <div dangerouslySetInnerHTML={{ __html: truncateContent(row.content, 180) }} />,
             wrap: true,

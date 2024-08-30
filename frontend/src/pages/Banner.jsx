@@ -38,7 +38,6 @@ function Banner() {
     const fetchCategories = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/get-categories`);
-            console.log('Fetched categories:', response.data.data);
             setCategories(response.data.data);
         } catch (error) {
             console.error('Error fetching categories:', error);

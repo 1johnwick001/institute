@@ -7,6 +7,8 @@ import {uploadGallery,  deleteGalleryImage, editGallery, getGalleryImage } from 
 import { deleteBanner, editBanner, getBanner, uploadBanner } from "../controller/Banner.controller.js";
 import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.controller.js";
 import dashboard from "../controller/Dashboard.controller.js";
+import  {createInstBanner, deleteInstBanner, editInstBanner, getInstBanner } from "../controller/InstituteBanner.controller.js";
+import { createDoc, deleteDoc, editDoc, getDoc } from "../controller/document.controller.js";
 
 
 const router = express.Router()
@@ -22,14 +24,14 @@ const storage = multer.diskStorage({
   
   // File filter to accept only images and videos
   const fileFilter = (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif|mp4|mkv|avi|wmv|mov/;
+    const fileTypes = /jpeg|jpg|png|gif|mp4|mkv|avi|wmv|mov|pdf|doc|docx|xls|xlsx|ppt|pptx/;
     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileTypes.test(file.mimetype);
     
     if (mimetype && extname) {
       return cb(null, true);
     } else {
-      cb('Error: Only images and videos are allowed!');
+      cb('Error: Only images ,pdf and videos are allowed!');
     }
   };
   
@@ -41,6 +43,12 @@ const storage = multer.diskStorage({
 
 // dashboard route
 router.get('/api/get-dashboard',dashboard)
+
+// docfile routes
+router.post('/api/upload-doc',upload.single('file'),createDoc)
+router.get('/api/get-doc',getDoc)
+router.put('/api/edit-doc/:id',upload.single('file'),editDoc);
+router.delete('/api/delete-doc/:id',deleteDoc)
 
 // category routes
 
@@ -69,5 +77,12 @@ router.post('/api/create-blog', upload.single('blogImage'), createBlog )
 router.get(`/api/get-blogs/:id?`, getBlogs)
 router.put('/api/edit-blog/:id', upload.single('blogImage') , editBlog)
 router.delete('/api/delete-blog/:id', deleteBlog)
+
+
+// =======instittue banner Crud ======
+router.post('/api/create-inst-banner', upload.fields([{ name: 'instituteImage', maxCount: 1 }, { name: 'instituteIcon', maxCount: 1 }]), createInstBanner);
+router.get('/api/get-inst-banners', getInstBanner);
+router.put('/api/edit-inst-banner/:id', upload.fields([{ name: 'instituteImage', maxCount: 1 },{ name: 'instituteIcon', maxCount: 1 }]),editInstBanner);
+router.delete('/api/delete-inst-banner/:id',deleteInstBanner)
 
 export default router

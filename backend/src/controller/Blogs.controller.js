@@ -1,17 +1,27 @@
 import Blog from "../model/Blogs.model.js";
+import Category from "../model/category.model.js";
 
 
 const createBlog = async (req,res) => {
     try {
 
-        const { content } = req.body;
+        const { title, content, category } = req.body;
 
-        if (!content) {
+        if (!title || !content || !category) {
             return res.status(400).json({
-                code:400,
-                status:false,
-                message:"Content is required",
-            })
+              code: 400,
+              status: false,
+              message: 'Title , content and category are required',
+            });
+        }
+
+        const categoryExists = await Category.findById(category);
+        if (!categoryExists) {
+            return res.status(404).json({
+            code: 404,
+            status: false,
+            message: "Category not found",
+            });
         }
 
         // collect the urls from the uploaded files
@@ -19,6 +29,8 @@ const createBlog = async (req,res) => {
         const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` : null;
 
         const newBlog = new Blog ({
+            category: categoryExists._id,
+            title,
             content ,
             images : fileUrl,
         })
@@ -90,7 +102,7 @@ const editBlog = async (req,res) => {
     try {
 
         const {id} = req.params;
-        const {content} = req.body;
+        const {content,title} = req.body;
 
         if (!content) {
             return res.status(400).json({
@@ -107,6 +119,7 @@ const editBlog = async (req,res) => {
         const updatedBlog = await Blog.findByIdAndUpdate(
             id,
             {
+                title,
                 content,
                 images: fileUrl || undefined,  // Only update image if a new file is uploaded
             },

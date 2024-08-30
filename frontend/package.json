@@ -25,6 +25,8 @@
     "react-scripts": "5.0.1",
     "remixicon": "^4.3.0",
     "remixicons": "^1.0.0",
+    "suneditor": "^2.47.0",
+    "suneditor-react": "^3.6.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

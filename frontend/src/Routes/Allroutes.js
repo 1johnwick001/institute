@@ -11,6 +11,9 @@ import Banner from '../pages/Banner'
 import CreateBlog from '../pages/blog/CreateBlog'
 import Blogs from '../pages/blog/Blogs'
 import EditBlog from '../pages/blog/EditBlog'
+import InstituteBanner from '../pages/landingPage/InstituteBanner'
+import DocFiles from '../pages/docFile/DocFiles'
+
 
 function Allroutes() {
 
@@ -20,6 +23,8 @@ function Allroutes() {
 		<Routes>
 			<Route path='/' element={<Login />} />
 			<Route path='/home' element={isLoggedIn? <Home /> : <Navigate to="/" />} />
+			{/* =========== Document section ================= */}
+			<Route path='/doc-files' element={isLoggedIn? < DocFiles/> : <Navigate to="/" />} />
 			{/* =========  category Url ======== */}
 			<Route path='/all-category' element={isLoggedIn? <AllCategories /> : <Navigate to="/" />} />
 			<Route path='/category' element={isLoggedIn? <Categories /> : <Navigate to="/" />} />
@@ -32,6 +37,9 @@ function Allroutes() {
 			<Route path='/blogs-list' element={isLoggedIn? <Blogs /> : <Navigate to="/" />} />
 			<Route path='/create-blog' element={isLoggedIn? <CreateBlog /> : <Navigate to="/" />} />
 			<Route path='/edit-blog/:id' element={isLoggedIn? <EditBlog /> : <Navigate to="/" />} />
+			{/* ==========Institute Banner section ======= */}
+			<Route path='/institute-banner' element={isLoggedIn? <InstituteBanner /> : <Navigate to="/" />} />
+			
 		</Routes>
 
 	)
