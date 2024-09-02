@@ -8,7 +8,7 @@ const docSchema = new mongoose.Schema({
         type:String
     },
     fileType: {
-        type: String, // Optional: Add a field for file type (e.g., 'pdf', 'docx')
+        type: String, 
     },
     category:{
         type:mongoose.Schema.Types.ObjectId,

@@ -9,6 +9,7 @@ import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.
 import dashboard from "../controller/Dashboard.controller.js";
 import  {createInstBanner, deleteInstBanner, editInstBanner, getInstBanner } from "../controller/InstituteBanner.controller.js";
 import { createDoc, deleteDoc, editDoc, getDoc } from "../controller/document.controller.js";
+import landingPage from "../controller/frontend.controller.js";
 
 
 const router = express.Router()
@@ -84,5 +85,9 @@ router.post('/api/create-inst-banner', upload.fields([{ name: 'instituteImage', 
 router.get('/api/get-inst-banners', getInstBanner);
 router.put('/api/edit-inst-banner/:id', upload.fields([{ name: 'instituteImage', maxCount: 1 },{ name: 'instituteIcon', maxCount: 1 }]),editInstBanner);
 router.delete('/api/delete-inst-banner/:id',deleteInstBanner)
+
+
+// routes to send data to frontend
+router.get('/api/get-landingPage',landingPage)
 
 export default router
