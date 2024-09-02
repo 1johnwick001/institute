@@ -98,17 +98,17 @@ function Gallery() {
             console.error('No image selected for editing');
             return;
         }
-    
+
         const formData = new FormData();
         formData.append('galleryName', imageName);
         if (imageFile) {
             formData.append('galleryImage', imageFile); // Only append if a new file is selected
-        } 
+        }
         formData.append('mediaType', mediaType);
-    
+
         try {
             const response = await axios.put(`${API_BASE_URL}/edit-gallery/${selectedImage._id}`, formData)// This header should be removed
-    
+
             if (response.status === 200) {
                 fetchImages();
                 setShowEditModal(false);
@@ -189,7 +189,7 @@ function Gallery() {
                         className="btn btn-warning btn-sm m-2"
                         onClick={() => {
                             openEditModal(row);
-                            
+
                             setMediaType(row.mediaType); // Set media type
                             setShowEditModal(true);
                         }}
@@ -332,82 +332,82 @@ function Gallery() {
                 </div>
 
                 {/* Edit Image Modal */}
-<div
-    className={`modal fade ${showEditModal ? 'show' : ''}`}
-    tabIndex="-1"
-    style={{ display: showEditModal ? 'block' : 'none' }}>
-    <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-            <div className="modal-header bg-info">
-                <h5 className="modal-title">Edit Gallery Items</h5>
-                <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
-            </div>
-            <div className="modal-body">
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    handleEditImage();
-                }}>
-                    <div className="mb-3">
-                        <label htmlFor="editgalleryName" className="form-label">Gallery Name</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="editgalleryName"
-                            value={imageName}
-                            onChange={(e) => setImageName(e.target.value)}
-                            placeholder="Enter image name"
-                            required
-                        />
+                <div
+                    className={`modal fade ${showEditModal ? 'show' : ''}`}
+                    tabIndex="-1"
+                    style={{ display: showEditModal ? 'block' : 'none' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header bg-info">
+                                <h5 className="modal-title">Edit Gallery Items</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleEditImage();
+                                }}>
+                                    <div className="mb-3">
+                                        <label htmlFor="editgalleryName" className="form-label">Gallery Name</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="editgalleryName"
+                                            value={imageName}
+                                            onChange={(e) => setImageName(e.target.value)}
+                                            placeholder="Enter image name"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label">Current Media:</label>
+                                        {mediaType === 'image' && currentImageUrl ? (
+                                            <img
+                                                src={currentImageUrl}
+                                                alt="Current"
+                                                style={{ maxWidth: '80px', height: '80px' }}
+                                            />
+                                        ) : mediaType === 'video' && currentVideoUrl ? (
+                                            <video
+                                                src={currentVideoUrl}
+                                                style={{ maxWidth: '80px', height: '80px' }}
+                                                controls
+                                            />
+                                        ) : (
+                                            <p>No media available</p>
+                                        )}
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="editImageFile" className="form-label">Image/Video File (optional)</label>
+                                        <input
+                                            type="file"
+                                            className="form-control"
+                                            id="editImageFile"
+                                            onChange={(e) => setImageFile(e.target.files[0])}
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label">Media Type</label>
+                                        <select
+                                            id="mediaType"
+                                            className="form-control"
+                                            value={mediaType}
+                                            onChange={(e) => setMediaType(e.target.value)}
+                                        >
+                                            <option value="">Select media type</option>
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
+                                    </div>
+                                    <hr />
+                                    <div>
+                                        <button type="submit" className="btn btn-primary w-100">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div className="mb-3">
-                        <label className="form-label">Current Media:</label>
-                        {mediaType === 'image' && currentImageUrl ? (
-                            <img
-                                src={currentImageUrl}
-                                alt="Current"
-                                style={{ maxWidth: '80px', height: '80px' }}
-                            />
-                        ) : mediaType === 'video' && currentVideoUrl ? (
-                            <video
-                                src={currentVideoUrl}
-                                style={{ maxWidth: '80px', height: '80px' }}
-                                controls
-                            />
-                        ) : (
-                            <p>No media available</p>
-                        )}
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="editImageFile" className="form-label">Image/Video File (optional)</label>
-                        <input
-                            type="file"
-                            className="form-control"
-                            id="editImageFile"
-                            onChange={(e) => setImageFile(e.target.files[0])}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">Media Type</label>
-                        <select
-                            id="mediaType"
-                            className="form-control"
-                            value={mediaType}
-                            onChange={(e) => setMediaType(e.target.value)}
-                        >
-                            <option value="">Select media type</option>
-                            <option value="image">Image</option>
-                            <option value="video">Video</option>
-                        </select>
-                    </div>
-                    <hr />
-                    <div>
-                        <button type="submit" className="btn btn-primary w-100">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                </div>
 
                 {/* Delete Image Modal */}
                 <div className={`modal fade ${showDeleteModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showDeleteModal ? 'block' : 'none' }}>
