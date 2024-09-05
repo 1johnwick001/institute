@@ -77,7 +77,11 @@ const categoryData = async (req, res) => {
         if (!category) {
           return res.status(404).json({ message: 'Category not found' });
         }
-    
+
+
+        // Fetch direct subcategories (children of the current category)
+        const subcategories = await Category.find({ parent: categoryId });
+
         const blogs = await Blog.find({ category: categoryId });
         const banner = await Banner.find ({ category : categoryId })
         const gallery = await Gallery.find ({ category : categoryId })
@@ -86,6 +90,7 @@ const categoryData = async (req, res) => {
         const BogData = await BOG.find({category : categoryId})
     
         const result = {
+          subcategories,
           banner,
           blogs,
           gallery,
