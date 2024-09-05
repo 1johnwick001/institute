@@ -5,6 +5,7 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import API_BASE_URL from '../../config/Config';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
+import { IKUpload } from 'imagekitio-react';
 
 function DocFiles() {
   const [showModal, setShowModal] = useState(false);
@@ -13,8 +14,10 @@ function DocFiles() {
   const [categories, setCategories] = useState([]); // State for categories
   const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
 
-  const [docName, setDocName] = useState(''); // State for document name
-  console.log('name',docName)
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [docToDelete, setDocToDelete] = useState(null);
+
+  const [docName, setDocName] = useState(''); 
   const [docFile, setDocFile] = useState(null); // State for document file
 
   const [data, setData] = useState([]); // State for fetched data
@@ -100,13 +103,23 @@ function DocFiles() {
   };
 
   // Function to handle delete button click
-  const handleDeleteClick = async (id) => {
+  const handleDeleteClick = (id) => {
+    setDocToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/delete-doc/${id}`);
+      await axios.delete(`${API_BASE_URL}/delete-doc/${docToDelete}`);
       fetchData(); // Refresh data after successful deletion
+      setShowDeleteModal(false);
     } catch (error) {
       console.error('Error while deleting document file', error);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
   };
 
   // Function to reset form
@@ -255,14 +268,25 @@ function DocFiles() {
                     <label htmlFor="docFile" className="form-label">
                     Document File
                     </label>
-                    <input
+                    {/* <input
                     type="file"
                     className="form-control"
                     id="docFile"
                     onChange={(e) => setDocFile(e.target.files[0])}
-                        // Assuming PDF files, adjust if needed
-                    required={!isEditMode} // Required only in add mode
-                    />
+                        
+                    required={!isEditMode}
+                    /> */}
+                    <IKUpload
+                      className='form-control'
+                      fileName={docName}
+                      folder='/docfiles'
+                      onError={(err) => console.error("Error uploading image", err)}
+                      onSuccess={(res) => {
+                          console.log("Upload successful, doc URL:", res.url);
+                          setDocFile(res.url);
+                      }}
+                      required
+                  />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="category" className="form-label">
@@ -289,6 +313,47 @@ function DocFiles() {
         </div>
         {/* Modal backdrop */}
         {showModal && <div className="modal-backdrop fade show"></div>}
+
+        {/* Delete Modal */}
+      <div
+        className={`modal fade ${showDeleteModal ? 'show' : ''}`}
+        tabIndex="-1"
+        style={{ display: showDeleteModal ? 'block' : 'none' }}
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header bg-danger">
+              <h5 className="modal-title">Delete Document File</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={handleDeleteCancel}
+                aria-label="close"
+              >
+                
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to delete this document file?</p>
+              <div className='d-flex justify-content-end'>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleDeleteConfirm}
+              >
+                Delete
+              </button>
+              
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal backdrop */}
+      {showDeleteModal && <div className="modal-backdrop fade show"></div>}
+    
         
     </>
   );

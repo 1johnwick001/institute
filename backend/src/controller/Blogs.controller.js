@@ -5,13 +5,13 @@ import Category from "../model/category.model.js";
 const createBlog = async (req,res) => {
     try {
 
-        const { title, content, category } = req.body;
+        const { title, content, category , images } = req.body;
 
-        if (!title || !content || !category) {
+        if (!title || !content || !category || !images) {
             return res.status(400).json({
               code: 400,
               status: false,
-              message: 'Title , content and category are required',
+              message: 'Title , content , image and category are required',
             });
         }
 
@@ -24,15 +24,13 @@ const createBlog = async (req,res) => {
             });
         }
 
-        // collect the urls from the uploaded files
-
-        const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` : null;
+        
 
         const newBlog = new Blog ({
             category: categoryExists._id,
             title,
             content ,
-            images : fileUrl,
+            images ,
         })
 
         await newBlog.save();
@@ -102,28 +100,38 @@ const editBlog = async (req,res) => {
     try {
 
         const {id} = req.params;
-        const {content,title} = req.body;
+        const {content,title , images} = req.body;
 
-        if (!content) {
+        if (!content || !title || !images) {
             return res.status(400).json({
                 code: 400,
                 status: false,
-                message: "Content is required",
+                message: 'Title , content , image  are required',
             });
         }
 
-        // If a new image is uploaded, generate the file URL
-        const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` : null;
+        // Find the blog by ID
+        const existingBlog = await Blog.findById(id);
 
-        // Find the blog by ID and update it
+        if (!existingBlog) {
+            return res.status(404).json({
+                code: 404,
+                status: false,
+                message: "Blog not found",
+            });
+        }
+
+        
+        /// Merge the existing blog document with the updated fields
         const updatedBlog = await Blog.findByIdAndUpdate(
             id,
             {
-                title,
-                content,
-                images: fileUrl || undefined,  // Only update image if a new file is uploaded
+                ...existingBlog.toObject(), // Spread the existing document
+                title: title || existingBlog.title, // Update title if provided
+                content: content || existingBlog.content, // Update content if provided
+                images: images || existingBlog.images, // Update images if provided
             },
-            { new: true }  // Return the updated document
+            { new: true } // Return the updated document
         );
 
         if (!updatedBlog) {

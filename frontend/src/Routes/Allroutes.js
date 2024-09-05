@@ -13,6 +13,9 @@ import Blogs from '../pages/blog/Blogs'
 import EditBlog from '../pages/blog/EditBlog'
 import InstituteBanner from '../pages/landingPage/InstituteBanner'
 import DocFiles from '../pages/docFile/DocFiles'
+import FactInfo from '../pages/factsInfo/FactInfo'
+import Bog from '../pages/BOG/Bog'
+import CreateEditBog from '../pages/BOG/CreateEditBog'
 
 
 function Allroutes() {
@@ -25,6 +28,12 @@ function Allroutes() {
 			<Route path='/home' element={isLoggedIn? <Home /> : <Navigate to="/" />} />
 			{/* =========== Document section ================= */}
 			<Route path='/doc-files' element={isLoggedIn? < DocFiles/> : <Navigate to="/" />} />
+			{/* =========== facts info section ================= */}
+			<Route path='/fact-info' element={isLoggedIn? < FactInfo/> : <Navigate to="/" />} />
+			{/* =========== BOG info section ================= */}
+			<Route path='/bog-details' element={isLoggedIn? < Bog/> : <Navigate to="/" />} />
+			<Route path='/create-edit' element={isLoggedIn? < CreateEditBog/> : <Navigate to="/" />} />
+			<Route path="/create-edit/:id?" element={<CreateEditBog />} />
 			{/* =========  category Url ======== */}
 			<Route path='/all-category' element={isLoggedIn? <AllCategories /> : <Navigate to="/" />} />
 			<Route path='/category' element={isLoggedIn? <Categories /> : <Navigate to="/" />} />

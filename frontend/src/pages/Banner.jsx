@@ -5,6 +5,8 @@ import Sidebar from '../components/sidebar/Sidebar';
 import Pagetitle from '../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../config/Config';
+import { IKUpload } from 'imagekitio-react';
+
 
 function Banner() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -71,7 +73,7 @@ function Banner() {
 
         try {
             await axios.post(`${API_BASE_URL}/banner-upload`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'application/json' },
             });
             fetchImages();
             setShowAddModal(false);
@@ -99,7 +101,7 @@ function Banner() {
 
         try {
             await axios.put(`${API_BASE_URL}/edit-banner/${selectedImage._id}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'application/json' },
             });
             fetchImages();
             setShowEditModal(false);
@@ -167,13 +169,13 @@ function Banner() {
                     <img
                         src={row.bannerImage}
                         alt={row.bannerName}
-                        style={{ width: '90px', height: '85px', borderRadius: '35px' }}
+                        style={{ width: '55px', height: '55px',  }}
                     />
                 ) : (
                     <video
                         src={row.bannerVideo}
                         alt={row.bannerName}
-                        style={{ width: '90px', height: '85px', borderRadius: '35px' }}
+                        style={{ width: '55px', height: '55px',  }}
                     />
                 )
             ),
@@ -286,11 +288,22 @@ function Banner() {
 
                                     <div className="mb-3">
                                         <label htmlFor="bannerImageFile" className="form-label">Banner Image/Video File</label>
-                                        <input
+                                        {/* <input
                                             type="file"
                                             className="form-control"
                                             id="bannerImageFile"
                                             onChange={(e) => setBannerImageFile(e.target.files[0])}
+                                            required
+                                        /> */}
+                                        <IKUpload
+                                            className='form-control'
+                                            fileName={bannerName}
+                                            folder='/media'
+                                            onError={(err) => console.error("Error uploading image", err)}
+                                            onSuccess={(res) => {
+                                                console.log("Upload successful, image URL:", res.url);
+                                                setBannerImageFile(res.url);
+                                            }}
                                             required
                                         />
                                     </div>
@@ -353,23 +366,34 @@ function Banner() {
                                             <img
                                                 src={currentImageUrl}
                                                 alt="Current"
-                                                style={{ maxWidth: '80px', height: '80px' }}
+                                                style={{ maxWidth: '65px', height: '65px' }}
                                             />
                                         ) :  (
                                             <video
                                                 src={currentVideoUrl}
-                                                style={{ maxWidth: '80px', height: '80px' }}
+                                                style={{ maxWidth: '65px', height: '65px' }}
                                                 controls
                                             />
                                         ) }
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="editBannerImageFile" className="form-label">Banner Image File (optional)</label>
-                                        <input
+                                        {/* <input
                                             type="file"
                                             className="form-control"
                                             id="editBannerImageFile"
                                             onChange={(e) => setBannerImageFile(e.target.files[0])}
+                                        /> */}
+                                        <IKUpload
+                                            className='form-control'
+                                            fileName={bannerName}
+                                            folder='/media'
+                                            onError={(err) => console.error("Error uploading image", err)}
+                                            onSuccess={(res) => {
+                                                console.log("Upload successful, image URL:", res.url);
+                                                setBannerImageFile(res.url);
+                                            }}
+                                            required
                                         />
                                     </div>
                                     <div className="mb-3">

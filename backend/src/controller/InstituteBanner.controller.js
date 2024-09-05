@@ -2,21 +2,7 @@ import InstituteBanner from "../model/instituteBanners.model.js";
 
 const createInstBanner = async (req, res) => {
     try {
-      const { instituteName, instituteLink } = req.body;
-  
-      // Check if files are uploaded properly
-      if (!req.files || !req.files.instituteImage || !req.files.instituteIcon) {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: "Please upload both institute image and icon.",
-        });
-      }
-  
-      // Construct file URLs based on where your server serves static files
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      const instituteIcon = `${baseUrl}/uploads/media/${req.files.instituteIcon[0].filename}`;
-      const instituteImage = `${baseUrl}/uploads/media/${req.files.instituteImage[0].filename}`;
+      const { instituteName, instituteLink , instituteImage , instituteIcon} = req.body;
   
       // Create new instance of InstituteBanner
       const instBannerData = new InstituteBanner({
@@ -76,7 +62,7 @@ const getInstBanner = async (req,res) => {
 const editInstBanner = async (req, res) => {
     try {
       const { id } = req.params; // Institute banner ID from request parameters
-      const { instituteName, instituteLink } = req.body;
+      const { instituteName, instituteLink , instituteImage , instituteIcon } = req.body;
   
       // Fetch the existing InstituteBanner document by ID
       const instBannerItem = await InstituteBanner.findById(id);
@@ -96,17 +82,14 @@ const editInstBanner = async (req, res) => {
       if (instituteLink) {
         instBannerItem.instituteLink = instituteLink;
       }
-  
-      // Check if there are new files uploaded (images or icons)
-      if (req.files && req.files.instituteImage) {
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        instBannerItem.instituteImage = `${baseUrl}/uploads/media/${req.files.instituteImage[0].filename}`;
+      if (instituteImage) {
+        instBannerItem.instituteImage = instituteImage;
+      }
+      if (instituteIcon) {
+        instBannerItem.instituteIcon = instituteIcon;
       }
   
-      if (req.files && req.files.instituteIcon) {
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        instBannerItem.instituteIcon = `${baseUrl}/uploads/media/${req.files.instituteIcon[0].filename}`;
-      }
+      
   
       // Save the updated document to the database
       await instBannerItem.save();

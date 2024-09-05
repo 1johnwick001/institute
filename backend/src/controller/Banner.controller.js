@@ -4,9 +4,9 @@ import Category from "../model/category.model.js";
 
 const uploadBanner = async (req, res) => {
     try {
-      const { bannerName, category } = req.body;
+      const { bannerName, category , mediaType , bannerImage } = req.body;
   
-      if (!req.file) {
+      if (!req.body) {
         return res.status(400).json({
           code: 400,
           status: false,
@@ -24,28 +24,15 @@ const uploadBanner = async (req, res) => {
         });
       }
   
-      // Determine if the file is an image or video
-      let mediaType;
-      if (req.file.mimetype.startsWith('image/')) {
-        mediaType = 'image';
-      } else if (req.file.mimetype.startsWith('video/')) {
-        mediaType = 'video';
-      } else {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: "Invalid file type. Only images and videos are allowed.",
-        });
-      }
+      
   
       // Create the URL for the uploaded file
-      const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
   
       // Save the banner data to the database
       const BannerData = new Banner({
         bannerName,
         mediaType,
-        [mediaType === 'image' ? 'bannerImage' : 'bannerVideo']: fileUrl,
+        bannerImage,
         category: categoryExists._id
       });
   
@@ -99,63 +86,54 @@ const getBanner = async (req, res) => {
 };
 
 const editBanner = async (req, res) => {
-    try {
-        const { bannerName, category } = req.body;
-        const { id } = req.params;
+  try {
+      const { id } = req.params;
+      const { bannerName, bannerImage, mediaType } = req.body;
 
-        // Find the banner by ID
-        const banner = await Banner.findById(id);
+      // Find the banner by ID
+      const banner = await Banner.findById(id);
 
-        if (!banner) {
-            return res.status(404).json({
-                code: 404,
-                status: false,
-                message: "Banner Image not found",
-            });
-        }
+      if (!banner) {
+          return res.status(404).json({
+              code: 404,
+              status: false,
+              message: "Banner not found",
+          });
+      }
 
-        // Update banner name if provided
-        banner.bannerName = bannerName || banner.bannerName;
+      // Update banner details if provided
+      if (bannerName && bannerName !== banner.bannerName) {
+          banner.bannerName = bannerName;
+      }
 
-        // If a new category is provided, validate it
-        if (category) {
-            const categoryExists = await Category.findById(category);
-            if (!categoryExists) {
-                return res.status(404).json({
-                    code: 404,
-                    status: false,
-                    message: "Category not found",
-                });
-            }
-            banner.category = category; // Update the category reference
-        }
+      if (bannerImage && bannerImage !== banner.bannerImage) {
+          banner.bannerImage = bannerImage;
+      }
 
-        // If a new file is uploaded
-        if (req.file) {
-            const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
-            banner.bannerImage = fileUrl; // Update the file URL (either image or video)
-        }
+      if (mediaType && mediaType !== banner.mediaType) {
+          banner.mediaType = mediaType;
+      }
 
-        await banner.save();
+      // Save the updated banner
+      await banner.save();
 
-        return res.json({
-            code: 200,
-            status: true,
-            message: 'Banner updated successfully',
-            data: {
-                banner,
-            },
-        });
+      return res.json({
+          code: 200,
+          status: true,
+          message: 'Banner updated successfully',
+          data:  banner ,
+      });
 
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            code: 500,
-            status: false,
-            message: error.message,
-        });
-    }
+  } catch (error) {
+      console.error('Error updating banner:', error);
+      return res.status(500).json({
+          code: 500,
+          status: false,
+          message: 'An error occurred while updating the banner.',
+      });
+  }
 };
+
 
 const deleteBanner = async (req,res) => {
     try {

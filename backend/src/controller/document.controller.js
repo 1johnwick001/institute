@@ -1,26 +1,27 @@
 import path from "path";
 import DocFiles from "../model/document.model.js";
 import fs from "fs"
+import Category from "../model/category.model.js";
 
 const createDoc = async (req, res) => {
     try {
-        // Check if a file is uploaded
-        if (!req.file) {
-            return res.status(400).json({ message: "No file uploaded." });
-        }
 
-        // Extract data from the request
-        const { category, fileName } = req.body; // 
-        const { filename, mimetype } = req.file; // 
+      const { category, fileName , file } = req.body;
 
-
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/media/${filename}`;
+      // Check if the category exists
+      const categoryExists = await Category.findById(category);
+      if (!categoryExists) {
+        return res.status(404).json({
+          code: 404,
+          status: false,
+          message: "Category not found",
+        });
+      }
 
         // Create a new document entry in the database
         const newDocument = new DocFiles({
-            fileName: fileName,
-            fileUrl: fileUrl,
-            fileType: mimetype, // Store the file's MIME type, e.g., 'application/pdf'
+            fileName,
+            fileUrl : file,
             category: category,
         });
 

@@ -108,6 +108,20 @@ function Sidebar() {
                     </ul>
                 </li>
 
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/fact-info">
+                        <i className='bi bi-info-circle'></i>
+                        <span>Fact Numbers</span>
+                    </Link>
+                </li>
+
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/bog-details">
+                        <i className='bi bi-person-vcard'></i>
+                        <span>Body Of Governance</span>
+                    </Link>
+                </li>
+
                 <li class="nav-heading">Landing Page </li>
 
                 <li className='nav-item'>

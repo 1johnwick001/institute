@@ -9,7 +9,9 @@ import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.
 import dashboard from "../controller/Dashboard.controller.js";
 import  {createInstBanner, deleteInstBanner, editInstBanner, getInstBanner } from "../controller/InstituteBanner.controller.js";
 import { createDoc, deleteDoc, editDoc, getDoc } from "../controller/document.controller.js";
-import landingPage from "../controller/frontend.controller.js";
+import {landingPage, categoryData } from "../controller/frontend.controller.js";
+import { createFactInfo, deleteFactInfo, editFactsInfo, getFactsInfo } from "../controller/factInfo.controller.js";
+import { createBog, deleteBog, editBog, getBog, getBogById } from "../controller/bog.controller.js";
 
 
 const router = express.Router()
@@ -60,34 +62,47 @@ router.delete('/api/delete-category/:id',deleteCategory)
 
 // =======Gallery Crud ======
 
-router.post('/api/gallery-upload',upload.single('galleryImage'), uploadGallery)
+router.post('/api/gallery-upload', uploadGallery)
 router.get('/api/gallery-images', getGalleryImage)
-router.put('/api/edit-gallery/:id', upload.single('galleryImage'), editGallery);
+router.put('/api/edit-gallery/:id', editGallery);
 router.delete('/api/delete-image/:id', deleteGalleryImage);
 
 // =======Banner Images Crud ======
 
-router.post('/api/banner-upload',upload.single('bannerImage'), uploadBanner)
+router.post('/api/banner-upload', uploadBanner)
 router.get('/api/banner', getBanner)
-router.put('/api/edit-banner/:id', upload.single('bannerImage'), editBanner);
+router.put('/api/edit-banner/:id', editBanner);
 router.delete('/api/delete-banner/:id', deleteBanner);
 
 // =======Blogs Crud ======
 
-router.post('/api/create-blog', upload.single('blogImage'), createBlog )
+router.post('/api/create-blog', createBlog )
 router.get(`/api/get-blogs/:id?`, getBlogs)
-router.put('/api/edit-blog/:id', upload.single('blogImage') , editBlog)
+router.put('/api/edit-blog/:id',  editBlog)
 router.delete('/api/delete-blog/:id', deleteBlog)
 
+// =======facts info Crud ======
+router.post('/api/create-factsInfo', createFactInfo)
+router.get('/api/get-factsInfo', getFactsInfo)
+router.put('/api/edit-factsInfo/:id', editFactsInfo)
+router.delete('/api/delete-factsInfo/:id', deleteFactInfo)
+
+// =======BOG Crud ======
+router.post('/api/create-bog',createBog)
+router.get('/api/get-bog',getBog)
+router.get('/api/get-bog/:id',getBogById)
+router.put('/api/edit-bog/:id',editBog)
+router.delete('/api/delete-bog/:id',deleteBog)
 
 // =======instittue banner Crud ======
-router.post('/api/create-inst-banner', upload.fields([{ name: 'instituteImage', maxCount: 1 }, { name: 'instituteIcon', maxCount: 1 }]), createInstBanner);
+router.post('/api/create-inst-banner', createInstBanner);
 router.get('/api/get-inst-banners', getInstBanner);
-router.put('/api/edit-inst-banner/:id', upload.fields([{ name: 'instituteImage', maxCount: 1 },{ name: 'instituteIcon', maxCount: 1 }]),editInstBanner);
+router.put('/api/edit-inst-banner/:id',editInstBanner);
 router.delete('/api/delete-inst-banner/:id',deleteInstBanner)
 
 
 // routes to send data to frontend
 router.get('/api/get-landingPage',landingPage)
+router.post('/api/get-data/:id',categoryData)
 
 export default router

@@ -5,6 +5,7 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
+import { IKUpload } from 'imagekitio-react';
 
 function Gallery() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -20,9 +21,11 @@ function Gallery() {
 
     const [imageName, setImageName] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
-    const [imageFile, setImageFile] = useState(null);
+    const [imageFile, setImageFile] = useState('');
 
     const [currentImageUrl, setCurrentImageUrl] = useState('');
+
+    const [uploading, setUploading] = useState(false);
 
     // Fetch images from backend
     const fetchImages = async () => {
@@ -73,7 +76,7 @@ function Gallery() {
 
         try {
             const response = await axios.post(`${API_BASE_URL}/gallery-upload`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'application/json' },
             });
 
             if (response.status === 201) {
@@ -98,17 +101,25 @@ function Gallery() {
             console.error('No image selected for editing');
             return;
         }
-
+    
         const formData = new FormData();
         formData.append('galleryName', imageName);
         if (imageFile) {
             formData.append('galleryImage', imageFile); // Only append if a new file is selected
         }
         formData.append('mediaType', mediaType);
-
+    
+        console.log('Form Data:', {
+            galleryName: imageName,
+            galleryImage: imageFile,
+            mediaType: mediaType,
+        });
+    
         try {
-            const response = await axios.put(`${API_BASE_URL}/edit-gallery/${selectedImage._id}`, formData)// This header should be removed
-
+            const response = await axios.put(`${API_BASE_URL}/edit-gallery/${selectedImage._id}`, formData, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+    
             if (response.status === 200) {
                 fetchImages();
                 setShowEditModal(false);
@@ -140,17 +151,14 @@ function Gallery() {
         }
     };
 
-    const openEditModal = (image) => {
-        setSelectedImage(image);
-        setImageName(image.galleryName);
-        if (image.mediaType === 'image') {
-            setCurrentImageUrl(image.galleryImage);
-        } else if (image.mediaType === 'video') {
-            setCurrentVideoUrl(image.galleryVideo);
-        }
+    const openEditModal = (item) => {
+        setImageName(item.galleryName);
+        setMediaType(item.mediaType);
+        setCurrentImageUrl(item.galleryImage);  // Set the current image URL
+        setCurrentVideoUrl(item.galleryVideo);  // Set the current video URL if needed
+        setSelectedImage(item);  // Store the item to be used in the edit function
         setShowEditModal(true);
     };
-
     // Columns configuration for the data table
     const columns = [
         {
@@ -172,12 +180,15 @@ function Gallery() {
                         alt={row.galleryName}
                         style={{ width: '75px', height: '75px', borderRadius: '35px' }}
                     />
-                ) : (
+                ) : row.mediaType === 'video' ? (
                     <video
                         src={row.galleryVideo}
                         alt={row.galleryName}
                         style={{ width: '90px', height: '85px', borderRadius: '35px' }}
+                        controls
                     />
+                ) : (
+                    <p>No media available</p>
                 )
             ),
         },
@@ -189,8 +200,7 @@ function Gallery() {
                         className="btn btn-warning btn-sm m-2"
                         onClick={() => {
                             openEditModal(row);
-
-                            setMediaType(row.mediaType); // Set media type
+                            setMediaType(row.mediaType);
                             setShowEditModal(true);
                         }}
                     >
@@ -300,13 +310,26 @@ function Gallery() {
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="imageFile" className="form-label">Gallery Image / video File</label>
-                                        <input
+                                        <IKUpload
+                                        className='form-control'
+                                          fileName={imageName}
+                                          folder='/media'
+                                          onError={(err) => console.error("Error uploading image", err)}
+                                          onSuccess={(res) => {
+                                            console.log("Upload successful, image URL:", res.url);
+                                            setImageFile(res.url);  // Set the uploaded image URL to state
+                                            setUploading(false);
+                                          }}
+                                          onUploadStart={() => setUploading(true)}
+                                          
+                                        />
+                                        {/* <input
                                             type="file"
                                             className="form-control"
                                             id="imageFile"
                                             onChange={(e) => setImageFile(e.target.files[0])}
                                             required
-                                        />
+                                        /> */}
                                     </div>
                                     <div className="mb-3">
                                         <label className="form-label">Media Type</label>
@@ -323,7 +346,7 @@ function Gallery() {
                                     </div>
                                     <hr />
                                     <div>
-                                        <button type="submit" className="btn btn-primary w-100">Submit</button>
+                                        <button type="submit" className="btn btn-primary w-100" disabled={uploading}>Submit</button>
                                     </div>
                                 </form>
                             </div>
@@ -378,12 +401,25 @@ function Gallery() {
                                         )}
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="editImageFile" className="form-label">Image/Video File (optional)</label>
-                                        <input
+                                        <label htmlFor="editImageFile" className="form-label">Image/Video File</label>
+                                        {/* <input
                                             type="file"
                                             className="form-control"
                                             id="editImageFile"
                                             onChange={(e) => setImageFile(e.target.files[0])}
+                                        /> */}
+                                        <IKUpload
+                                        className='form-control'
+                                          fileName={imageName}
+                                          folder='/media'
+                                          onError={(err) => console.error("Error uploading image", err)}
+                                          onSuccess={(res) => {
+                                            console.log("Upload successful, image URL:", res.url);
+                                            setImageFile(res.url);  // Set the uploaded image URL to state
+                                            setUploading(false);
+                                          }}
+                                          onUploadStart={() => setUploading(true)}
+                                          
                                         />
                                     </div>
                                     <div className="mb-3">
@@ -401,7 +437,7 @@ function Gallery() {
                                     </div>
                                     <hr />
                                     <div>
-                                        <button type="submit" className="btn btn-primary w-100">Save Changes</button>
+                                        <button type="submit" className="btn btn-primary w-100" disabled={uploading}>Save Changes</button>
                                     </div>
                                 </form>
                             </div>

@@ -2,76 +2,68 @@ import Category from "../model/category.model.js";
 import Gallery from "../model/gallery.model.js";
 
 const uploadGallery = async (req, res) => {
-    try {
-      const { galleryName, category } = req.body;
-  
-      if (!req.file) {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: "Please upload a Gallery Item",
-        });
-      }
-  
-      // Check if the category exists
-      const categoryExists = await Category.findById(category);
-      if (!categoryExists) {
-        return res.status(404).json({
-          code: 404,
-          status: false,
-          message: "Category not found",
-        });
-      }
-  
-      // Determine if the file is an image or video
-      let mediaType;
-      let mediaField;
-      if (req.file.mimetype.startsWith('image/')) {
-        mediaType = 'image';
-        mediaField = 'galleryImage'; // use this to set the image field in the schema
-      } else if (req.file.mimetype.startsWith('video/')) {
-        mediaType = 'video';
-        mediaField = 'galleryVideo'; // use this to set the video field in the schema
-      } else {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: "Invalid file type. Only images and videos are allowed.",
-        });
-      }
-  
-      // Create the URL for the uploaded file
-      const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
-  
-      // Create a new gallery document
-      const galleryData = new Gallery({
-        galleryName,
-        mediaType,
-        category: categoryExists._id,
-        [mediaField]: fileUrl // dynamically set either image or video field
-      });
-  
-      // Save the document to the database
-      await galleryData.save();
-  
-      // Respond with success
-      res.status(201).json({
-        code: 201,
-        status: true,
-        message: 'Gallery uploaded successfully',
-        data: {
-          galleryData
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        code: 500,
+  try {
+      
+      const { galleryName, category, galleryImage, mediaType } = req.body; // Expecting galleryImage to be a URL from frontend
+      console.log("body",req.body);
+      
+    // Validate required fields
+    if (!galleryName || !category || !galleryImage || !mediaType) {
+      return res.status(400).json({
+        code: 400,
         status: false,
-        message: error.message,
+        message: "Please provide all required fields.",
       });
     }
-  };  
+
+    // Check if the category exists
+    const categoryExists = await Category.findById(category);
+    if (!categoryExists) {
+      return res.status(404).json({
+        code: 404,
+        status: false,
+        message: "Category not found",
+      });
+    }
+
+    // Ensure mediaType is valid
+    if (!['image', 'video'].includes(mediaType)) {
+      return res.status(400).json({
+        code: 400,
+        status: false,
+        message: "Invalid media type. Only 'image' or 'video' are allowed.",
+      });
+    }
+
+    // Create a new gallery document with the provided URL
+    const galleryData = new Gallery({
+      galleryName,
+      mediaType,
+      category: categoryExists._id,
+      [mediaType === 'image' ? 'galleryImage' : 'galleryVideo']: galleryImage, // Directly use the URL provided
+    });
+
+    // Save the document to the database
+    await galleryData.save();
+
+    // Respond with success
+    res.status(201).json({
+      code: 201,
+      status: true,
+      message: 'Gallery uploaded successfully',
+      data: {
+        galleryData
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      status: false,
+      message: error.message,
+    });
+  }
+}; 
 
 const getGalleryImage = async (req, res) => {
     try {
@@ -104,82 +96,19 @@ const getGalleryImage = async (req, res) => {
 }
 
 const editGallery = async (req, res) => {
+    const id = req.params.id
+    const { galleryName, galleryImage, mediaType } = req.body;
+
     try {
-        const { id } = req.params; // Gallery ID from request parameters
-        const { galleryName, category } = req.body; // Text fields from request body
+        const updatedItem = await Gallery.findByIdAndUpdate(id,{ galleryName, galleryImage, mediaType },{ new: true });
 
-        // Fetch the existing gallery item by ID
-        const galleryItem = await Gallery.findById(id);
-
-        if (!galleryItem) {
-            return res.status(404).json({
-                code: 404,
-                status: false,
-                message: "Gallery item not found"
-            });
+        if (!updatedItem) {
+            return res.status(404).json({ message: 'Item not found' });
         }
 
-        // Check if category exists if provided
-        if (category) {
-            const categoryExists = await Category.findById(category);
-            if (!categoryExists) {
-                return res.status(404).json({
-                    code: 404,
-                    status: false,
-                    message: "Category not found"
-                });
-            }
-            galleryItem.category = categoryExists._id; // Update category
-        }
-
-        // Update the galleryName if provided
-        if (galleryName) {
-            galleryItem.galleryName = galleryName;
-        }
-
-        // Handle file uploads if a new file is uploaded
-        if (req.file) {
-            let mediaType;
-            let mediaField;
-            if (req.file.mimetype.startsWith('image/')) {
-                mediaType = 'image';
-                mediaField = 'galleryImage';
-            } else if (req.file.mimetype.startsWith('video/')) {
-                mediaType = 'video';
-                mediaField = 'galleryVideo';
-            } else {
-                return res.status(400).json({
-                    code: 400,
-                    status: false,
-                    message: "Invalid file type. Only images and videos are allowed."
-                });
-            }
-
-            // Create the URL for the uploaded file
-            const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
-
-            // Update media fields dynamically based on the type
-            galleryItem.mediaType = mediaType;
-            galleryItem[mediaField] = fileUrl;
-        }
-
-        // Save the updated gallery item
-        await galleryItem.save();
-
-        return res.status(200).json({
-            code: 200,
-            status: true,
-            message: 'Gallery item updated successfully',
-            data: galleryItem
-        });
-
+        res.json({ message: 'Gallery item updated successfully', data: updatedItem });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            code: 500,
-            status: false,
-            message: error.message,
-        });
+        res.status(500).json({ message: 'Server error', error });
     }
 };
 

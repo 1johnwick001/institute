@@ -6,6 +6,8 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import API_BASE_URL from '../../config/Config';
 import SunEditor from 'suneditor-react';
 import axios from 'axios';
+import { IKUpload } from 'imagekitio-react';
+
 
 function CreateBlog() {
   const [categories, setCategories] = useState([])
@@ -14,6 +16,8 @@ function CreateBlog() {
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
+
+  const [uploading, setUploading] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -42,9 +46,7 @@ const renderCategoryOptions = (categories) => {
     setTitle(event.target.value);
   };
 
-  const handleImageChange = (event) => {
-    setImage(event.target.files[0]);
-  };
+
 
   const handleSubmit = async () => {
     if (!image) {
@@ -56,17 +58,15 @@ const renderCategoryOptions = (categories) => {
     formData.append('category', selectedCategory);
     formData.append('title', title);
     formData.append('content', content);
-    formData.append('blogImage', image);
+    formData.append('images', image);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/create-blog`, {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post(`${API_BASE_URL}/create-blog`, formData , {
+        headers : {'Content-Type': 'application/json'}
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Blog created successfully', data);
+      if (response.status === 201) {
+        const data = await response.data;
         navigate('/blogs-list'); // Redirect to blogs list
       } else {
         console.error('Error creating blog');
@@ -132,7 +132,7 @@ const renderCategoryOptions = (categories) => {
                 </div>
                 <div className="mt-3 col-md-3 mb-2">
                   <label htmlFor="imageName" className="form-label">Blog Image</label>
-                  <input
+                  {/* <input
                     id="imageName"
                     name="blogImage"
                     className="form-control"
@@ -140,9 +140,22 @@ const renderCategoryOptions = (categories) => {
                     accept="image/*"
                     onChange={handleImageChange} // Handle image file change
                     required
+                  /> */}
+                  <IKUpload
+                      className='form-control'
+                      fileName='b-img'
+                      folder='/media'
+                      onError={(err) => console.error("Error uploading image", err)}
+                      onSuccess={(res) => {
+                          console.log("Upload successful, image URL:", res.url);
+                          setImage(res.url);
+                          setUploading(false);
+                      }}
+                      onUploadStart={() => setUploading(true)}
+                      required
                   />
                 </div>
-                <button className="mt-2 btn btn-primary w-100" type="submit">Submit</button>
+                <button className="mt-2 btn btn-primary w-100" type="submit" disabled={uploading}>Submit</button>
               </form>
             </div>
           </div>

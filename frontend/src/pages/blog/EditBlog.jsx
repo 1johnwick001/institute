@@ -4,7 +4,9 @@ import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import SunEditor from 'suneditor-react';
+import axios from 'axios';
 import API_BASE_URL from '../../config/Config';
+import { IKUpload } from 'imagekitio-react';
 
 function EditBlog() {
   const { id } = useParams(); // Get the blog ID from the URL
@@ -35,32 +37,23 @@ function EditBlog() {
     fetchBlogData();
   }, [id]); // Only run this effect when `id` changes
 
-  const handleImageChange = (event) => {
-    setImage(event.target.files[0]);
-  };
+
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
   };
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-
-    if (image) {
-      formData.append('blogImage', image); // Add the new image file only if a new one is selected
-    }
-
+    const data = {
+      title,
+      content,
+      images: image,
+    };
+  
     try {
-      const response = await fetch(`${API_BASE_URL}/edit-blog/${id}`, {
-        method: 'PUT',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Blog updated successfully', data);
+      const response = await axios.put(`${API_BASE_URL}/edit-blog/${id}`, data);
+  
+      if (response.status === 200) {
         navigate('/blogs-list'); // Redirect to blogs list
       } else {
         console.error('Error updating blog');
@@ -119,13 +112,24 @@ function EditBlog() {
                 <hr />
                 <div className="mt-3 col-md-3">
                   <label htmlFor="imageName" className="form-label">Blog Image</label>
-                  <input
+                  {/* <input
                     id="imageName"
                     name='blogImage'
                     className="form-control"
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
+                  /> */}
+                  <IKUpload
+                      className='form-control'
+                      fileName='b-img'
+                      folder='/media'
+                      onError={(err) => console.error("Error uploading image", err)}
+                      onSuccess={(res) => {
+                          console.log("Upload successful, image URL:", res.url);
+                          setImage(res.url);
+                      }}
+                      
                   />
                   {existingImage && !image && (
                     <div className="mt-2">

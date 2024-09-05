@@ -6,6 +6,7 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
 
+import { IKUpload } from 'imagekitio-react';
 
 
 function InstituteBanner() {
@@ -48,36 +49,27 @@ function InstituteBanner() {
   // Function to handle form submission
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('instituteName', instituteName);
-    if (instituteImage) formData.append('instituteImage', instituteImage);
-    if (instituteIcon) formData.append('instituteIcon', instituteIcon);
-    formData.append('instituteLink', instituteLink);
-
+  
     try {
+      const payload = {
+        instituteName,
+        instituteImage, // URL from ImageKit
+        instituteIcon,   // URL from ImageKit
+        instituteLink,
+      };
+  
       if (isEditMode && currentBannerId) {
         await axios.put(
           `${API_BASE_URL}/edit-inst-banner/${currentBannerId}`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
+          payload
         );
       } else {
-        await axios.post(`${API_BASE_URL}/create-inst-banner`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        await axios.post(`${API_BASE_URL}/create-inst-banner`, payload);
       }
-
-      // Reset form and close modal
+  
       setShowModal(false);
       resetForm();
-      fetchData(); // Refresh data after successful submission
+      fetchData();
     } catch (error) {
       console.error('Error while calling API', error);
     }
@@ -120,8 +112,8 @@ function InstituteBanner() {
   // Function to reset form
   const resetForm = () => {
     setInstituteName('');
-    setInstituteImage(null);
-    setInstituteIcon(null);
+    setInstituteImage('');
+    setInstituteIcon('');
     setInstituteLink('');
     setCurrentImageURL('');
     setCurrentIconURL('');
@@ -287,6 +279,7 @@ const columns = [
                           alt="Current Institute"
                           style={{ width: '55px', height: '55px', borderRadius: '35px' }}
                         />
+                        
                       </div>
                     </div>
                     <div className="mb-3">
@@ -305,26 +298,51 @@ const columns = [
                   <label htmlFor="instituteImage" className="form-label">
                     Institute Image
                   </label>
-                  <input
+                  {/* <input
                     type="file"
                     className="form-control"
                     id="instituteImage"
                     onChange={(e) => setInstituteImage(e.target.files[0])}
                     accept="image/*"
                     required={!isEditMode} // Required only in add mode
+                  /> */}
+                  <IKUpload
+                    className='form-control'
+                      fileName={instituteName}
+                      folder='/media'
+                      onError={(err) => console.error("Error uploading image", err)}
+                      onSuccess={(res) => {
+                        console.log("Upload successful, image URL:", res.url);
+                        setInstituteImage(res.url);  // Set the uploaded image URL to state
+                      }}  // Set the uploaded image URL to state
+                      required={!isEditMode}
+                      accept="image/*"
+                      
                   />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="instituteIcon" className="form-label">
                     Institute Icon
                   </label>
-                  <input
+                  {/* <input
                     type="file"
                     className="form-control"
                     id="instituteIcon"
                     onChange={(e) => setInstituteIcon(e.target.files[0])}
                     accept="image/*"
                     required={!isEditMode} // Required only in add mode
+                  /> */}
+                  <IKUpload
+                    className='form-control'
+                      fileName={instituteName}
+                      folder='/media'
+                      onError={(err) => console.error("Error uploading image", err)}
+                      onSuccess={(res) => {
+                        console.log("Upload successful icon url, image URL:", res.url);
+                        setInstituteIcon(res.url);
+                      }}
+                      required={!isEditMode}
+                      accept="image/*"
                   />
                 </div>
                 <div className="mb-3">
