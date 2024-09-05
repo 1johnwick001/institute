@@ -1,8 +1,10 @@
 import BOG from "../model/bog.model.js";
+import Category from "../model/category.model.js";
+
 
 const createBog = async (req,res) => {
     try {
-        const {name , designation , companyName , imageLink } = req.body;
+        const {name , designation , companyName , imageLink , category} = req.body;
 
         if (!name) {
             return res.status(400).json({
@@ -12,11 +14,21 @@ const createBog = async (req,res) => {
             })
         }
 
+        const categoryExists = await Category.findById(category);
+        if (!categoryExists) {
+            return res.status(404).json({
+            code: 404,
+            status: false,
+            message: "Category not found",
+            });
+        }
+
         const bogData = new BOG({
             name,
             designation,
             companyName,
-            imageLink
+            imageLink,
+            category:categoryExists._id
         })
 
         await bogData.save()

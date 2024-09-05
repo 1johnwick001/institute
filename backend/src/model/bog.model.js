@@ -13,6 +13,10 @@ const bogMemberSchema = new mongoose.Schema({
     imageLink: {
         type : String
     },
+    category:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }
     
 },{timestamps:true});
 

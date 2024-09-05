@@ -5,6 +5,7 @@ import Blog from "../model/Blogs.model.js";
 import Gallery from "../model/gallery.model.js";
 import FactData from "../model/factInfo.model.js";
 import DocFiles from "../model/document.model.js";
+import BOG from "../model/bog.model.js";
 
 const landingPage = async(req,res) => {
     try {
@@ -81,12 +82,16 @@ const categoryData = async (req, res) => {
         const banner = await Banner.find ({ category : categoryId })
         const gallery = await Gallery.find ({ category : categoryId })
         const docs = await DocFiles.find ({ category : categoryId })
+        const factInfo = await FactData.find({category : categoryId})
+        const BogData = await BOG.find({category : categoryId})
     
         const result = {
           banner,
           blogs,
           gallery,
-          docs
+          docs,
+          factInfo,
+          BOG : BogData
         };
     
         res.json(result);

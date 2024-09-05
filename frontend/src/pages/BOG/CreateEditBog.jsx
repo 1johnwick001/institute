@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React,{ useState, useEffect } from "react";
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
@@ -9,6 +9,9 @@ import API_BASE_URL from "../../config/Config";
 
 function CreateEditBog() {
 
+  const [categories, setCategories] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('')
+
   const [name, setName] = useState('');
   const [designation, setDesignation] = useState('');
   const [companyName, setCompany] = useState('');
@@ -16,8 +19,34 @@ function CreateEditBog() {
   const [uploading, setUploading] = useState(false);
 
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the BOG ID from the URL
+  const { id } = useParams(); 
+
   const [bogId, setBogId] = useState(null);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/get-categories`);
+      setCategories(response.data.data)
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setCategories([]);
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories();
+}, []);
+
+
+const renderCategoryOptions = (categories) => {
+  return categories.map((category) => (
+    <React.Fragment key={category._id}>
+      <option value={category._id}>{category.name}</option>
+      {category.subcategories && renderCategoryOptions (category.subcategories)}
+    </React.Fragment>
+  ));
+};
+
 
   useEffect(() => {
     if (id) {
@@ -44,7 +73,7 @@ function CreateEditBog() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const bogData = { name, designation, companyName, imageLink };
+      const bogData = { category :selectedCategory ,name, designation, companyName, imageLink };
 
       if (bogId) {
         await axios.put(`${API_BASE_URL}/edit-bog/${bogId}`, bogData);
@@ -68,6 +97,18 @@ function CreateEditBog() {
           <div className="card">
             <div className="card-body">
               <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="category" className="form-label">Select Category</label>
+                  <select
+                    id="category"
+                    className="form-control"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    {renderCategoryOptions(categories)}
+                  </select>
+                </div>
                 <div className="mb-3">
                   <label htmlFor="bogName" className="form-label">Name</label>
                   <input
