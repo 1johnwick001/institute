@@ -25,7 +25,7 @@ const landingPage = async(req,res) => {
         const homeGalleryImages = await Gallery.find({ category: homeCategory._id, mediaType: 'image' }).limit(7).sort({ createdAt: -1 }).exec();
 
         // gallery images related to "Placement" category
-        const placementGalleryImages = await Gallery.find({ category: placementCategory._id, mediaType: 'image' }).limit(5).sort({ createdAt: -1 }).exec();
+        const placementGalleryImages = await Gallery.find({ category: placementCategory._id, mediaType: 'image' }).limit(10).sort({ createdAt: -1 }).exec();
 
 // ================Blogs Partttt===========================
 
@@ -34,7 +34,7 @@ const landingPage = async(req,res) => {
         const aboutUsBlogs = await Blog.find({ category : aboutUsCategory._id }).limit(3).sort({createdAt:-1}).exec()
 
         // top 3 blogs from "placements" category
-        const placementsBlogs = await Blog.find({ category : placementCategory._id}).limit(3).sort({createdAt:-1}).exec()
+        const placementsBlogs = await Blog.find({ category : placementCategory._id}).limit(10).sort({createdAt:-1}).exec()
 
         // campus life blogs 
         const campusLifeBlogs = await Blog.find({ category: homeCategory._id }).sort({ createdAt : -1}).limit(5).exec()
