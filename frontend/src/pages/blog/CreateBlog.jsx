@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import API_BASE_URL from '../../config/Config';
-import SunEditor from 'suneditor-react';
 import axios from 'axios';
 import { IKUpload } from 'imagekitio-react';
+import TestSunEditorJsx from './Editor';
 
 
 function CreateBlog() {
@@ -16,6 +16,12 @@ function CreateBlog() {
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
+  const editor = useRef();
+
+  const getSunEditorInstance = (sunEditor) => {
+    editor.current = sunEditor;
+  };
+
 
   const [uploading, setUploading] = useState(false);
 
@@ -49,7 +55,7 @@ const renderCategoryOptions = (categories) => {
 
 
   const handleSubmit = async () => {
-    if (!image) {
+    if (!title) {
       alert('Please upload a blog image.');
       return;
     }
@@ -76,6 +82,7 @@ const renderCategoryOptions = (categories) => {
     }
   };
 
+  
   return (
     <>
       <Header />
@@ -113,7 +120,7 @@ const renderCategoryOptions = (categories) => {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="blog" className="form-label">Blog Content</label>
-                  <SunEditor
+                  {/* <SunEditor
                     value={content}
                     placeholder="Please type here..."
                     autoFocus={true}
@@ -121,26 +128,23 @@ const renderCategoryOptions = (categories) => {
                     setOptions={{
                       buttonList: [
                         ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
-                        ['font', 'fontSize', 'formatBlock'],
+                        ['font', 'fontSize', 'formatBlock','textStyle','paragraphStyle','hiliteColor'],
                         ['align', 'horizontalRule', 'list', 'table'],
                         ['link', 'image'],
                         ['fullScreen', 'showBlocks', 'codeView']
                       ]
                     }}
+                    height="50vh"
                     onChange={(newContent) => setContent(newContent)} // Handle content change
+                  /> */}
+                  <TestSunEditorJsx
+                  value={content}
+                  onChange={(newContent) => setContent(newContent)} // Handle content change
                   />
                 </div>
                 <div className="mt-3 col-md-3 mb-2">
-                  <label htmlFor="imageName" className="form-label">Blog Image</label>
-                  {/* <input
-                    id="imageName"
-                    name="blogImage"
-                    className="form-control"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange} // Handle image file change
-                    required
-                  /> */}
+                  <label htmlFor="imageName" className="form-label">Blog Icon</label>
+                  
                   <IKUpload
                       className='form-control'
                       fileName='b-img'
@@ -152,7 +156,7 @@ const renderCategoryOptions = (categories) => {
                           setUploading(false);
                       }}
                       onUploadStart={() => setUploading(true)}
-                      required
+                      
                   />
                 </div>
                 <button className="mt-2 btn btn-primary w-100" type="submit" disabled={uploading}>Submit</button>

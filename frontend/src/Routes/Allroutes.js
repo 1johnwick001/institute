@@ -16,6 +16,7 @@ import DocFiles from '../pages/docFile/DocFiles'
 import FactInfo from '../pages/factsInfo/FactInfo'
 import Bog from '../pages/BOG/Bog'
 import CreateEditBog from '../pages/BOG/CreateEditBog'
+import SuperSubCateg from '../pages/category/SuperSubCateg'
 
 
 function Allroutes() {
@@ -39,6 +40,7 @@ function Allroutes() {
 			<Route path='/category' element={isLoggedIn? <Categories /> : <Navigate to="/" />} />
 			<Route path='/subcategory' element={isLoggedIn? <SubCategories /> : <Navigate to="/" />} />
 			<Route path='/subsubcategory' element={isLoggedIn? <SubSubCategories /> : <Navigate to="/" />} />
+			<Route path='/supersubcategory' element={isLoggedIn? <SuperSubCateg /> : <Navigate to="/" />} />
 			{/* =========  Gallery Url ======== */}
 			<Route path='/gallery' element={isLoggedIn? <Gallery /> : <Navigate to="/" />} />
 			<Route path='/banner' element={isLoggedIn? <Banner /> : <Navigate to="/" />} />

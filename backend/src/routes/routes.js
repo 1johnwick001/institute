@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer"
 import path from "path";
 
-import {createCategory, deleteCategory, getCategories, updateCategory } from "../controller/category.controller.js";
+import {createCategory, deleteCategory, getCategories, getCategoriesLevel2AndAbove, updateCategory } from "../controller/category.controller.js";
 import {uploadGallery,  deleteGalleryImage, editGallery, getGalleryImage } from "../controller/Gallery.controller.js";
 import { deleteBanner, editBanner, getBanner, uploadBanner } from "../controller/Banner.controller.js";
 import { createBlog, deleteBlog, editBlog, getBlogs } from "../controller/Blogs.controller.js";
@@ -48,7 +48,7 @@ const storage = multer.diskStorage({
 router.get('/api/get-dashboard',dashboard)
 
 // docfile routes
-router.post('/api/upload-doc',upload.single('file'),createDoc)
+router.post('/api/upload-doc',createDoc)
 router.get('/api/get-doc',getDoc)
 router.put('/api/edit-doc/:id',upload.single('file'),editDoc);
 router.delete('/api/delete-doc/:id',deleteDoc)
@@ -57,6 +57,7 @@ router.delete('/api/delete-doc/:id',deleteDoc)
 
 router.post('/api/create-category',createCategory)
 router.get('/api/get-categories',getCategories)
+router.get('/api/get-categories-level',getCategoriesLevel2AndAbove)
 router.put('/api/update-category/:id',updateCategory)
 router.delete('/api/delete-category/:id',deleteCategory)
 

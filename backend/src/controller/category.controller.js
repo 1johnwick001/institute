@@ -104,6 +104,16 @@ try {
 }
 };
 
+const getCategoriesLevel2AndAbove = async (req, res) => {
+    try {
+      // Fetch categories with level 2 and above
+      const categories = await Category.find({ level: { $gte: 2 } }).populate('parent');
+      res.status(200).json(categories);
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+};
+
 const updateCategory = async (req, res) => {
     try {
         const {id} = req.params;  // Geting category ID from the URL parameter
@@ -220,4 +230,4 @@ const deleteCategory = async (req, res) => {
 
 
 
-export  {createCategory, getCategories, updateCategory , deleteCategory};
+export  {createCategory, getCategories, getCategoriesLevel2AndAbove ,updateCategory , deleteCategory};

@@ -59,6 +59,13 @@ function Sidebar() {
                                 <span>sub-Sub-category</span>
                             </Link>
                         </li>
+                        <li class="nav-heading">Tabs or other child categories </li>
+                        <li>
+                            <Link to="/supersubcategory">
+                                <i className='bi bi-circle'></i>
+                                <span>super-sub-categories</span>
+                            </Link>
+                        </li>
                     </ul>
                 </li>
     

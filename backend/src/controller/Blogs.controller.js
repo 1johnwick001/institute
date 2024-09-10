@@ -7,7 +7,7 @@ const createBlog = async (req,res) => {
 
         const { title, content, category , images } = req.body;
 
-        if (!title || !content || !category || !images) {
+        if (!title || !content || !category ) {
             return res.status(400).json({
               code: 400,
               status: false,
@@ -30,7 +30,7 @@ const createBlog = async (req,res) => {
             category: categoryExists._id,
             title,
             content ,
-            images ,
+            images : images || [] ,
         })
 
         await newBlog.save();
@@ -96,17 +96,17 @@ const getBlogs = async (req, res) => {
     }
 };
 
-const editBlog = async (req,res) => {
+const editBlog = async (req, res) => {
     try {
+        const { id } = req.params;
+        const { content, title, images } = req.body;
 
-        const {id} = req.params;
-        const {content,title , images} = req.body;
-
-        if (!content || !title || !images) {
+        // Validate that at least one field is provided
+        if (!title && !content && !images) {
             return res.status(400).json({
                 code: 400,
                 status: false,
-                message: 'Title , content , image  are required',
+                message: 'At least one field (title, content, images) is required to update',
             });
         }
 
@@ -121,16 +121,19 @@ const editBlog = async (req,res) => {
             });
         }
 
-        
-        /// Merge the existing blog document with the updated fields
+        // Prepare update object with only the fields provided
+        const updateFields = {};
+        if (title) updateFields.title = title;
+        if (content) updateFields.content = content;
+        if (images !== null) {
+            // Only include images in updateFields if provided
+            updateFields.images = images;
+        }
+
+        // Update the blog document
         const updatedBlog = await Blog.findByIdAndUpdate(
             id,
-            {
-                ...existingBlog.toObject(), // Spread the existing document
-                title: title || existingBlog.title, // Update title if provided
-                content: content || existingBlog.content, // Update content if provided
-                images: images || existingBlog.images, // Update images if provided
-            },
+            updateFields,
             { new: true } // Return the updated document
         );
 
@@ -149,7 +152,6 @@ const editBlog = async (req,res) => {
             data: updatedBlog,
         });
 
-        
     } catch (error) {
         console.error(error);
         res.status(500).json({

@@ -3,7 +3,6 @@ import 'remixicon/fonts/remixicon.css'
 import './App.css';
 
 
-import 'react-quill/dist/quill.snow.css';
 import 'suneditor/dist/css/suneditor.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';

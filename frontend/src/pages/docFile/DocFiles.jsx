@@ -21,6 +21,7 @@ function DocFiles() {
   const [docFile, setDocFile] = useState(null); // State for document file
 
   const [data, setData] = useState([]); // State for fetched data
+  const [uploading, setUploading] = useState(false);
 
   // Fetch categories from backend
   useEffect(() => {
@@ -72,21 +73,21 @@ function DocFiles() {
           formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              'Content-Type': 'application/json',
             },
           }
         );
       } else {
         await axios.post(`${API_BASE_URL}/upload-doc`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
           },
         });
       }
 
       // Reset form and close modal
-      setShowModal(false);
       resetForm();
+      setShowModal(false);
       fetchData(); // Refresh data after successful submission
     } catch (error) {
       console.error('Error while calling API', error);
@@ -124,12 +125,13 @@ function DocFiles() {
 
   // Function to reset form
   const resetForm = () => {
-    setDocName('');
-    setDocFile(null);
-    setSelectedCategory('');
-    setIsEditMode(false);
-    setCurrentDocId(null);
+    setDocName(''); // Reset document name
+    setDocFile(null); // Reset document file
+    setSelectedCategory(''); // Reset selected category
+    setIsEditMode(false); // Reset edit mode
+    setCurrentDocId(null); // Reset current document ID
   };
+  
 
   const columns = [
     {
@@ -138,13 +140,13 @@ function DocFiles() {
       sortable: true,
     },
     {
-      name: 'Document Name',
-      selector: (row) => row.fileName,
+      name: 'Document Category Name',
+      selector: (row) => row.category.name,
       sortable: true,
     },
     {
-      name: 'Document type',
-      selector: (row) => row.fileType,
+      name: 'Document Name',
+      selector: (row) => row.fileName,
       sortable: true,
     },
     {
@@ -243,7 +245,10 @@ function DocFiles() {
                 <button
                 type="button"
                 className="btn-close"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  resetForm();
+                  setShowModal(false);
+                }} 
                 aria-label="close"
                 >
                 
@@ -251,6 +256,21 @@ function DocFiles() {
             </div>
             <div className="modal-body">
                 <form onSubmit={handleFormSubmit}>
+                <div className="mb-3">
+                    <label htmlFor="category" className="form-label">
+                    Category
+                    </label>
+                    <select
+                    className="form-control"
+                    id="category"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    required
+                    >
+                    <option value="">Select a category</option>
+                    {renderCategoryOptions(categories)}
+                    </select>
+                </div>
                 <div className="mb-3">
                     <label htmlFor="docName" className="form-label">
                     Document Name
@@ -284,26 +304,14 @@ function DocFiles() {
                       onSuccess={(res) => {
                           console.log("Upload successful, doc URL:", res.url);
                           setDocFile(res.url);
+                          setUploading(false);
                       }}
                       required
+                      onUploadStart={() => setUploading(true)}
                   />
                 </div>
-                <div className="mb-3">
-                    <label htmlFor="category" className="form-label">
-                    Category
-                    </label>
-                    <select
-                    className="form-control"
-                    id="category"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    required
-                    >
-                    <option value="">Select a category</option>
-                    {renderCategoryOptions(categories)}
-                    </select>
-                </div>
-                <button type="submit" className="btn btn-primary w-100">
+                
+                <button type="submit" disabled={uploading} className="btn btn-primary w-100" >
                     {isEditMode ? 'Update Document' : 'Save Document'}
                 </button>
                 </form>

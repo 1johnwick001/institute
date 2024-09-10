@@ -7,6 +7,8 @@ import SunEditor from 'suneditor-react';
 import axios from 'axios';
 import API_BASE_URL from '../../config/Config';
 import { IKUpload } from 'imagekitio-react';
+import TestSunEditorJsx from './Editor';
+
 
 function EditBlog() {
   const { id } = useParams(); // Get the blog ID from the URL
@@ -93,7 +95,7 @@ function EditBlog() {
                 {content && ( // Only render SunEditor when content is available
                   <div className='mb-3'>
                     <label htmlFor="blog" className="form-label">Blog Content</label>
-                    <SunEditor
+                    {/* <SunEditor
                       setContents={content} // Use setContents to initialize content
                       setDefaultStyle='font-size:18px'
                       setOptions={{
@@ -106,7 +108,11 @@ function EditBlog() {
                         ]
                       }}
                       onChange={newContent => setContent(newContent)}
-                    />
+                    /> */}
+                     <TestSunEditorJsx
+                  value={content}
+                  onChange={(newContent) => setContent(newContent)} // Handle content change
+                  />
                   </div>
                 )}
                 <hr />

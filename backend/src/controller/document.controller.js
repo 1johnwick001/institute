@@ -42,7 +42,7 @@ const createDoc = async (req, res) => {
 
 const getDoc = async (req,res) => {
     try {
-        const docuFiles = await DocFiles.find({})
+        const docuFiles = await DocFiles.find({}).populate('category','name')
 
         if (docuFiles.length === 0) {
             return res.status(404).json({
@@ -111,12 +111,6 @@ const deleteDoc = async (req, res) => {
       if (!document) {
         return res.status(404).json({ message: "Document not found." });
       }
-  
-      // Delete the file from the server
-      const filePath = path.join("uploads", "media", path.basename(document.fileUrl));
-      fs.unlink(filePath, (err) => {
-        if (err) console.error("Error deleting file:", err);
-      });
   
       // Remove the document from the database
       await DocFiles.findByIdAndDelete(id);
