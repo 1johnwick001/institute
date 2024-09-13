@@ -1,4 +1,6 @@
 import Application from "../model/applicationForm.model.js";
+import fs from 'fs';
+import path from 'path';
 
 const createApplicationForm = async(req,res) => {
     try {
@@ -14,7 +16,14 @@ const createApplicationForm = async(req,res) => {
                 return res.status(400).json({ message: "Resume file is required" });
             }
 
-            const baseUrl = `${req.protocol}://${req.get('host')}`; // This will give something like 'http://localhost:3000'
+            const uploadDir = path.join(path.resolve(), 'uploads/media');
+
+            // Create the uploads/media folder if it doesn't exist
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true }); // Creates the directory recursively
+            }
+
+            const baseUrl = `${req.protocol}://${req.get('host')}`; 
 
             const normalizedResumePath = resumePath.replace(/\\/g, '/');
         
