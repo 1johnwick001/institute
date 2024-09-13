@@ -68,8 +68,47 @@ function Sidebar() {
                         </li>
                     </ul>
                 </li>
+
+
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/tabs-data">
+                        <i className='bi bi-tags'></i>
+                        <span>Tabs</span>
+                    </Link>
+                </li>
     
                 
+                
+
+                <li className='nav-item'>
+                    <Link 
+                        to="#"
+                        className='nav-link collapsed'
+                        data-bs-target = '#enquirey-nav'
+                        data-bs-toggle='collapse'
+                    >
+                        <i className='bi bi-menu-button-wide'></i>
+                        <span>Enquirey Section</span>
+                        <i className='bi bi-chevron-down ms-auto'></i>
+                    </Link>
+                    <ul id='enquirey-nav'
+                    className='nav-content collapse'
+                    data-bs-parent = '#sidebar-nav'
+                    >
+                        <li >
+                            <Link to="/application-form">
+                                    <i className='bi bi-linkedin'></i>
+                                    <span>Application Form Data</span>
+                            </Link>
+                        </li>
+                        <li >
+                            <Link to="/contactUSForm">
+                                <i className='bi bi-linkedin'></i>
+                                <span>Contact us Form Data</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </li>
     
                 <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/gallery">

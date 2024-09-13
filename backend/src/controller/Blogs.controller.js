@@ -1,57 +1,65 @@
 import Blog from "../model/Blogs.model.js";
 import Category from "../model/category.model.js";
+import TabsData from "../model/Tabs.models.js";
 
 
-const createBlog = async (req,res) => {
+const createBlog = async (req, res) => {
     try {
-
-        const { title, content, category , images } = req.body;
-
-        if (!title || !content || !category ) {
-            return res.status(400).json({
-              code: 400,
-              status: false,
-              message: 'Title , content , image and category are required',
-            });
-        }
-
-        const categoryExists = await Category.findById(category);
-        if (!categoryExists) {
-            return res.status(404).json({
+      const { title, content, category, images, tab } = req.body;
+  
+      if (!title || !content || !category) {
+        return res.status(400).json({
+          code: 400,
+          status: false,
+          message: 'Title, content, and category are required',
+        });
+      }
+  
+      const categoryExists = await Category.findById(category);
+      if (!categoryExists) {
+        return res.status(404).json({
+          code: 404,
+          status: false,
+          message: 'Category not found',
+        });
+      }
+  
+      let tabExists = null;
+      if (tab) {
+        tabExists = await TabsData.findById(tab);
+        if (!tabExists) {
+          return res.status(404).json({
             code: 404,
             status: false,
-            message: "Category not found",
-            });
+            message: 'Tab not found',
+          });
         }
-
-        
-
-        const newBlog = new Blog ({
-            category: categoryExists._id,
-            title,
-            content ,
-            images : images || [] ,
-        })
-
-        await newBlog.save();
-
-        res.status(201).json({
-            code: 201,
-            status: true,
-            message: 'Blog created successfully!',
-            data: newBlog,
-        });
-
-        
+      }
+  
+      const newBlog = new Blog({
+        title,
+        content,
+        images: images || [],
+        category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+        tab: tabExists ? tabExists._id : null, // Associate with tab if provided
+      });
+  
+      await newBlog.save();
+  
+      res.status(201).json({
+        code: 201,
+        status: true,
+        message: 'Blog created successfully!',
+        data: newBlog,
+      });
     } catch (error) {
-        console.error(error);
-    res.status(500).json({
-      code: 500,
-      status: false,
-      message: error.message,
-    });
+      res.status(500).json({
+        code: 500,
+        status: false,
+        message: error.message,
+      });
     }
-}
+};
 
 const getBlogs = async (req, res) => {
     try {

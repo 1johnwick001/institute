@@ -6,6 +6,7 @@ import Gallery from "../model/gallery.model.js";
 import FactData from "../model/factInfo.model.js";
 import DocFiles from "../model/document.model.js";
 import BOG from "../model/bog.model.js";
+import TabsData from "../model/Tabs.models.js";
 
 const landingPage = async(req,res) => {
     try {
@@ -69,40 +70,78 @@ const landingPage = async(req,res) => {
 }
 
 const categoryData = async (req, res) => {
-    try {
-        const categoryId = req.params.id;
-    
-        const category = await Category.findById(categoryId);
-        
-        if (!category) {
-          return res.status(404).json({ message: 'Category not found' });
-        }
+  try {
+    const categoryId = req.params.id;
 
-
-        // Fetch direct subcategories (children of the current category)
-        const subcategories = await Category.find({ parent: categoryId });
-
-        const blogs = await Blog.find({ category: categoryId });
-        const banner = await Banner.find ({ category : categoryId })
-        const gallery = await Gallery.find ({ category : categoryId })
-        const docs = await DocFiles.find ({ category : categoryId })
-        const factInfo = await FactData.find({category : categoryId})
-        const BogData = await BOG.find({category : categoryId})
+    // Check if the ID corresponds to a category
+    const category = await Category.findById(categoryId);
     
-        const result = {
-          subcategories,
-          banner,
-          blogs,
-          gallery,
-          docs,
-          factInfo,
-          BOG : BogData
-        };
-    
-        res.json(result);
-      } catch (error) {
-        res.status(500).json({ message: 'Error fetching category data', error: error.message });
-      }
+    // Check if the ID corresponds to a tab if no category found
+    const tab = !category ? await TabsData.findById(categoryId) : null;
+
+    // If neither a category nor a tab is found, return a 404 error
+    if (!category && !tab) {
+      return res.status(404).json({ message: 'Category or Tab not found' });
+    }
+
+    let associatedData = {};
+
+    if (category) {
+      // Fetch subcategories if a category is found
+      const subcategories = await Category.find({ parent: categoryId });
+      
+      // Fetch tabs associated with this category
+      const tabs = await TabsData.find({ category: categoryId });
+
+      // Fetch other data associated with the category
+      const blogs = await Blog.find({ category: categoryId });
+      const banner = await Banner.find({ category: categoryId });
+      const gallery = await Gallery.find({ category: categoryId });
+      const docs = await DocFiles.find({ category: categoryId });
+      const factInfo = await FactData.find({ category: categoryId });
+      const bogData = await BOG.find({ category: categoryId });
+
+      // Compile the associated data for the category
+      associatedData = {
+        subcategories,
+        tabs,
+        blogs,
+        banner,
+        gallery,
+        docs,
+        factInfo,
+        BOG: bogData,
+      };
+    } else if (tab) {
+      // If a tab is found, fetch data associated with the tab's ID
+      const blogs = await Blog.find({ tab: tab._id });
+      const banner = await Banner.find({ tab: tab._id });
+      const gallery = await Gallery.find({ tab: tab._id });
+      const docs = await DocFiles.find({ tab: tab._id });
+      const factInfo = await FactData.find({ tab: tab._id });
+      const bogData = await BOG.find({ tab: tab._id });
+
+      // Compile the associated data for the tab
+      associatedData = {
+        tab,
+        blogs,
+        banner,
+        gallery,
+        docs,
+        factInfo,
+        BOG: bogData,
+      };
+    }
+
+    // Return the associated data based on the ID type (category or tab)
+    return res.status(200).json({
+      message:"data fetched successfully",
+      data:associatedData
+    });
+  } catch (error) {
+    console.error('Error fetching category or tab data', error);
+    res.status(500).json({ message: 'Error fetching data', error: error.message });
+  }
 };
 
 export  {landingPage , categoryData}

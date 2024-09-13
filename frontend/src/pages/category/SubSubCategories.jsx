@@ -19,6 +19,8 @@ function SubSubCategories() {
     const [deletingSubSubCategoryId, setDeletingSubSubCategoryId] = useState(null);
     const [editSubSubCategoryName, setEditSubSubCategoryName] = useState('');
 
+    const [type, setType] = useState('');
+
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => {
         setShowModal(false);
@@ -54,7 +56,7 @@ function SubSubCategories() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_BASE_URL}/create-category`, { name: subSubCategoryName, parentId: parentSubCategoryId });
+            const response = await axios.post(`${API_BASE_URL}/create-category`, { name: subSubCategoryName, parentId: parentSubCategoryId, type  });
             fetchSubSubcategories(); // Refresh the sub-subcategories list
             handleCloseModal();
         } catch (error) {
@@ -181,6 +183,21 @@ function SubSubCategories() {
                                             placeholder="Enter sub-sub-category name"
                                             required
                                         />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="type" className="form-label">Type</label>
+                                        <select
+                                            className="form-control"
+                                            id="type"
+                                            value={type}
+                                            onChange={(e) => setType(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">Select Type</option>
+                                            <option value="pdf">PDF</option>
+                                            <option value="text">Text</option>
+                                            <option value="both">Both</option>
+                                        </select>
                                     </div>
 
                                     <hr />

@@ -14,6 +14,9 @@ function Gallery() {
 
     const [categories, setCategories] = useState([]); // State for categories
     const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
+    const [tabs, setTabs] = useState([]); // State for tabs
+    const [selectedTab, setSelectedTab] = useState(''); // State for selected tab
+
     const [mediaType, setMediaType] = useState('');
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
@@ -31,7 +34,6 @@ function Gallery() {
     const fetchImages = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/gallery-images`);
-            console.log('API response:', response.data.data);
             setImages(Array.isArray(response.data.data) ? response.data.data : []);
         } catch (error) {
             console.error('Error fetching images:', error);
@@ -43,7 +45,6 @@ function Gallery() {
     const fetchCategories = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/get-categories`);
-            console.log('Fetched categories:', response.data.data);
             setCategories(response.data.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
@@ -51,10 +52,29 @@ function Gallery() {
         }
     };
 
+    // Fetch tabs for a selected category
+  const fetchTabs = async (categoryId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/get-tabs-by-category/${categoryId}`);
+      setTabs(response.data.data); // Assuming the response contains tabs filtered by category
+    } catch (error) {
+      console.error('Error fetching tabs:', error);
+      setTabs([]);
+    }
+  };
+
+
     useEffect(() => {
         fetchImages();
         fetchCategories()
     }, []);
+
+    // Update when category changes
+const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
+    fetchTabs(categoryId); // Fetch tabs based on the selected category
+  };
 
     const renderCategoryOptions = (categories) => {
         return categories.map((category) => (
@@ -72,6 +92,7 @@ function Gallery() {
         formData.append('galleryName', imageName);
         formData.append('galleryImage', imageFile);
         formData.append('category', selectedCategory);
+        formData.append('tab', selectedTab); // Adding the tab if selected
         formData.append('mediaType', mediaType);
 
         try {
@@ -290,12 +311,28 @@ function Gallery() {
                                             id="category"
                                             className="form-control"
                                             value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                            onChange={handleCategoryChange}
                                         >
                                             <option value="">Select a category</option>
                                             {renderCategoryOptions(categories)}
                                         </select>
                                     </div>
+                                    {Array.isArray(tabs) && tabs.length > 0 && (
+  <div className="mb-3">
+    <label htmlFor="tab" className="form-label">Select Tab (optional)</label>
+    <select
+      id="tab"
+      className="form-control"
+      value={selectedTab}
+      onChange={(e) => setSelectedTab(e.target.value)}
+    >
+      <option value="">Select a tab</option>
+      {tabs.map((tab) => (
+        <option key={tab._id} value={tab._id}>{tab.name}</option>
+      ))}
+    </select>
+  </div>
+)}
                                     <div className="mb-3">
                                         <label htmlFor="galleryName" className="form-label">gallery Name</label>
                                         <input

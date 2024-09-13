@@ -1,10 +1,11 @@
 import FactData from "../model/factInfo.model.js";
 import Category from "../model/category.model.js";
+import TabsData from "../model/Tabs.models.js";
 
 
 const createFactInfo = async (req,res) => {
     try {
-        const {factName , factNumber , category} = req.body;
+        const {factName , factNumber , category ,tab} = req.body;
 
         if (!factName) {
             return res.status(400).json({
@@ -23,10 +24,23 @@ const createFactInfo = async (req,res) => {
         });
       }
 
+      let tabExists = null;
+      if (tab) {
+        tabExists = await TabsData.findById(tab);
+        if (!tabExists) {
+          return res.status(404).json({
+            code: 404,
+            status: false,
+            message: 'Tab not found',
+          });
+        }
+      }
+
         const factsData = new FactData({
             factName,
             factNumber,
-            category : category
+            category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+            tab: tabExists ? tabExists._id : null, // Associate with tab if provided
         })
 
         await factsData.save()

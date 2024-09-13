@@ -18,7 +18,11 @@ const BannerSchema = new mongoose.Schema({
     category:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required : true
+    },
+    tab: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tab',
+        default: null
     }
 },{timestamps:true})
 

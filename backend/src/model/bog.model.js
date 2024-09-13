@@ -16,6 +16,11 @@ const bogMemberSchema = new mongoose.Schema({
     category:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category'
+    },
+    tab: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tab',
+        default: null
     }
     
 },{timestamps:true});

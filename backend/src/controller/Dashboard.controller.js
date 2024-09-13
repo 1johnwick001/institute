@@ -2,6 +2,7 @@ import Category from "../model/category.model.js";
 import Gallery from "../model/gallery.model.js";
 import Blog from "../model/Blogs.model.js";
 import BannerImage from "../model/Banner.models.js";
+import Application from "../model/applicationForm.model.js";
 
 const dashboard = async (req,res) => {
     try {
@@ -11,12 +12,14 @@ const dashboard = async (req,res) => {
         const totalImages = await Gallery.countDocuments();
         const totalBlogs = await Blog.countDocuments();
         const totalBannerImages = await BannerImage.countDocuments();
+        const totalApplicationForms = await Application.countDocuments();
 
         const data = {
             totalCategories,
             totalImages,
             totalBlogs,
-            totalBannerImages
+            totalBannerImages,
+            totalApplicationForms,
         }
 
         // send the counts as a response

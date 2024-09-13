@@ -18,6 +18,11 @@ function SubCategories() {
 	const [deletingSubCategoryId, setDeletingSubCategoryId] = useState(null);
 	const [editSubCategoryName, setEditSubCategoryName] = useState('');
 
+
+	const [categoryType, setCategoryType] = useState('')
+
+
+
 	const handleShowModal = () => setShowModal(true);
 	const handleCloseModal = () => {
 		setShowModal(false);
@@ -51,7 +56,7 @@ function SubCategories() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post(`${API_BASE_URL}/create-category`, { name: categoryName, parentId });
+			const response = await axios.post(`${API_BASE_URL}/create-category`, { name: categoryName, parentId, type: categoryType, });
 			fetchSubcategories(); // Refresh the subcategories list
 			handleCloseModal();
 		} catch (error) {
@@ -179,6 +184,21 @@ function SubCategories() {
 						  required
 						/>
 					  </div>
+					  <div className="mb-3">
+                <label htmlFor="categoryType" className="form-label">Type</label>
+                <select
+                  className="form-control"
+                  id="categoryType"
+                  value={categoryType}
+                  onChange={(e) => setCategoryType(e.target.value)}
+                  required
+                >
+                  <option value="">Select Type</option>
+                  <option value="pdf">PDF</option>
+                  <option value="text">Text</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
 					  
 					  <hr />
 					  <div>

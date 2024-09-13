@@ -12,6 +12,9 @@ import { createDoc, deleteDoc, editDoc, getDoc } from "../controller/document.co
 import {landingPage, categoryData } from "../controller/frontend.controller.js";
 import { createFactInfo, deleteFactInfo, editFactsInfo, getFactsInfo } from "../controller/factInfo.controller.js";
 import { createBog, deleteBog, editBog, getBog, getBogById } from "../controller/bog.controller.js";
+import { createApplicationForm,getApplicationForm ,viewApplicationById, deleteApplicationForm} from "../controller/ApplicationForm.controller.js";
+import { createContactUs, viewContactUs, deleteContactUs, getContacts } from "../controller/ContactUs.controller.js";
+import { createTab, deleteTab, getTabs, getTabsByCategory, updateTab } from "../controller/tabs.controller.js";
 
 
 const router = express.Router()
@@ -27,14 +30,14 @@ const storage = multer.diskStorage({
   
   // File filter to accept only images and videos
   const fileFilter = (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif|mp4|mkv|avi|wmv|mov|pdf|doc|docx|xls|xlsx|ppt|pptx/;
+    const fileTypes = /pdf|doc|docx/;
     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileTypes.test(file.mimetype);
     
     if (mimetype && extname) {
       return cb(null, true);
     } else {
-      cb('Error: Only images ,pdf and videos are allowed!');
+      cb('Error: Only pdf and docs are allowed!');
     }
   };
   
@@ -60,6 +63,14 @@ router.get('/api/get-categories',getCategories)
 router.get('/api/get-categories-level',getCategoriesLevel2AndAbove)
 router.put('/api/update-category/:id',updateCategory)
 router.delete('/api/delete-category/:id',deleteCategory)
+
+// tabs routes
+
+router.post('/api/create-tabs',createTab)
+router.get('/api/get-tabs',getTabs)
+router.get('/api/get-tabs-by-category/:categoryId',getTabsByCategory)
+router.put('/api/update-tabs/:id',updateTab)
+router.delete('/api/delete-tab/:id',deleteTab)
 
 // =======Gallery Crud ======
 
@@ -101,6 +112,17 @@ router.get('/api/get-inst-banners', getInstBanner);
 router.put('/api/edit-inst-banner/:id',editInstBanner);
 router.delete('/api/delete-inst-banner/:id',deleteInstBanner)
 
+// for application form
+router.post('/api/apply',upload.single('resume'), createApplicationForm)
+router.get('/api/getApplicationForm', getApplicationForm)
+router.get('/api/getApplicationById/:id', viewApplicationById)
+router.delete('/api/deleteApplicationForm/:id', deleteApplicationForm)
+
+// for contactUs forms
+router.post('/api/contact-us',createContactUs)
+router.get('/api/getContactUsForm', getContacts)
+router.get('/api/getContactUsById/:id', viewContactUs)
+router.delete('/api/deleteContactForm/:id', deleteContactUs)
 
 // routes to send data to frontend
 router.get('/api/get-landingPage',landingPage)

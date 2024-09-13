@@ -15,6 +15,9 @@ function Banner() {
 
     const [categories, setCategories] = useState([]); // State for categories
     const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
+    const [tabs, setTabs] = useState([]); // State for tabs
+  const [selectedTab, setSelectedTab] = useState(''); // State for selected tab
+
     const [mediaType, setMediaType] = useState('');
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
@@ -23,6 +26,8 @@ function Banner() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [bannerImageFile, setBannerImageFile] = useState(null);
     const [currentImageUrl, setCurrentImageUrl] = useState('');
+
+    const [uploading, setUploading] = useState(false);
 
     // Fetch Banner images from backend
     const fetchImages = async () => {
@@ -47,10 +52,28 @@ function Banner() {
         }
     };
 
+    // Fetch tabs for a selected category
+  const fetchTabs = async (categoryId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/get-tabs-by-category/${categoryId}`);
+      setTabs(response.data.data); // Assuming the response contains tabs filtered by category
+    } catch (error) {
+      console.error('Error fetching tabs:', error);
+      setTabs([]);
+    }
+  };
+
     useEffect(() => {
         fetchImages();
         fetchCategories();
     }, []);
+
+    // Update when category changes
+const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
+    fetchTabs(categoryId); // Fetch tabs based on the selected category
+  };
 
     // Function to render category dropdown options recursively
     const renderCategoryOptions = (categories) => {
@@ -69,6 +92,7 @@ function Banner() {
         formData.append('bannerName', bannerName);
         formData.append('bannerImage', bannerImageFile);
         formData.append('category', selectedCategory);
+        formData.append('tab', selectedTab); // Adding the tab if selected
         formData.append('mediaType', mediaType);
 
         try {
@@ -266,12 +290,29 @@ function Banner() {
                                             id="category"
                                             className="form-control"
                                             value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                            onChange={handleCategoryChange}
                                         >
                                             <option value="">Select a category</option>
                                             {renderCategoryOptions(categories)}
                                         </select>
                                     </div>
+
+                                    {Array.isArray(tabs) && tabs.length > 0 && (
+  <div className="mb-3">
+    <label htmlFor="tab" className="form-label">Select Tab (optional)</label>
+    <select
+      id="tab"
+      className="form-control"
+      value={selectedTab}
+      onChange={(e) => setSelectedTab(e.target.value)}
+    >
+      <option value="">Select a tab</option>
+      {tabs.map((tab) => (
+        <option key={tab._id} value={tab._id}>{tab.name}</option>
+      ))}
+    </select>
+  </div>
+)}
 
                                     <div className="mb-3">
                                         <label htmlFor="bannerName" className="form-label">Banner Name</label>
@@ -303,8 +344,10 @@ function Banner() {
                                             onSuccess={(res) => {
                                                 console.log("Upload successful, image URL:", res.url);
                                                 setBannerImageFile(res.url);
+                                                setUploading(false);
                                             }}
                                             required
+                                            onUploadStart={() => setUploading(true)}
                                         />
                                     </div>
 
@@ -324,7 +367,7 @@ function Banner() {
 
                                     <hr />
                                     <div>
-                                        <button type="submit" className="btn btn-primary w-100">Submit</button>
+                                        <button type="submit" className="btn btn-primary w-100" disabled={uploading}>Submit</button>
                                     </div>
                                 </form>
                             </div>

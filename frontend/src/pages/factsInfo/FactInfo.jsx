@@ -15,6 +15,9 @@ function FactInfo() {
     const [categories, setCategories] = useState([]); // State for categories
     const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
 
+    const [tabs, setTabs] = useState([]); // State for tabs
+    const [selectedTab, setSelectedTab] = useState(''); // State for selected tab
+
     // edit hooks
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentFactId, setCurrentFactId] = useState(null);
@@ -40,6 +43,24 @@ function FactInfo() {
             setCategories([]);
         }
     };
+
+    // Fetch tabs for a selected category
+  const fetchTabs = async (categoryId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/get-tabs-by-category/${categoryId}`);
+      setTabs(response.data.data); // Assuming the response contains tabs filtered by category
+    } catch (error) {
+      console.error('Error fetching tabs:', error);
+      setTabs([]);
+    }
+  };
+
+   // Update when category changes
+const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
+    fetchTabs(categoryId); // Fetch tabs based on the selected category
+  };
 
     const renderCategoryOptions = (categories) => {
         return categories.map((category) => (
@@ -81,6 +102,7 @@ function FactInfo() {
                     factName,
                     factNumber,
                     category: selectedCategory,
+                    tab: selectedTab
                 });
             }
             setShowModal(false);
@@ -205,13 +227,29 @@ function FactInfo() {
                                             className="form-control"
                                             id="category"
                                             value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                            onChange={handleCategoryChange}
                                             required
                                         >
                                             <option value="">Select a category</option>
                                             {renderCategoryOptions(categories)}
                                         </select>
                                     </div>
+                                    {Array.isArray(tabs) && tabs.length > 0 && (
+  <div className="mb-3">
+    <label htmlFor="tab" className="form-label">Select Tab (optional)</label>
+    <select
+      id="tab"
+      className="form-control"
+      value={selectedTab}
+      onChange={(e) => setSelectedTab(e.target.value)}
+    >
+      <option value="">Select a tab</option>
+      {tabs.map((tab) => (
+        <option key={tab._id} value={tab._id}>{tab.name}</option>
+      ))}
+    </select>
+  </div>
+)}
                                     <div className="mb-3">
                                         <label className="form-label">Fact Name</label>
                                         <input

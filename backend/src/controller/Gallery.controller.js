@@ -1,14 +1,14 @@
 import Category from "../model/category.model.js";
 import Gallery from "../model/gallery.model.js";
+import TabsData from "../model/Tabs.models.js";
 
 const uploadGallery = async (req, res) => {
   try {
       
-      const { galleryName, category, galleryImage, mediaType } = req.body; // Expecting galleryImage to be a URL from frontend
-      console.log("body",req.body);
+      const { galleryName, category, galleryImage, mediaType, tab } = req.body; // Expecting galleryImage to be a URL from frontend
       
     // Validate required fields
-    if (!galleryName || !category || !galleryImage || !mediaType) {
+    if (!galleryName || !galleryImage || !mediaType) {
       return res.status(400).json({
         code: 400,
         status: false,
@@ -35,11 +35,24 @@ const uploadGallery = async (req, res) => {
       });
     }
 
+    let tabExists = null;
+      if (tab) {
+        tabExists = await TabsData.findById(tab);
+        if (!tabExists) {
+          return res.status(404).json({
+            code: 404,
+            status: false,
+            message: 'Tab not found',
+          });
+        }
+      }
+
     // Create a new gallery document with the provided URL
     const galleryData = new Gallery({
       galleryName,
       mediaType,
-      category: categoryExists._id,
+      category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+      tab: tabExists ? tabExists._id : null, // Associate with tab if provided
       [mediaType === 'image' ? 'galleryImage' : 'galleryVideo']: galleryImage, // Directly use the URL provided
     });
 
@@ -63,7 +76,7 @@ const uploadGallery = async (req, res) => {
       message: error.message,
     });
   }
-}; 
+};
 
 const getGalleryImage = async (req, res) => {
     try {

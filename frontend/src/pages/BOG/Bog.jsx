@@ -59,6 +59,7 @@ function Bog() {
         {
             name: 'Sr. No.',
             selector: (row, index) => index + 1,
+            width: '90px',
             sortable: true,
         },
         {

@@ -1212,6 +1212,11 @@ h6 {
   background: #90e0ef;
 }
 
+.dashboard .application-card .card-icon {
+  color: #344e41;
+  background: #dad7cd;
+}
+
 /* Activity */
 .dashboard .activity {
   font-size: 14px;

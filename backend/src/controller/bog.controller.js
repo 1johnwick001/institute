@@ -1,10 +1,11 @@
 import BOG from "../model/bog.model.js";
 import Category from "../model/category.model.js";
+import TabsData from "../model/Tabs.models.js";
 
 
 const createBog = async (req,res) => {
     try {
-        const {name , designation , companyName , imageLink , category} = req.body;
+        const {name , designation , companyName , imageLink , category, tab} = req.body;
 
         if (!name) {
             return res.status(400).json({
@@ -23,12 +24,25 @@ const createBog = async (req,res) => {
             });
         }
 
+        let tabExists = null;
+      if (tab) {
+        tabExists = await TabsData.findById(tab);
+        if (!tabExists) {
+          return res.status(404).json({
+            code: 404,
+            status: false,
+            message: 'Tab not found',
+          });
+        }
+      }
+
         const bogData = new BOG({
             name,
             designation,
             companyName,
             imageLink,
-            category:categoryExists._id
+            category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+            tab: tabExists ? tabExists._id : null, // Associate with tab if provided
         })
 
         await bogData.save()

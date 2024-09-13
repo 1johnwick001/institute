@@ -8,8 +8,13 @@ const factSchema = new mongoose.Schema({
         type : String,
     },
     category:{
-        type : mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Category'
+    },
+    tab: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tab',
+        default: null
     }
 },{timestamps:true})
 

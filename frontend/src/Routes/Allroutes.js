@@ -17,6 +17,11 @@ import FactInfo from '../pages/factsInfo/FactInfo'
 import Bog from '../pages/BOG/Bog'
 import CreateEditBog from '../pages/BOG/CreateEditBog'
 import SuperSubCateg from '../pages/category/SuperSubCateg'
+import ApplicationForm from '../pages/applicationForm/ApplicationForm'
+import ViewApplicationForm from '../pages/applicationForm/ViewApplicationForm'
+import ContactUs from '../pages/ContactUsForm/ContactUs'
+import ViewContactUs from '../pages/ContactUsForm/ViewContactUs'
+import Tabs from '../pages/tabs/Tabs'
 
 
 function Allroutes() {
@@ -41,6 +46,10 @@ function Allroutes() {
 			<Route path='/subcategory' element={isLoggedIn? <SubCategories /> : <Navigate to="/" />} />
 			<Route path='/subsubcategory' element={isLoggedIn? <SubSubCategories /> : <Navigate to="/" />} />
 			<Route path='/supersubcategory' element={isLoggedIn? <SuperSubCateg /> : <Navigate to="/" />} />
+
+			{/* tabs data */}
+			<Route path='/tabs-data' element={isLoggedIn? <Tabs /> : <Navigate to="/" />} />
+			
 			{/* =========  Gallery Url ======== */}
 			<Route path='/gallery' element={isLoggedIn? <Gallery /> : <Navigate to="/" />} />
 			<Route path='/banner' element={isLoggedIn? <Banner /> : <Navigate to="/" />} />
@@ -50,6 +59,12 @@ function Allroutes() {
 			<Route path='/edit-blog/:id' element={isLoggedIn? <EditBlog /> : <Navigate to="/" />} />
 			{/* ==========Institute Banner section ======= */}
 			<Route path='/institute-banner' element={isLoggedIn? <InstituteBanner /> : <Navigate to="/" />} />
+			{/* ========== Application Form section ======= */}
+			<Route path='/application-form' element={isLoggedIn? <ApplicationForm /> : <Navigate to="/" />} />
+			<Route path='/view-application-form/:id' element={isLoggedIn? <ViewApplicationForm /> : <Navigate to="/" />} />
+			{/* contact us form */}
+			<Route path='/contactUSForm' element={isLoggedIn? <ContactUs /> : <Navigate to="/" />} />
+			<Route path='/viewContactUSForm/:id' element={isLoggedIn? <ViewContactUs /> : <Navigate to="/" />} />
 			
 		</Routes>
 

@@ -11,7 +11,8 @@ function Dashboard() {
 		totalCategories: 0,
 		totalImages: 0,
 		totalBannerImages: 0,
-		totalBlogs: 0
+		totalBlogs: 0,
+		totalApplicationForms: 0,
 	})
 	
 	// for fetching dashboard stats
@@ -122,7 +123,29 @@ function Dashboard() {
 				</div>
 			  </div>
 			  {/* End Left side columns */}
+			  
 			</div>
+			<div className="col">
+				<div className="row">
+				  {/* Total Application Forms data */}
+				  <div className="col-xxl-3 col-md-6">
+					<div className="card info-card application-card">
+					  <div className="card-body">
+						<h5 className="card-title"><span>Total Application Forms Submitted</span></h5>
+						<div className="d-flex align-items-center">
+						  <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
+							<i className="bi bi-clipboard-data" />
+						  </div>
+						  <div className="ps-3  ">
+							<h6>{dashboardStats.totalApplicationForms}</h6>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  {/* End Total Application Forms data*/}
+				</div>
+			  </div>
 		  </section>
 		</main>
 	  );

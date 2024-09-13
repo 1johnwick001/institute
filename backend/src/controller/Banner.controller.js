@@ -1,12 +1,12 @@
 import Banner from "../model/Banner.models.js";
 import Category from "../model/category.model.js";
-
+import TabsData from "../model/Tabs.models.js";
 
 const uploadBanner = async (req, res) => {
     try {
-      const { bannerName, category , mediaType , bannerImage } = req.body;
+      const { bannerName, category , mediaType , bannerImage, tab } = req.body;
   
-      if (!req.body) {
+      if (!bannerName) {
         return res.status(400).json({
           code: 400,
           status: false,
@@ -23,17 +23,27 @@ const uploadBanner = async (req, res) => {
           message: "Category not found",
         });
       }
+
+      let tabExists = null;
+      if (tab) {
+        tabExists = await TabsData.findById(tab);
+        if (!tabExists) {
+          return res.status(404).json({
+            code: 404,
+            status: false,
+            message: 'Tab not found',
+          });
+        }
+      }
   
-      
-  
-      // Create the URL for the uploaded file
   
       // Save the banner data to the database
       const BannerData = new Banner({
         bannerName,
         mediaType,
         bannerImage,
-        category: categoryExists._id
+        category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+        tab: tabExists ? tabExists._id : null, // Associate with tab if provided
       });
   
       await BannerData.save();

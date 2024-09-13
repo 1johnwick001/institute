@@ -2,11 +2,13 @@ import path from "path";
 import DocFiles from "../model/document.model.js";
 import fs from "fs"
 import Category from "../model/category.model.js";
+import TabsData from "../model/Tabs.models.js";
+
 
 const createDoc = async (req, res) => {
     try {
 
-      const { category, fileName , file } = req.body;
+      const { category, fileName , file , tab } = req.body;
 
       // Check if the category exists
       const categoryExists = await Category.findById(category);
@@ -18,11 +20,24 @@ const createDoc = async (req, res) => {
         });
       }
 
+      let tabExists = null;
+      if (tab) {
+        tabExists = await TabsData.findById(tab);
+        if (!tabExists) {
+          return res.status(404).json({
+            code: 404,
+            status: false,
+            message: 'Tab not found',
+          });
+        }
+      }
+
         // Create a new document entry in the database
         const newDocument = new DocFiles({
             fileName,
             fileUrl : file,
-            category: category,
+            category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+            tab: tabExists ? tabExists._id : null, // Associate with tab if provided
         });
 
         // Save the new document to the database
