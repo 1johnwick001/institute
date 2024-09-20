@@ -22,6 +22,8 @@ import ViewApplicationForm from '../pages/applicationForm/ViewApplicationForm'
 import ContactUs from '../pages/ContactUsForm/ContactUs'
 import ViewContactUs from '../pages/ContactUsForm/ViewContactUs'
 import Tabs from '../pages/tabs/Tabs'
+import FeedbackForm from '../pages/feedbackForm/FeedbackForm'
+import ViewFeedback from '../pages/feedbackForm/ViewFeedback'
 
 
 function Allroutes() {
@@ -65,6 +67,9 @@ function Allroutes() {
 			{/* contact us form */}
 			<Route path='/contactUSForm' element={isLoggedIn? <ContactUs /> : <Navigate to="/" />} />
 			<Route path='/viewContactUSForm/:id' element={isLoggedIn? <ViewContactUs /> : <Navigate to="/" />} />
+			{/* feedback  form */}
+			<Route path='/feedbackForm' element={isLoggedIn? <FeedbackForm /> : <Navigate to="/" />} />
+			<Route path='/viewFeedback/:id' element={isLoggedIn? <ViewFeedback /> : <Navigate to="/" />} />
 			
 		</Routes>
 

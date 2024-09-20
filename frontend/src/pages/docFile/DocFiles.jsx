@@ -91,7 +91,7 @@ function DocFiles() {
     try {
       if (isEditMode && currentDocId) {
         await axios.put(
-          `${API_BASE_URL}/edit-doc-file/${currentDocId}`,
+          `${API_BASE_URL}/edit-doc/${currentDocId}`,
           formData,
           {
             headers: {

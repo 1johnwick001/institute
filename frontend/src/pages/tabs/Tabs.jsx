@@ -17,7 +17,6 @@ function Tabs() {
     const fetchTabs = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/get-tabs`);
-            console.log('API response:', response.data.data);
             setTabs(Array.isArray(response.data.data) ? response.data.data : []);
         } catch (error) {
             console.error('Error fetching tabs:', error);
@@ -133,6 +132,8 @@ function Tabs() {
                         highlightOnHover
                         striped
                         responsive
+                        paginationPerPage={50} // Default rows per page
+                        paginationRowsPerPageOptions={[10, 20, 50, 100]} // Custom pagination options
                         customStyles={{
                             headCells: {
                                 style: {

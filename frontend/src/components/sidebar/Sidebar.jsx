@@ -97,14 +97,20 @@ function Sidebar() {
                     >
                         <li >
                             <Link to="/application-form">
-                                    <i className='bi bi-linkedin'></i>
+                                    <i className='bi bi-info-circle'></i>
                                     <span>Application Form Data</span>
                             </Link>
                         </li>
                         <li >
                             <Link to="/contactUSForm">
-                                <i className='bi bi-linkedin'></i>
+                                <i className='bi bi-info-circle'></i>
                                 <span>Contact us Form Data</span>
+                            </Link>
+                        </li>
+                        <li >
+                            <Link to="/feedbackForm">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Feedback Form Data</span>
                             </Link>
                         </li>
                     </ul>
@@ -164,7 +170,7 @@ function Sidebar() {
                 <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/bog-details">
                         <i className='bi bi-person-vcard'></i>
-                        <span>Body Of Governance</span>
+                        <span>Cards/Faculty/Bog</span>
                     </Link>
                 </li>
 

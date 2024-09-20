@@ -29,12 +29,6 @@ const createApplicationForm = async (req, res) => {
       const normalizedResumePath = path.posix.join('uploads/media', path.basename(resumePath));
       const resumeFullUrl = `${baseUrl}/${normalizedResumePath}`;
   
-      // Log to verify paths
-      console.log('Upload Directory:', uploadDir);
-      console.log('Resume Path:', resumePath);
-      console.log('Normalized Resume Path:', normalizedResumePath);
-      console.log('Resume Full URL:', resumeFullUrl);
-  
       const newApplication = new Application({
         postAppliedFor,
         department,
@@ -81,7 +75,7 @@ const createApplicationForm = async (req, res) => {
         data: error.message
       });
     }
-  };
+};
 
 const getApplicationForm = async (req,res) => {
     try {

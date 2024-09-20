@@ -25,14 +25,14 @@ const createTab = async (req, res) => {
       }
 
       const slug = slugify(name, { lower: true, strict: true });
-      const existingTab = await TabsData.findOne({ slug });
-      if (existingTab) {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: 'Tab with this name already exists',
-        });
-      }
+      // const existingTab = await TabsData.findOne({ slug });
+      // if (existingTab) {
+      //   return res.status(400).json({
+      //     code: 400,
+      //     status: false,
+      //     message: 'Tab with this name already exists',
+      //   });
+      // }
   
       let level = 0;
   

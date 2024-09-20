@@ -190,7 +190,7 @@ const renderCategoryOptions = (categories) => {
                     value={designation}
                     onChange={(e) => setDesignation(e.target.value)}
                     placeholder="Enter designation"
-                    required
+                    
                   />
                 </div>
                 <div className="mb-3">
@@ -202,7 +202,7 @@ const renderCategoryOptions = (categories) => {
                     value={companyName}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Enter company name"
-                    required
+                    
                   />
                 </div>
                 <hr />

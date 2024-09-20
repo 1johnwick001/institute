@@ -102,7 +102,7 @@ export default function TestSunEditorJsx({value , onChange}) {
           ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
           ['font', 'fontSize', 'formatBlock','textStyle','paragraphStyle','hiliteColor'],
           ['align', 'horizontalRule', 'list', 'table'],
-          ['link', 'image'],
+          ['link', 'image','video'],
           ['fullScreen', 'showBlocks', 'codeView']
         ],
         imageUploadUrl: `${process.env.REACT_APP_IMAGEKIT_UPLOAD_URL}`, // Set this to your API endpoint for direct uploads

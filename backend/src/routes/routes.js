@@ -15,6 +15,7 @@ import { createBog, deleteBog, editBog, getBog, getBogById } from "../controller
 import { createApplicationForm,getApplicationForm ,viewApplicationById, deleteApplicationForm} from "../controller/ApplicationForm.controller.js";
 import { createContactUs, viewContactUs, deleteContactUs, getContacts } from "../controller/ContactUs.controller.js";
 import { createTab, deleteTab, getTabs, getTabsByCategory, updateTab } from "../controller/tabs.controller.js";
+import { createFeedback, deleteFeedback, getFeedBackForm, viewFeedbackById } from "../controller/feedback.controller.js";
 
 
 const router = express.Router()
@@ -53,7 +54,7 @@ router.get('/api/get-dashboard',dashboard)
 // docfile routes
 router.post('/api/upload-doc',createDoc)
 router.get('/api/get-doc',getDoc)
-router.put('/api/edit-doc/:id',upload.single('file'),editDoc);
+router.put('/api/edit-doc/:id',editDoc);
 router.delete('/api/delete-doc/:id',deleteDoc)
 
 // category routes
@@ -123,6 +124,13 @@ router.post('/api/contact-us',createContactUs)
 router.get('/api/getContactUsForm', getContacts)
 router.get('/api/getContactUsById/:id', viewContactUs)
 router.delete('/api/deleteContactForm/:id', deleteContactUs)
+
+
+// feedback forms
+router.post('/api/create-feedback',createFeedback)
+router.get('/api/get-feedback',getFeedBackForm)
+router.get('/api/getFeedbackById/:id',viewFeedbackById)
+router.delete('/api/delete-feedback/:id',deleteFeedback)
 
 // routes to send data to frontend
 router.get('/api/get-landingPage',landingPage)
