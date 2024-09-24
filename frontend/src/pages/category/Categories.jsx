@@ -107,9 +107,9 @@ function Categories() {
       <Pagetitle page='Category' />
 
       <section className="section">
-        <div className="d-flex justify-content-end mb-3">
+        {/* <div className="d-flex justify-content-end mb-3">
           <button className='btn btn-primary' onClick={handleShowModal}>Add Category</button>
-        </div>
+        </div> */}
         <table className="table table-bordered table-striped table-hover">
           <thead className="thead-dark">
             <tr className='table-dark'>
@@ -124,9 +124,9 @@ function Categories() {
                 <th scope="row">{index + 1}</th>
                 <td>{category.name}</td>
                 <td>
-                  <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
+                  {/* <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
                     <i className="fas fa-edit"></i> Edit
-                  </button>
+                  </button> */}
                   <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
                     <i className="fas fa-trash"></i> Delete
                   </button>
@@ -214,7 +214,9 @@ function Categories() {
               <button type="button" className="btn-close" onClick={handleCloseDeleteModal}></button>
             </div>
             <div className="modal-body">
-              <p>Are you sure you want to delete this category?</p>
+              <h4>Are you sure you want to delete this category?</h4>
+              <hr></hr>
+              <h6>!!!Deleting this will also delete all the data related to this category including categories, tabs!!!</h6>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={handleCloseDeleteModal}>Cancel</button>

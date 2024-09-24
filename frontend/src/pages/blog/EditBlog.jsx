@@ -46,14 +46,20 @@ function EditBlog() {
   };
 
   const handleSubmit = async () => {
-    const data = {
-      title,
-      content,
-      images: image,
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    
+    if (image) {
+      formData.append('blogImage', image); // Append the new image file
+    }
   
     try {
-      const response = await axios.put(`${API_BASE_URL}/edit-blog/${id}`, data);
+      const response = await axios.put(`${API_BASE_URL}/edit-blog/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set the correct header for FormData
+        },
+      });
   
       if (response.status === 200) {
         navigate('/blogs-list'); // Redirect to blogs list
@@ -63,6 +69,11 @@ function EditBlog() {
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+  
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]); // Store the selected image file
   };
 
   return (
@@ -95,20 +106,7 @@ function EditBlog() {
                 {content && ( // Only render SunEditor when content is available
                   <div className='mb-3'>
                     <label htmlFor="blog" className="form-label">Blog Content</label>
-                    {/* <SunEditor
-                      setContents={content} // Use setContents to initialize content
-                      setDefaultStyle='font-size:18px'
-                      setOptions={{
-                        buttonList: [
-                          ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
-                          ['font', 'fontSize', 'formatBlock'],
-                          ['align', 'horizontalRule', 'list', 'table'],
-                          ['link', 'image'],
-                          ['fullScreen', 'showBlocks', 'codeView']
-                        ]
-                      }}
-                      onChange={newContent => setContent(newContent)}
-                    /> */}
+                    
                      <TestSunEditorJsx
                   value={content}
                   onChange={(newContent) => setContent(newContent)} // Handle content change
@@ -118,25 +116,15 @@ function EditBlog() {
                 <hr />
                 <div className="mt-3 col-md-3">
                   <label htmlFor="imageName" className="form-label">Blog Image</label>
-                  {/* <input
+                  <input
                     id="imageName"
                     name='blogImage'
                     className="form-control"
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                  /> */}
-                  <IKUpload
-                      className='form-control'
-                      fileName='b-img'
-                      folder='/media'
-                      onError={(err) => console.error("Error uploading image", err)}
-                      onSuccess={(res) => {
-                          console.log("Upload successful, image URL:", res.url);
-                          setImage(res.url);
-                      }}
-                      
                   />
+                  
                   {existingImage && !image && (
                     <div className="mt-2">
                       <p>Current Image:</p>

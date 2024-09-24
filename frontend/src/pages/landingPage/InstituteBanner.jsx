@@ -6,8 +6,6 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
 
-import { IKUpload } from 'imagekitio-react';
-
 
 function InstituteBanner() {
   // State for managing modal visibility and mode
@@ -51,20 +49,27 @@ function InstituteBanner() {
     e.preventDefault();
   
     try {
-      const payload = {
-        instituteName,
-        instituteImage, // URL from ImageKit
-        instituteIcon,   // URL from ImageKit
-        instituteLink,
-      };
+      const formData = new FormData(); // Create FormData object
+  
+      // Append fields to FormData
+      formData.append("instituteName", instituteName);
+      formData.append("instituteLink", instituteLink);
+  
+      // Append the file only if it exists
+      if (instituteImage) {
+        formData.append("instituteImage", instituteImage);
+      }
   
       if (isEditMode && currentBannerId) {
         await axios.put(
           `${API_BASE_URL}/edit-inst-banner/${currentBannerId}`,
-          payload
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } } // Important for file uploads
         );
       } else {
-        await axios.post(`${API_BASE_URL}/create-inst-banner`, payload);
+        await axios.post(`${API_BASE_URL}/create-inst-banner`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }, // Important for file uploads
+        });
       }
   
       setShowModal(false);
@@ -122,59 +127,59 @@ function InstituteBanner() {
   };
 
   // Column configuration for the data table
-const columns = [
-    {
-      name: 'Sr.No.',
-      selector: (row, index) => index + 1,
-      sortable: true,
-    },
-    {
-      name: 'Institute Name',
-      selector: (row) => row.instituteName,
-      sortable: true,
-    },
-    {
-      name: 'Institute Link',
-      selector: (row) => row.instituteLink,
-      sortable: true,
-    },
-    {
-      name: 'Institute Image',
-      cell: (row) => (
-        <img
-          src={row.instituteImage}
-          alt={row.instituteName}
-          style={{ width: '55px', height: '45px', borderRadius: '15px' }}
-        />
-      ),
-    },
-    {
-      name: 'Institute Icon',
-      cell: (row) => (
-        <img
-          src={row.instituteIcon}
-          alt={row.instituteName}
-          style={{ width: '45px', height: '45px', borderRadius: '25px' }}
-        />
-      ),
-    },
-    {
-      name: 'Actions',
-      cell: (row) => (
-        <>
-          <button
-            className="btn btn-warning btn-sm me-2"
-            onClick={() => handleEditClick(row)}
-          >
-            <i className="bi bi-pencil"></i>
-          </button>
-          <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row._id)}>
-            <i className="bi bi-trash"></i>
-          </button>
-        </>
-      ),
-    },
-];
+  const columns = [
+      {
+        name: 'Sr.No.',
+        selector: (row, index) => index + 1,
+        sortable: true,
+      },
+      {
+        name: 'Institute Name',
+        selector: (row) => row.instituteName,
+        sortable: true,
+      },
+      {
+        name: 'Institute Link',
+        selector: (row) => row.instituteLink,
+        sortable: true,
+      },
+      {
+        name: 'Institute Image',
+        cell: (row) => (
+          <img
+            src={row.instituteImage}
+            alt={row.instituteName}
+            style={{ width: '55px', height: '45px', borderRadius: '15px' }}
+          />
+        ),
+      },
+      // {
+      //   name: 'Institute Icon',
+      //   cell: (row) => (
+      //     <img
+      //       src={row.instituteIcon}
+      //       alt={row.instituteName}
+      //       style={{ width: '45px', height: '45px', borderRadius: '25px' }}
+      //     />
+      //   ),
+      // },
+      {
+        name: 'Actions',
+        cell: (row) => (
+          <>
+            <button
+              className="btn btn-warning btn-sm me-2"
+              onClick={() => handleEditClick(row)}
+            >
+              <i className="bi bi-pencil"></i>
+            </button>
+            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row._id)}>
+              <i className="bi bi-trash"></i>
+            </button>
+          </>
+        ),
+      },
+  ];
 
   return (
     <>
@@ -282,7 +287,7 @@ const columns = [
                         
                       </div>
                     </div>
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                       <label className="form-label">Current Institute Icon</label>
                       <div>
                         <img
@@ -291,60 +296,23 @@ const columns = [
                           style={{ width: '55px', height: '55px', borderRadius: '35px' }}
                         />
                       </div>
-                    </div>
+                    </div> */}
                   </>
                 )}
                 <div className="mb-3">
                   <label htmlFor="instituteImage" className="form-label">
                     Institute Image
                   </label>
-                  {/* <input
+                  <input
                     type="file"
                     className="form-control"
                     id="instituteImage"
                     onChange={(e) => setInstituteImage(e.target.files[0])}
                     accept="image/*"
                     required={!isEditMode} // Required only in add mode
-                  /> */}
-                  <IKUpload
-                    className='form-control'
-                      fileName={instituteName}
-                      folder='/media'
-                      onError={(err) => console.error("Error uploading image", err)}
-                      onSuccess={(res) => {
-                        console.log("Upload successful, image URL:", res.url);
-                        setInstituteImage(res.url);  // Set the uploaded image URL to state
-                      }}  // Set the uploaded image URL to state
-                      required={!isEditMode}
-                      accept="image/*"
-                      
                   />
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="instituteIcon" className="form-label">
-                    Institute Icon
-                  </label>
-                  {/* <input
-                    type="file"
-                    className="form-control"
-                    id="instituteIcon"
-                    onChange={(e) => setInstituteIcon(e.target.files[0])}
-                    accept="image/*"
-                    required={!isEditMode} // Required only in add mode
-                  /> */}
-                  <IKUpload
-                    className='form-control'
-                      fileName={instituteName}
-                      folder='/media'
-                      onError={(err) => console.error("Error uploading image", err)}
-                      onSuccess={(res) => {
-                        console.log("Upload successful icon url, image URL:", res.url);
-                        setInstituteIcon(res.url);
-                      }}
-                      required={!isEditMode}
-                      accept="image/*"
-                  />
-                </div>
+                  
                 <div className="mb-3">
                   <label htmlFor="instituteLink" className="form-label">
                     Institute Link

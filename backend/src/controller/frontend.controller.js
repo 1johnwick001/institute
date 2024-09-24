@@ -23,10 +23,10 @@ const landingPage = async(req,res) => {
         const bgBanner = await Banner.find({ category: homeCategory._id }).sort({ createdAt : -1}).limit(5).exec()
 
         // gallery images related to "home" category
-        const homeGalleryImages = await Gallery.find({ category: homeCategory._id, mediaType: 'image' }).limit(7).sort({ createdAt: -1 }).exec();
+        const homeGalleryImages = await Gallery.find({ category: homeCategory._id, mediaType: 'image' }).limit(50).sort({ createdAt: -1 }).exec();
 
         // gallery images related to "Placement" category
-        const placementGalleryImages = await Gallery.find({ category: placementCategory._id, mediaType: 'image' }).limit(10).sort({ createdAt: -1 }).exec();
+        const placementGalleryImages = await Gallery.find({ category: placementCategory._id, mediaType: 'image' }).limit(50).sort({ createdAt: -1 }).exec();
 
 // ================Blogs Partttt===========================
 
@@ -144,4 +144,142 @@ const categoryData = async (req, res) => {
   }
 };
 
-export  {landingPage , categoryData}
+const getPlacementData = async (req, res) => {
+  try {
+      // Find the category with name 'Placements Data'
+      const placementCategData = await Category.findOne({ name: 'Excellent Placements' }).exec();
+
+      if (!placementCategData) {
+          return res.status(404).json({
+              status: false,
+              message: 'Placement category not found',
+          });
+      }
+
+      // Fetch other data associated with the category
+      const blogs = await Blog.find({ category: placementCategData });
+      const banner = await Banner.find({ category: placementCategData });
+      const gallery = await Gallery.find({ category: placementCategData });
+      const docs = await DocFiles.find({ category: placementCategData });
+      const factInfo = await FactData.find({ category: placementCategData });
+      const bogData = await BOG.find({ category: placementCategData });
+
+      const DATA = {
+        blogs,
+        banner,
+        gallery,
+        docs,
+        factInfo,
+        BOG: bogData,
+      };
+
+      // Send the response back to the client
+      return res.status(200).json({
+          status: true,
+          message: 'Placement images retrieved successfully',
+          data: DATA
+      });
+  } catch (error) {
+      // Handle any errors that may occur
+      res.status(500).json({
+          status: false,
+          message: 'Error retrieving placement images',
+          error: error.message,
+      });
+  }
+};
+
+const getNewsandEvents = async (req, res) => {
+  try {
+      
+      const EventsCateg = await Category.findOne({name : 'Events'}).exec()  
+
+      if (!EventsCateg) {
+        return res.status(404).json({
+            status: false,
+            message: 'News and Events category not found',
+        });
+    }
+      
+      // Fetch the images related to the "Excellent Placements" tab
+      // Fetch other data associated with the category
+      const blogs = await Blog.find({ category: EventsCateg });
+      const banner = await Banner.find({ category: EventsCateg });
+      const gallery = await Gallery.find({ category: EventsCateg });
+      const docs = await DocFiles.find({ category: EventsCateg });
+      const factInfo = await FactData.find({ category: EventsCateg });
+      const bogData = await BOG.find({ category: EventsCateg });
+
+      const Data = {
+        blogs,
+        banner,
+        gallery,
+        docs,
+        factInfo,
+        BOG: bogData,
+      };
+
+      // Send the response back to the client
+      return res.status(200).json({
+          status: true,
+          message: 'Events  retrieved successfully',
+          data: Data,
+      });
+  } catch (error) {
+      // Handle any errors that may occur
+      res.status(500).json({
+          status: false,
+          message: 'Error retrieving placement images',
+          error: error.message,
+      });
+  }
+};
+
+const MouCards = async (req, res) => {
+  try {
+      // Find the category with the name 'MOU'
+      const MouCard = await Category.findOne({ name: 'MOU' }).exec();
+
+      // If the category is not found, return a 404 response
+      if (!MouCard) {
+        return res.status(404).json({
+            status: false,
+            message: 'MoU category not found',
+        });
+      }
+
+      // Fetch related data associated with the category's _id
+      const blogs = await Blog.find({ category: MouCard._id });
+      const banner = await Banner.find({ category: MouCard._id });
+      const gallery = await Gallery.find({ category: MouCard._id });
+      const docs = await DocFiles.find({ category: MouCard._id });
+      const factInfo = await FactData.find({ category: MouCard._id });
+      const bogData = await BOG.find({ category: MouCard._id });
+
+      // Combine the associated data
+      const associatedData = {
+        blogs,
+        banner,
+        gallery,
+        docs,
+        factInfo,
+        BOG: bogData,
+      };
+
+      // Send the response back to the client
+      return res.status(200).json({
+          status: true,
+          message: 'MoU Cards retrieved successfully',
+          data: associatedData,
+      });
+  } catch (error) {
+      // Handle any errors that may occur
+      res.status(500).json({
+          status: false,
+          message: 'Error retrieving MoU data',
+          error: error.message,
+      });
+  }
+};
+
+export  {landingPage , categoryData ,getPlacementData, getNewsandEvents ,MouCards}

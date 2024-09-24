@@ -1,11 +1,20 @@
 import Blog from "../model/Blogs.model.js";
 import Category from "../model/category.model.js";
 import TabsData from "../model/Tabs.models.js";
+import path , { dirname }from "path"
+import fs from "fs"
+import { fileURLToPath } from 'url';
 
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const createBlog = async (req, res) => {
     try {
-      const { title, content, category, images, tab } = req.body;
+      const { title, content, category, tab } = req.body;
+
+      const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` : null;
   
       if (!title || !content || !category) {
         return res.status(400).json({
@@ -36,10 +45,12 @@ const createBlog = async (req, res) => {
         }
       }
   
+
+      
       const newBlog = new Blog({
         title,
         content,
-        images: images || [],
+        images: fileUrl || [],
         category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
         tab: tabExists ? tabExists._id : null, // Associate with tab if provided
       });
@@ -107,20 +118,24 @@ const getBlogs = async (req, res) => {
 const editBlog = async (req, res) => {
     try {
         const { id } = req.params;
-        const { content, title, images } = req.body;
+        const { content, title } = req.body;
+
+        // Get the new image URL if a file is uploaded
+        const images = req.file 
+            ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` 
+            : null;
 
         // Validate that at least one field is provided
-        if (!title && !content && !images) {
+        if (!title && !content ) {
             return res.status(400).json({
                 code: 400,
                 status: false,
-                message: 'At least one field (title, content, images) is required to update',
+                message: 'At least one field (title, content) is required to update',
             });
         }
 
         // Find the blog by ID
         const existingBlog = await Blog.findById(id);
-
         if (!existingBlog) {
             return res.status(404).json({
                 code: 404,
@@ -133,10 +148,7 @@ const editBlog = async (req, res) => {
         const updateFields = {};
         if (title) updateFields.title = title;
         if (content) updateFields.content = content;
-        if (images !== null) {
-            // Only include images in updateFields if provided
-            updateFields.images = images;
-        }
+        if (images) updateFields.images = images; // Update images if provided
 
         // Update the blog document
         const updatedBlog = await Blog.findByIdAndUpdate(
@@ -144,14 +156,6 @@ const editBlog = async (req, res) => {
             updateFields,
             { new: true } // Return the updated document
         );
-
-        if (!updatedBlog) {
-            return res.status(404).json({
-                code: 404,
-                status: false,
-                message: "Blog not found",
-            });
-        }
 
         res.status(200).json({
             code: 200,
@@ -161,23 +165,22 @@ const editBlog = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error updating blog:", error);
         res.status(500).json({
             code: 500,
             status: false,
-            message: error.message,
+            message: "Internal server error.",
         });
     }
-}
+};
 
-const deleteBlog = async (req,res) => {
+const deleteBlog = async (req, res) => {
     try {
+        const { id } = req.params;
 
-        const {id} = req.params;
-
-        const deleteBlog = await Blog.findByIdAndDelete(id);
-
-        if (!deleteBlog) {
+        // Find the blog by ID first to get the image path
+        const blogToDelete = await Blog.findById(id);
+        if (!blogToDelete) {
             return res.status(404).json({
                 code: 404,
                 status: false,
@@ -185,11 +188,33 @@ const deleteBlog = async (req,res) => {
             });
         }
 
+        
+
+        // Delete the image file from the filesystem
+        if (blogToDelete.images) {
+            const imageFileName = blogToDelete.images.split('/').pop(); // Extract the filename
+            const imagePath = path.join(__dirname, 'uploads/media', imageFileName); // Adjusted path
+
+            // Directly attempt to delete the file
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error("Error deleting old file:", err);
+                } else {
+                    console.log("File deleted successfully:", imagePath);
+                }
+            });
+        } else {
+            console.log("No image to delete.");
+        }
+
+        // Now delete the blog
+        const deletedBlog = await Blog.findByIdAndDelete(id);
+
         res.status(200).json({
             code: 200,
             status: true,
             message: "Blog deleted successfully",
-            data: deleteBlog,  // Optionally, return the deleted blog data
+            data: deletedBlog,
         });
         
     } catch (error) {
@@ -200,6 +225,6 @@ const deleteBlog = async (req,res) => {
             message: error.message,
         });
     }
-}
+};
 
 export {createBlog , getBlogs ,  editBlog, deleteBlog}

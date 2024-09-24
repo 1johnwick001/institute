@@ -27,11 +27,26 @@ app.use(express.urlencoded({
     extended:true,
     limit: '50mb'
 }));
-app.use(cors());
+
+const allowedOrigins = ['http://localhost:3000', 'http://122.160.154.127'];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true, // Allow credentials if needed
+}));
+
 app.use(cookieParser());
 
 // Serve static files from the uploads directory
 app.use('/uploads/media',express.static(path.join(path.resolve(),'uploads/media')))
+app.use('/uploads/docs',express.static(path.join(path.resolve(),'uploads/docs')))
 
 
 // configuring Routes

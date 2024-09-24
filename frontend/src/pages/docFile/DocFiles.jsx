@@ -20,11 +20,11 @@ function DocFiles() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
 
-  const [docName, setDocName] = useState(''); 
+  const [docName, setDocName] = useState('');
   const [docFile, setDocFile] = useState(null); // State for document file
 
   const [data, setData] = useState([]); // State for fetched data
-  const [uploading, setUploading] = useState(false);
+  // const [uploading, setUploading] = useState(false);
 
   // Fetch categories from backend
   useEffect(() => {
@@ -53,7 +53,7 @@ function DocFiles() {
     }
   };
 
-    // Update when category changes
+  // Update when category changes
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
     setSelectedCategory(categoryId);
@@ -62,12 +62,12 @@ function DocFiles() {
 
   const renderCategoryOptions = (categories) => {
     return categories.map((category) => (
-        <React.Fragment key={category._id}>
-            <option value={category._id}>{category.name}</option>
-            {category.subcategories && renderCategoryOptions(category.subcategories)}
-        </React.Fragment>
+      <React.Fragment key={category._id}>
+        <option value={category._id}>{category.name}</option>
+        {category.subcategories && renderCategoryOptions(category.subcategories)}
+      </React.Fragment>
     ));
-};
+  };
   // Fetch document data
   const fetchData = async () => {
     try {
@@ -82,29 +82,44 @@ function DocFiles() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('fileName', docName);
-    if (docFile) formData.append('file', docFile);
-    formData.append('category', selectedCategory);
-    formData.append('tab', selectedTab); // Adding the tab if selected
+
+
+    // for editing 
+    const editFormData = new FormData();
+    editFormData.append('fileName', docName);
+    if (docFile) editFormData.append('file', docFile);
 
     try {
+      let response;
       if (isEditMode && currentDocId) {
-        await axios.put(
+        response = await axios.put(
           `${API_BASE_URL}/edit-doc/${currentDocId}`,
-          formData,
+          editFormData,
           {
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'multipart/form-data', // Correct content type for file uploads
             },
           }
         );
       } else {
-        await axios.post(`${API_BASE_URL}/upload-doc`, formData, {
+        const formData = new FormData();
+        formData.append('fileName', docName);
+        
+        if (docFile) formData.append('file', docFile);
+        formData.append('category', selectedCategory);
+        formData.append('tab', selectedTab); // Adding the tab if selected
+
+        response = await axios.post(`${API_BASE_URL}/upload-doc`, formData, {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data', // Correct content type for file uploads
           },
         });
+      }
+
+      // Assuming the response contains the uploaded document with the URL
+      if (response.data && response.data.document) {
+        const uploadedDocument = response.data.document;
+        console.log("Uploaded Document:", uploadedDocument); // Log the uploaded document
       }
 
       // Reset form and close modal
@@ -115,7 +130,6 @@ function DocFiles() {
       console.error('Error while calling API', error);
     }
   };
-
   // Function to handle edit button click
   const handleEditClick = (row) => {
     setIsEditMode(true);
@@ -153,7 +167,7 @@ function DocFiles() {
     setIsEditMode(false); // Reset edit mode
     setCurrentDocId(null); // Reset current document ID
   };
-  
+
 
   const columns = [
     {
@@ -177,7 +191,7 @@ function DocFiles() {
         <i class="bi bi-filetype-pdf"></i>
       ),
     },
-   
+
     {
       name: 'Actions',
       cell: (row) => (
@@ -194,7 +208,7 @@ function DocFiles() {
         </>
       ),
     },
-];
+  ];
 
   return (
     <>
@@ -214,7 +228,7 @@ function DocFiles() {
               Add Doc Files
             </button>
           </div>
-          
+
           <DataTable
             className="data-table"
             columns={columns}
@@ -251,92 +265,92 @@ function DocFiles() {
             }}
           />
         </section>
-        </main>
-        {/* Add/Edit Modal */}
-        <div
+      </main>
+      {/* Add/Edit Modal */}
+      <div
         className={`modal fade ${showModal ? 'show' : ''}`}
         tabIndex="-1"
         style={{ display: showModal ? 'block' : 'none' }}
-        >
+      >
         <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
+          <div className="modal-content">
             <div className="modal-header bg-info">
-                <h5 className="modal-title">
+              <h5 className="modal-title">
                 {isEditMode ? 'Edit Document File' : 'Add Document File'}
-                </h5>
-                <button
+              </h5>
+              <button
                 type="button"
                 className="btn-close"
                 onClick={() => {
                   resetForm();
                   setShowModal(false);
-                }} 
+                }}
                 aria-label="close"
-                >
-                
-                </button>
+              >
+
+              </button>
             </div>
             <div className="modal-body">
-                <form onSubmit={handleFormSubmit}>
+              <form onSubmit={handleFormSubmit}>
                 <div className="mb-3">
-                    <label htmlFor="category" className="form-label">
+                  <label htmlFor="category" className="form-label">
                     Category
-                    </label>
-                    <select
+                  </label>
+                  <select
                     className="form-control"
                     id="category"
                     value={selectedCategory}
                     onChange={handleCategoryChange}
-                    required
-                    >
+                    required={!isEditMode}
+                  >
                     <option value="">Select a category</option>
                     {renderCategoryOptions(categories)}
-                    </select>
+                  </select>
                 </div>
 
                 {Array.isArray(tabs) && tabs.length > 0 && (
-  <div className="mb-3">
-    <label htmlFor="tab" className="form-label">Select Tab (optional)</label>
-    <select
-      id="tab"
-      className="form-control"
-      value={selectedTab}
-      onChange={(e) => setSelectedTab(e.target.value)}
-    >
-      <option value="">Select a tab</option>
-      {tabs.map((tab) => (
-        <option key={tab._id} value={tab._id}>{tab.name}</option>
-      ))}
-    </select>
-  </div>
-)}
+                  <div className="mb-3">
+                    <label htmlFor="tab" className="form-label">Select Tab (optional)</label>
+                    <select
+                      id="tab"
+                      className="form-control"
+                      value={selectedTab}
+                      onChange={(e) => setSelectedTab(e.target.value)}
+                    >
+                      <option value="">Select a tab</option>
+                      {tabs.map((tab) => (
+                        <option key={tab._id} value={tab._id}>{tab.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div className="mb-3">
-                    <label htmlFor="docName" className="form-label">
+                  <label htmlFor="docName" className="form-label">
                     Document Name
-                    </label>
-                    <input
+                  </label>
+                  <input
                     type="text"
                     className="form-control"
                     id="docName"
                     value={docName}
                     onChange={(e) => setDocName(e.target.value)}
                     required
-                    />
+                  />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="docFile" className="form-label">
+                  <label htmlFor="docFile" className="form-label">
                     Document File
-                    </label>
-                    {/* <input
+                  </label>
+                  <input
                     type="file"
                     className="form-control"
                     id="docFile"
                     onChange={(e) => setDocFile(e.target.files[0])}
-                        
+
                     required={!isEditMode}
-                    /> */}
-                    <IKUpload
+                  />
+                  {/* <IKUpload
                       className='form-control'
                       fileName={docName}
                       folder='/docfiles'
@@ -348,21 +362,21 @@ function DocFiles() {
                       }}
                       required
                       onUploadStart={() => setUploading(true)}
-                  />
+                  /> */}
                 </div>
-                
-                <button type="submit" disabled={uploading} className="btn btn-primary w-100" >
-                    {isEditMode ? 'Update Document' : 'Save Document'}
-                </button>
-                </form>
-            </div>
-            </div>
-        </div>
-        </div>
-        {/* Modal backdrop */}
-        {showModal && <div className="modal-backdrop fade show"></div>}
 
-        {/* Delete Modal */}
+                <button type="submit" className="btn btn-primary w-100" >
+                  {isEditMode ? 'Update Document' : 'Save Document'}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Modal backdrop */}
+      {showModal && <div className="modal-backdrop fade show"></div>}
+
+      {/* Delete Modal */}
       <div
         className={`modal fade ${showDeleteModal ? 'show' : ''}`}
         tabIndex="-1"
@@ -378,22 +392,22 @@ function DocFiles() {
                 onClick={handleDeleteCancel}
                 aria-label="close"
               >
-                
+
               </button>
             </div>
             <div className="modal-body">
               <p>Are you sure you want to delete this document file?</p>
               <div className='d-flex justify-content-end'>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleDeleteConfirm}
-              >
-                Delete
-              </button>
-              
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDeleteConfirm}
+                >
+                  Delete
+                </button>
+
               </div>
-              
+
             </div>
           </div>
         </div>
@@ -401,8 +415,8 @@ function DocFiles() {
 
       {/* Modal backdrop */}
       {showDeleteModal && <div className="modal-backdrop fade show"></div>}
-    
-        
+
+
     </>
   );
 }

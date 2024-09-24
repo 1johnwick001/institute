@@ -28,7 +28,7 @@ function Gallery() {
 
     const [currentImageUrl, setCurrentImageUrl] = useState('');
 
-    const [uploading, setUploading] = useState(false);
+    // const [uploading, setUploading] = useState(false);
 
     // Fetch images from backend
     const fetchImages = async () => {
@@ -53,15 +53,15 @@ function Gallery() {
     };
 
     // Fetch tabs for a selected category
-  const fetchTabs = async (categoryId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/get-tabs-by-category/${categoryId}`);
-      setTabs(response.data.data); // Assuming the response contains tabs filtered by category
-    } catch (error) {
-      console.error('Error fetching tabs:', error);
-      setTabs([]);
-    }
-  };
+    const fetchTabs = async (categoryId) => {
+        try {
+        const response = await axios.get(`${API_BASE_URL}/get-tabs-by-category/${categoryId}`);
+        setTabs(response.data.data); // Assuming the response contains tabs filtered by category
+        } catch (error) {
+        console.error('Error fetching tabs:', error);
+        setTabs([]);
+        }
+    };
 
 
     useEffect(() => {
@@ -70,11 +70,11 @@ function Gallery() {
     }, []);
 
     // Update when category changes
-const handleCategoryChange = (e) => {
-    const categoryId = e.target.value;
-    setSelectedCategory(categoryId);
-    fetchTabs(categoryId); // Fetch tabs based on the selected category
-  };
+    const handleCategoryChange = (e) => {
+        const categoryId = e.target.value;
+        setSelectedCategory(categoryId);
+        fetchTabs(categoryId); // Fetch tabs based on the selected category
+    };
 
     const renderCategoryOptions = (categories) => {
         return categories.map((category) => (
@@ -97,7 +97,7 @@ const handleCategoryChange = (e) => {
 
         try {
             const response = await axios.post(`${API_BASE_URL}/gallery-upload`, formData, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
 
             if (response.status === 201) {
@@ -138,7 +138,7 @@ const handleCategoryChange = (e) => {
     
         try {
             const response = await axios.put(`${API_BASE_URL}/edit-gallery/${selectedImage._id}`, formData, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
     
             if (response.status === 200) {
@@ -347,7 +347,7 @@ const handleCategoryChange = (e) => {
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="imageFile" className="form-label">Gallery Image / video File</label>
-                                        <IKUpload
+                                        {/* <IKUpload
                                         className='form-control'
                                           fileName={imageName}
                                           folder='/media'
@@ -359,14 +359,14 @@ const handleCategoryChange = (e) => {
                                           }}
                                           onUploadStart={() => setUploading(true)}
                                           
-                                        />
-                                        {/* <input
+                                        /> */}
+                                        <input
                                             type="file"
                                             className="form-control"
                                             id="imageFile"
                                             onChange={(e) => setImageFile(e.target.files[0])}
                                             required
-                                        /> */}
+                                        /> 
                                     </div>
                                     <div className="mb-3">
                                         <label className="form-label">Media Type</label>
@@ -383,7 +383,7 @@ const handleCategoryChange = (e) => {
                                     </div>
                                     <hr />
                                     <div>
-                                        <button type="submit" className="btn btn-primary w-100" disabled={uploading}>Submit</button>
+                                        <button type="submit" className="btn btn-primary w-100" >Submit</button>
                                     </div>
                                 </form>
                             </div>
@@ -439,13 +439,13 @@ const handleCategoryChange = (e) => {
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="editImageFile" className="form-label">Image/Video File</label>
-                                        {/* <input
+                                        <input
                                             type="file"
                                             className="form-control"
                                             id="editImageFile"
                                             onChange={(e) => setImageFile(e.target.files[0])}
-                                        /> */}
-                                        <IKUpload
+                                        />
+                                        {/* <IKUpload
                                         className='form-control'
                                           fileName={imageName}
                                           folder='/media'
@@ -453,11 +453,11 @@ const handleCategoryChange = (e) => {
                                           onSuccess={(res) => {
                                             console.log("Upload successful, image URL:", res.url);
                                             setImageFile(res.url);  // Set the uploaded image URL to state
-                                            setUploading(false);
+                                            // setUploading(false);
                                           }}
-                                          onUploadStart={() => setUploading(true)}
+                                        //   onUploadStart={() => setUploading(true)}
                                           
-                                        />
+                                        /> */}
                                     </div>
                                     <div className="mb-3">
                                         <label className="form-label">Media Type</label>
@@ -474,7 +474,7 @@ const handleCategoryChange = (e) => {
                                     </div>
                                     <hr />
                                     <div>
-                                        <button type="submit" className="btn btn-primary w-100" disabled={uploading}>Save Changes</button>
+                                        <button type="submit" className="btn btn-primary w-100" >Save Changes</button>
                                     </div>
                                 </form>
                             </div>
