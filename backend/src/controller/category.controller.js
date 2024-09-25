@@ -12,7 +12,7 @@ import TabsData from "../model/Tabs.models.js";
 
 const createCategory = async (req, res) => {
   try {
-    const { name, parentId, type } = req.body;
+    const { name, parentId, type ,instituteId  } = req.body;
 
     if (!name) {
       return res.status(400).json({
@@ -69,7 +69,7 @@ const createCategory = async (req, res) => {
       });
     }
 
-    const category = new Category({ name, slug, parent: parentId || null, level, type });
+    const category = new Category({ name, slug, parent: parentId || null, level, type ,instituteId: instituteId ||  null });
 
     await category.save();
 

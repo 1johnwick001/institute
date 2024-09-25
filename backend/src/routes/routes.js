@@ -134,9 +134,19 @@ router.put('/api/edit-bog/:id',upload.single('image'),editBog)
 router.delete('/api/delete-bog/:id',deleteBog)
 
 // =======instittue banner Crud ======
-router.post('/api/create-inst-banner',upload.single('instituteImage'), createInstBanner);
+router.post(
+  '/api/create-inst-banner', 
+  upload.fields([
+    { name: 'instituteImage', maxCount: 1 }, // for the banner image
+    { name: 'instituteIcon', maxCount: 1 }   // for the icon
+  ]), 
+  createInstBanner
+);
 router.get('/api/get-inst-banners', getInstBanner);
-router.put('/api/edit-inst-banner/:id',upload.single('instituteImage'), editInstBanner);
+router.put('/api/edit-inst-banner/:id', upload.fields([
+  { name: 'instituteImage', maxCount: 1 },
+  { name: 'instituteIcon', maxCount: 1 }
+]), editInstBanner);
 router.delete('/api/delete-inst-banner/:id',deleteInstBanner)
 
 // for application form

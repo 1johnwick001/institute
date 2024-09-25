@@ -47,19 +47,22 @@ function InstituteBanner() {
   // Function to handle form submission
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const formData = new FormData(); // Create FormData object
-  
+
       // Append fields to FormData
       formData.append("instituteName", instituteName);
       formData.append("instituteLink", instituteLink);
-  
+
       // Append the file only if it exists
       if (instituteImage) {
         formData.append("instituteImage", instituteImage);
       }
-  
+      if (instituteIcon) {
+        formData.append("instituteIcon", instituteIcon);  // Append the icon if it exists
+      }
+
       if (isEditMode && currentBannerId) {
         await axios.put(
           `${API_BASE_URL}/edit-inst-banner/${currentBannerId}`,
@@ -71,7 +74,7 @@ function InstituteBanner() {
           headers: { "Content-Type": "multipart/form-data" }, // Important for file uploads
         });
       }
-  
+
       setShowModal(false);
       resetForm();
       fetchData();
@@ -128,57 +131,57 @@ function InstituteBanner() {
 
   // Column configuration for the data table
   const columns = [
-      {
-        name: 'Sr.No.',
-        selector: (row, index) => index + 1,
-        sortable: true,
-      },
-      {
-        name: 'Institute Name',
-        selector: (row) => row.instituteName,
-        sortable: true,
-      },
-      {
-        name: 'Institute Link',
-        selector: (row) => row.instituteLink,
-        sortable: true,
-      },
-      {
-        name: 'Institute Image',
-        cell: (row) => (
-          <img
-            src={row.instituteImage}
-            alt={row.instituteName}
-            style={{ width: '55px', height: '45px', borderRadius: '15px' }}
-          />
-        ),
-      },
-      // {
-      //   name: 'Institute Icon',
-      //   cell: (row) => (
-      //     <img
-      //       src={row.instituteIcon}
-      //       alt={row.instituteName}
-      //       style={{ width: '45px', height: '45px', borderRadius: '25px' }}
-      //     />
-      //   ),
-      // },
-      {
-        name: 'Actions',
-        cell: (row) => (
-          <>
-            <button
-              className="btn btn-warning btn-sm me-2"
-              onClick={() => handleEditClick(row)}
-            >
-              <i className="bi bi-pencil"></i>
-            </button>
-            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row._id)}>
-              <i className="bi bi-trash"></i>
-            </button>
-          </>
-        ),
-      },
+    {
+      name: 'Sr.No.',
+      selector: (row, index) => index + 1,
+      sortable: true,
+    },
+    {
+      name: 'Institute Name',
+      selector: (row) => row.instituteName,
+      sortable: true,
+    },
+    {
+      name: 'Institute Link',
+      selector: (row) => row.instituteLink,
+      sortable: true,
+    },
+    {
+      name: 'Institute Image',
+      cell: (row) => (
+        <img
+          src={row.instituteImage}
+          alt={row.instituteName}
+          style={{ width: '55px', height: '45px', borderRadius: '15px' }}
+        />
+      ),
+    },
+    {
+      name: 'Institute Icon',
+      cell: (row) => (
+        <img
+          src={row.instituteIcon}
+          alt={row.instituteName}
+          style={{ width: '45px', height: '45px', borderRadius: '25px' }}
+        />
+      ),
+    },
+    {
+      name: 'Actions',
+      cell: (row) => (
+        <>
+          <button
+            className="btn btn-warning btn-sm me-2"
+            onClick={() => handleEditClick(row)}
+          >
+            <i className="bi bi-pencil"></i>
+          </button>
+          <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row._id)}>
+            <i className="bi bi-trash"></i>
+          </button>
+        </>
+      ),
+    },
   ];
 
   return (
@@ -284,10 +287,10 @@ function InstituteBanner() {
                           alt="Current Institute"
                           style={{ width: '55px', height: '55px', borderRadius: '35px' }}
                         />
-                        
+
                       </div>
                     </div>
-                    {/* <div className="mb-3">
+                    <div className="mb-3">
                       <label className="form-label">Current Institute Icon</label>
                       <div>
                         <img
@@ -296,7 +299,7 @@ function InstituteBanner() {
                           style={{ width: '55px', height: '55px', borderRadius: '35px' }}
                         />
                       </div>
-                    </div> */}
+                    </div>
                   </>
                 )}
                 <div className="mb-3">
@@ -312,7 +315,19 @@ function InstituteBanner() {
                     required={!isEditMode} // Required only in add mode
                   />
                 </div>
-                  
+                <div className="mb-3">
+                  <label htmlFor="instituteIcon" className="form-label">
+                    Institute Icon
+                  </label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    id="instituteIcon"
+                    onChange={(e) => setInstituteIcon(e.target.files[0])}
+                    accept="image/*"
+                    required={!isEditMode}  // Required only in add mode
+                  />
+                </div>
                 <div className="mb-3">
                   <label htmlFor="instituteLink" className="form-label">
                     Institute Link

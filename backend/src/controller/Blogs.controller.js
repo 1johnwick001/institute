@@ -50,7 +50,7 @@ const createBlog = async (req, res) => {
       const newBlog = new Blog({
         title,
         content,
-        images: fileUrl || [],
+        images: fileUrl ,
         category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
         tab: tabExists ? tabExists._id : null, // Associate with tab if provided
       });

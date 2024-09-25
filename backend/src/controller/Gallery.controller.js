@@ -153,57 +153,59 @@ const editGallery = async (req, res) => {
 
 const deleteGalleryImage = async (req, res) => {
   try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      // Find the image by ID
-      const image = await Gallery.findById(id);
+    // Find the image by ID
+    const image = await Gallery.findById(id);
 
-      // Check if the image exists
-      if (!image) {
-          return res.json({
-              code: 404,
-              status: false,
-              message: "Gallery not Found"
-          });
-      }
-
-
-      // Check if galleryImage exists
-      if (!image.galleryImage) {
-          return res.json({
-              code: 400,
-              status: false,
-              message: "Gallery image URL not found."
-          });
-      }
-
-      // Construct the file path for deletion using galleryImage
-      const oldFilePath = path.join('uploads/media', image.galleryImage.split('/uploads/media/')[1]);
-
-      // Delete the old file
-      fs.unlink(oldFilePath, async (err) => {
-          if (err) {
-              console.error("Error deleting old file:", err);
-              return res.status(500).json({ message: "Failed to delete file from disk." });
-          }
-
-          // Now delete the image from the database
-          await Gallery.findByIdAndDelete(id);
-
-          return res.json({
-              code: 200,
-              status: true,
-              message: 'Gallery deleted successfully'
-          });
+    // Check if the image exists
+    if (!image) {
+      return res.json({
+        code: 404,
+        status: false,
+        message: "Gallery not Found",
       });
+    }
+
+    // Check if galleryImage exists
+    if (!image.galleryImage) {
+      // Proceed to delete the image from the database even if galleryImage is not found
+      await Gallery.findByIdAndDelete(id);
+      return res.json({
+        code: 200,
+        status: true,
+        message: 'Gallery deleted successfully without unlinking the file',
+      });
+    }
+
+    // Construct the file path for deletion using galleryImage
+    const oldFilePath = path.join('uploads/media', image.galleryImage.split('/uploads/media/')[1]);
+
+    // Delete the old file if it exists
+    fs.unlink(oldFilePath, async (err) => {
+      if (err) {
+        console.error("Error deleting old file:", err);
+        // Even if unlink fails, proceed to delete from the database
+      }
+
+      // Now delete the image from the database
+      await Gallery.findByIdAndDelete(id);
+
+      return res.json({
+        code: 200,
+        status: true,
+        message: 'Gallery deleted successfully',
+      });
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          code: 500,
-          status: false,
-          message: error.message,
-      });
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      status: false,
+      message: error.message,
+    });
   }
 };
+
 
 export  {uploadGallery , getGalleryImage ,editGallery, deleteGalleryImage}

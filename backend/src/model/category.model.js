@@ -16,6 +16,11 @@ const categorySchema = new mongoose.Schema ({
         ref: 'Category',
         default: null
     },
+    instituteId : {
+      type:mongoose.Schema.Types.ObjectId,
+      ref: 'InstituteBanner',
+      default:null
+    },
     level: {
         type: Number,
         default: 0
@@ -42,7 +47,7 @@ categorySchema.pre("save", function (next) {
     next();
   });
 
-  // Conditional validation for type field
+
   
   
 

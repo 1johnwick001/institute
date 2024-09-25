@@ -28,12 +28,14 @@ const createInstBanner = async (req, res) => {
 
     // Construct the file URL
     const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
+    const instituteIconUrl = `${req.protocol}://${req.get('host')}/${req.files.instituteIcon[0].path.replace(/\\/g, '/')}`;
 
     // Create new instance of InstituteBanner
     const instBannerData = new InstituteBanner({
       instituteName,
       instituteLink,
       instituteImage: fileUrl, // Store the image URL
+      instituteIcon: instituteIconUrl
     });
 
     // Save to database
@@ -102,7 +104,7 @@ const editInstBanner = async (req, res) => {
 
     const updatedFields = {}; // To hold the updated fields
 
-    // Update institute name and link if provided
+    // Update institute name and link if provided and different
     if (instituteName && instituteName !== instBannerItem.instituteName) {
       updatedFields.instituteName = instituteName;
     }
@@ -110,33 +112,38 @@ const editInstBanner = async (req, res) => {
       updatedFields.instituteLink = instituteLink;
     }
 
-    // If a new file is uploaded, delete the previous file and update the file URL
-    if (req.file) {
-      // Extract old file path
-      const oldFilePath = path.join('uploads/media', instBannerItem.instituteImage.split('/uploads/media/')[1]);
-
-      // Delete the old file if it exists
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlink(oldFilePath, (err) => {
-          if (err) {
-            console.error("Error deleting old file:", err);
-          }
-        });
-      }
-
-      // Update with the new file URL
-      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/media/${req.file.filename}`;
-      updatedFields.instituteImage = fileUrl; // Set new file URL in the updated fields
+    // Handle instituteImage (banner image)
+    if (req.files && req.files['instituteImage']) {
+      const file = req.files['instituteImage'][0];
+      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/media/${file.filename}`;
+      updatedFields.instituteImage = fileUrl;
     }
 
-    // Update the institute banner in the database
-    const updatedInstBanner = await InstituteBanner.findByIdAndUpdate(id, updatedFields, { new: true });
+    // Handle instituteIcon (logo)
+    if (req.files && req.files['instituteIcon']) {
+      const iconFile = req.files['instituteIcon'][0];
+      const iconUrl = `${req.protocol}://${req.get("host")}/uploads/media/${iconFile.filename}`;
+      updatedFields.instituteIcon = iconUrl;
+    }
 
+    // Only update if there are changes
+    if (Object.keys(updatedFields).length > 0) {
+      const updatedInstBanner = await InstituteBanner.findByIdAndUpdate(id, updatedFields, { new: true });
+
+      return res.json({
+        code: 200,
+        status: true,
+        message: 'Institute banner updated successfully',
+        data: updatedInstBanner,
+      });
+    }
+
+    // If no changes were made, return a message
     return res.json({
       code: 200,
       status: true,
-      message: 'Institute banner updated successfully',
-      data: updatedInstBanner,
+      message: 'No changes were made to the institute banner',
+      data: instBannerItem,
     });
 
   } catch (error) {

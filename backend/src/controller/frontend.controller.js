@@ -71,38 +71,47 @@ const landingPage = async(req,res) => {
 
 const categoryData = async (req, res) => {
   try {
-    const categoryId = req.params.id;
+    const id = req.params.id;
 
     // Check if the ID corresponds to a category
-    const category = await Category.findById(categoryId);
-    
-    // Check if the ID corresponds to a tab if no category found
-    const tab = !category ? await TabsData.findById(categoryId) : null;
+    const category = await Category.findById(id).populate('instituteId');
 
-    // If neither a category nor a tab is found, return a 404 error
-    if (!category && !tab) {
-      return res.status(404).json({ message: 'Category or Tab not found' });
+    // Check if the ID corresponds to a tab if no category found
+    const tab = !category ? await TabsData.findById(id) : null;
+
+    // Check if the ID corresponds to an institute if no category or tab is found
+    const institute = !category && !tab ? await InstituteBanner.findById(id) : null;
+
+    // If no category, tab, or institute is found, return a 404 error
+    if (!category && !tab && !institute) {
+      return res.status(404).json({ message: 'Category, Tab, or Institute not found' });
     }
 
     let associatedData = {};
 
     if (category) {
-      // Fetch subcategories if a category is found
-      const subcategories = await Category.find({ parent: categoryId });
-      
+      // Fetch subcategories for this category
+      const subcategories = await Category.find({ parent: id });
+
       // Fetch tabs associated with this category
-      const tabs = await TabsData.find({ category: categoryId });
+      const tabs = await TabsData.find({ category: id });
 
       // Fetch other data associated with the category
-      const blogs = await Blog.find({ category: categoryId });
-      const banner = await Banner.find({ category: categoryId });
-      const gallery = await Gallery.find({ category: categoryId });
-      const docs = await DocFiles.find({ category: categoryId });
-      const factInfo = await FactData.find({ category: categoryId });
-      const bogData = await BOG.find({ category: categoryId });
+      const blogs = await Blog.find({ category: id });
+      const banner = await Banner.find({ category: id });
+      const gallery = await Gallery.find({ category: id });
+      const docs = await DocFiles.find({ category: id });
+      const factInfo = await FactData.find({ category: id });
+      const bogData = await BOG.find({ category: id });
 
       // Compile the associated data for the category
       associatedData = {
+        category: {
+          _id: category._id,
+          name: category.name,
+          slug: category.slug,
+          instituteId: category.instituteId,  // Include instituteId in the response
+        },
         subcategories,
         tabs,
         blogs,
@@ -131,18 +140,46 @@ const categoryData = async (req, res) => {
         factInfo,
         BOG: bogData,
       };
+    } else if (institute) {
+      // If an institute is found, fetch categories associated with this institute
+      const categories = await Category.find({ instituteId: institute._id });
+
+      // Fetch other data associated with the institute
+      const blogs = await Blog.find({ instituteId: institute._id });
+      const banner = await Banner.find({ instituteId: institute._id });
+      const gallery = await Gallery.find({ instituteId: institute._id });
+      const docs = await DocFiles.find({ instituteId: institute._id });
+      const factInfo = await FactData.find({ instituteId: institute._id });
+      const bogData = await BOG.find({ instituteId: institute._id });
+
+      // Compile the associated data for the institute
+      associatedData = {
+        institute: {
+          _id: institute._id,
+          name: institute.name,
+          // Include other institute-specific data
+        },
+        categories,
+        blogs,
+        banner,
+        gallery,
+        docs,
+        factInfo,
+        BOG: bogData,
+      };
     }
 
-    // Return the associated data based on the ID type (category or tab)
+    // Return the associated data based on the ID type (category, tab, or institute)
     return res.status(200).json({
-      message:"data fetched successfully",
-      data:associatedData
+      message: "Data fetched successfully",
+      data: associatedData
     });
   } catch (error) {
-    console.error('Error fetching category or tab data', error);
+    console.error('Error fetching category, tab, or institute data', error);
     res.status(500).json({ message: 'Error fetching data', error: error.message });
   }
 };
+
 
 const getPlacementData = async (req, res) => {
   try {
