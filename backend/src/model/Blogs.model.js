@@ -20,7 +20,7 @@ const BlogSchema = new mongoose.Schema ({
     },
     tab: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Tab',
+        ref: 'TabsData',
         default: null
     }
 });

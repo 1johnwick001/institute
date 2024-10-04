@@ -78,14 +78,30 @@ function Blogs() {
             width: '150px',
         },
         {
+            name: 'Category Name',
+            selector: (row) => {
+                if (row.tab) {
+                    // If tab exists, show category of the tab and the tab name
+                    return (
+                        <>
+                            {row.tab.category ? row.tab.category.name : 'No Category'} - {row.tab.name}
+                        </>
+                    );
+                }
+                // Otherwise, show only the gallery category name
+                return row.category ? row.category.name : 'No Category';
+            },
+            sortable: true,
+        },
+        {
+            
             name: 'Title',
             selector: row => row.title
         },
         {
             name: 'Content',
-            selector: row => <div dangerouslySetInnerHTML={{ __html: truncateContent(row.content, 180) }} />,
+            selector: row => <div dangerouslySetInnerHTML={{ __html: truncateContent(row.content, 150) }} />,
             wrap: true,
-            grow: 2,
         },
         {
             name: 'Actions',
@@ -133,6 +149,8 @@ function Blogs() {
                         responsive
                         striped
                         pointerOnHover
+                        paginationPerPage={35} // Default rows per page
+                        paginationRowsPerPageOptions={[10, 50, 100,200,500]}
                        customStyles={{
                         headCells: {
                             style: {

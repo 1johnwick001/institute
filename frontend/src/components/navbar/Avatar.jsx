@@ -36,18 +36,18 @@ function Avatar() {
 
     <ul className='dropdown-menu dropdown-menu-end dropdown-menu-arrow profile'>
         <li className='dropdown-header'>
-            <h6>PS</h6>
-            <span>Web developer</span>
+            <h6>Admin</h6>
+            <span>CDGI</span>
         </li>
         <li>
             <hr className='dropdown-divider' />
         </li>
-        <li>
+        {/* <li>
             <a className='dropdown-item d-flex align-items-center' href="#">
             <i className='bi bi-gear'></i>
             <span>my profile</span>
             </a>
-        </li>
+        </li> */}
         <li>
             <hr className='dropdown-divider' />
         </li>

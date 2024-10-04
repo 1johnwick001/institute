@@ -7,56 +7,71 @@ import TabsData from "../model/Tabs.models.js";
 
 const createDoc = async (req, res) => {
   try {
-      const { category, fileName, tab } = req.body;
-      const file = req.file ? `${req.protocol}://${req.get('host')}/uploads/docs/${req.file.filename}` : null;
+    const { category, fileName, tab } = req.body;
 
-      // Check if the category exists
-      const categoryExists = await Category.findById(category);
+    // Handle the file URL, ensuring it's set to null if no file is uploaded
+    const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/docs/${req.file.filename}` : null;
+
+    // Check if the category exists
+    let categoryExists = null;
+    if (category) {
+      categoryExists = await Category.findById(category);
       if (!categoryExists) {
-          return res.status(404).json({
-              code: 404,
-              status: false,
-              message: "Category not found",
-          });
+        return res.status(404).json({
+          code: 404,
+          status: false,
+          message: "Category not found",
+        });
       }
+    }
 
-      let tabExists = null;
-      if (tab) {
-          tabExists = await TabsData.findById(tab);
-          if (!tabExists) {
-              return res.status(404).json({
-                  code: 404,
-                  status: false,
-                  message: 'Tab not found',
-              });
-          }
+    // Check if the tab exists
+    let tabExists = null;
+    if (tab) {
+      tabExists = await TabsData.findById(tab);
+      if (!tabExists) {
+        return res.status(404).json({
+          code: 404,
+          status: false,
+          message: 'Tab not found',
+        });
       }
+    }
 
-      // Create a new document entry in the database
-      const newDocument = new DocFiles({
-          fileName,
-          fileUrl: file,
-          category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
-          tab: tabExists ? tabExists._id : null, // Associate with tab if provided
-      });
+    // Create a new document entry in the database
+    const newDocument = new DocFiles({
+      fileName,
+      fileUrl, // Pass the file URL directly
+      category: tabExists ? null : categoryExists ? categoryExists._id : null, // Only associate with category if no tab is provided
+      tab: tabExists ? tabExists._id : null, // Associate with tab if provided
+    });
 
-      // Save the new document to the database
-      await newDocument.save();
+    // Save the new document to the database
+    await newDocument.save();
 
-      // Respond with success
-      res.status(201).json({
-          message: "Document uploaded and saved successfully!",
-          document: newDocument,
-      });
+    // Respond with success
+    res.status(201).json({
+      message: "Document uploaded and saved successfully!",
+      document: newDocument,
+    });
   } catch (error) {
-      console.error("Error uploading document:", error);
-      res.status(500).json({ message: "Internal server error." });
+    console.error("Error uploading document:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
-
+ 
 const getDoc = async (req,res) => {
     try {
-        const docuFiles = await DocFiles.find({}).populate('category','name')
+      const docuFiles = await DocFiles.find({})
+      .populate('category', 'name') // Populate category name
+      .populate({
+          path: 'tab', // Populate tab
+          select: 'name', // Select the tab name
+          populate: {
+              path: 'category', // Populate category of the tab
+              select: 'name' // Only select the category name field
+          }
+      });
 
         if (docuFiles.length === 0) {
             return res.status(404).json({
@@ -83,45 +98,37 @@ const getDoc = async (req,res) => {
 
 const editDoc = async (req, res) => {
   try {
-      const { id } = req.params;
-      const {  fileName } = req.body;
+    const { id } = req.params;
+    const { fileName } = req.body;
 
-      const updatedFields = { fileName };
+    const updatedFields = { fileName };
 
-      // Find the document by ID
-      const existingDocument = await DocFiles.findById(id);
-      if (!existingDocument) {
-          return res.status(404).json({ message: "Document not found." });
-      }
+    // Find the document by ID
+    const existingDocument = await DocFiles.findById(id);
+    if (!existingDocument) {
+      return res.status(404).json({ message: "Document not found." });
+    }
 
-      // If a new file is uploaded, delete the previous file and update the file URL
-      if (req.file) {
-          const oldFilePath = path.join('uploads/docs', existingDocument.fileUrl.split('/uploads/docs/')[1]);
-          
-          // Delete the old file
-          fs.unlink(oldFilePath, (err) => {
-              if (err) {
-                  console.error("Error deleting old file:", err);
-              }
-          });
+    // If a new file is uploaded, update the file URL
+    if (req.file) {
+      // Update with new file details
+      const { filename, mimetype } = req.file;
+      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/docs/${filename}`;
+      updatedFields.fileUrl = fileUrl;
+      updatedFields.fileType = mimetype; // Update the file type if needed
+    }
 
-          const { filename, mimetype } = req.file;
-          const fileUrl = `${req.protocol}://${req.get("host")}/uploads/docs/${filename}`;
-          updatedFields.fileUrl = fileUrl;
-          updatedFields.fileType = mimetype; // Update the file type if needed
-      }
+    // Update the document in the database
+    const updatedDocument = await DocFiles.findByIdAndUpdate(id, updatedFields, { new: true });
 
-      // Update the document in the database
-      const updatedDocument = await DocFiles.findByIdAndUpdate(id, updatedFields, { new: true });
-
-      res.status(200).json({
-          message: "Document updated successfully!",
-          document: updatedDocument,
-      });
+    res.status(200).json({
+      message: "Document updated successfully!",
+      document: updatedDocument,
+    });
 
   } catch (error) {
-      console.error("Error updating document:", error);
-      res.status(500).json({ message: "Internal server error." });
+    console.error("Error updating document:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 
@@ -131,20 +138,27 @@ const deleteDoc = async (req, res) => {
   
       // Find the document by ID
       const document = await DocFiles.findById(id);
-
-      // Construct the file path for deletion
-      const oldFilePath = path.join('uploads/docs', document.fileUrl.split('/uploads/docs/')[1]);
-
-      // Delete the old file
-      fs.unlink(oldFilePath, (err) => {
-          if (err) {
-              console.error("Error deleting old file:", err);
-              return res.status(500).json({ message: "Failed to delete file from disk." });
-          }
-       }) 
   
       if (!document) {
         return res.status(404).json({ message: "Document not found." });
+      }
+  
+      // Check if fileUrl exists and is a valid string before deleting the file from disk
+      if (document.fileUrl && typeof document.fileUrl === 'string') {
+        const fileName = document.fileUrl.split('/uploads/docs/')[1];
+        
+        // Check if fileName exists and is valid
+        if (fileName) {
+          const oldFilePath = path.join('uploads/docs', fileName);
+  
+          // Attempt to delete the file from the file system
+          fs.unlink(oldFilePath, (err) => {
+            if (err) {
+              console.error("Error deleting file from disk:", err);
+              // Log error but proceed with deleting the document from the DB
+            }
+          });
+        }
       }
   
       // Remove the document from the database

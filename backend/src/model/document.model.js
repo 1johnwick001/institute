@@ -14,9 +14,14 @@ const docSchema = new mongoose.Schema({
     },
     tab: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Tab',
+        ref: 'TabsData',
         default: null
-    }
+    },
+    footerCategory: { // Add reference to footer categories
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'FooterCategory',
+        default: null,
+    },
 },{timestamps:true})
 
 const DocFiles = mongoose.model("DocFiles",docSchema);

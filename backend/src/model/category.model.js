@@ -35,21 +35,30 @@ const categorySchema = new mongoose.Schema ({
 })
 
 // Pre-save middleware to generate slug
-categorySchema.pre("save", function (next) {
-    if (this.isModified("name")) {
-      this.slug = slugify(this.name, { lower: true, strict: true });
+categorySchema.pre("save", async function (next) {
+  if (this.isModified("name")) {
+    let slug = slugify(this.name, { lower: true, strict: true });
+    let existingCategory = await this.constructor.findOne({ slug });
+
+    // If a slug with the same name exists, append a unique counter
+    let counter = 1;
+    while (existingCategory && existingCategory._id.toString() !== this._id.toString()) {
+      slug = `${slugify(this.name, { lower: true, strict: true })}-${counter}`;
+      counter++;
+      existingCategory = await this.constructor.findOne({ slug });
     }
-    if (this.level > 0) {
-        if (!this.type) {
-          this.invalidate("type", "Type is required for child and grandchild categories");
-        }
-      }
-    next();
-  });
 
+    this.slug = slug;
+  }
 
-  
-  
+  // Check if type is required based on the category level
+  if (this.level > 0 && !this.type) {
+    this.invalidate("type", "Type is required for child and grandchild categories");
+  }
+
+  next();
+});
+
 
 const Category = mongoose.model('Category', categorySchema);
 

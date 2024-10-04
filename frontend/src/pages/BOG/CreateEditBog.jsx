@@ -19,6 +19,8 @@ function CreateEditBog() {
   const [companyName, setCompany] = useState('');
   const [imageFile, setImageFile] = useState(null);  // File state
   const [imageLink, setImageLink] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);  // State for PDF file
+const [details, setDetails] = useState('');    // State for details
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -74,6 +76,7 @@ function CreateEditBog() {
             setDesignation(bogData.designation || '');
             setCompany(bogData.companyName || '');
             setImageLink(bogData.imageLink || '');
+            setDetails(bogData.details || '');
           }
         })
         .catch(error => {
@@ -86,24 +89,33 @@ function CreateEditBog() {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append('category', selectedCategory);
-      formData.append('name', name);
-      formData.append('designation', designation);
-      formData.append('companyName', companyName);
-      formData.append('tab', selectedTab);
+    formData.append('category', selectedCategory);
+    formData.append('name', name);
+    formData.append('designation', designation);
+    formData.append('companyName', companyName);
+    formData.append('tab', selectedTab);
+    formData.append('details', details);  // Add the details
 
-      if (imageFile) {
-        formData.append('image', imageFile);  // Attach the selected file
-      }
+    if (imageFile) {
+      formData.append('image', imageFile);  // Attach the selected image file
+    }
+
+    if (pdfFile) {
+      formData.append('pdfFile', pdfFile);  // Attach the selected PDF file
+    }
 
 
       const EditformData = new FormData();
       EditformData.append('name', name);
       EditformData.append('designation', designation);
       EditformData.append('companyName', companyName);
-      
+
       if (imageFile) {
         EditformData.append('image', imageFile);  // Attach the selected file
+      }
+
+      if (pdfFile) {
+        EditformData.append('pdfFile', pdfFile);  // Attach the selected PDF file
       }
 
       if (bogId) {
@@ -173,7 +185,7 @@ function CreateEditBog() {
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="imageFile" className="form-label">Cards Name Field</label>
+                  <label htmlFor="imageFile" className="form-label">Cards Image Field</label>
                   {imageLink && (
                     <div className="mb-3">
                       <img src={imageLink} alt="BOG" style={{ width: '50px', height: '50px' }} />
@@ -206,6 +218,26 @@ function CreateEditBog() {
                     value={companyName}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Enter company name"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="pdfFile" className="form-label">Upload PDF Document</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    id="pdfFile"
+                    onChange={(e) => setPdfFile(e.target.files[0])}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="details" className="form-label">Details</label>
+                  <textarea
+                    className="form-control"
+                    id="details"
+                    value={details}
+                    onChange={(e) => setDetails(e.target.value)}
+                    placeholder="Enter details"
                   />
                 </div>
                 <hr />

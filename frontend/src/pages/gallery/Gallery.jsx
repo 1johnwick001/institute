@@ -5,7 +5,6 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
-import { IKUpload } from 'imagekitio-react';
 
 function Gallery() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -185,14 +184,33 @@ function Gallery() {
         {
             name: 'Sr No',
             selector: (row, index) => index + 1,
+            width: '100px',
             sortable: true,
         },
         {
+            name: 'Category Name',
+            selector: (row) => {
+                if (row.tab) {
+                    // If tab exists, show category of the tab and the tab name
+                    return (
+                        <>
+                            {row.tab.category ? row.tab.category.name : 'No Category'} - {row.tab.name}
+                        </>
+                    );
+                }
+                // Otherwise, show only the gallery category name
+                return row.category ? row.category.name : 'No Category';
+            },
+            sortable: true,
+        },
+        {
+            width: '300px',
             name: 'Gallery Name',
             selector: (row) => row.galleryName,
             sortable: true,
         },
         {
+            
             name: 'Gallery Media',
             cell: (row) => (
                 row.mediaType === 'image' ? (
@@ -265,6 +283,8 @@ function Gallery() {
                         striped
                         responsive
                         pointerOnHover
+                        paginationPerPage={50} // Default rows per page
+                        paginationRowsPerPageOptions={[10, 50, 100,200,500]}
                         customStyles={{
                             headCells: {
                                 style: {
@@ -342,7 +362,7 @@ function Gallery() {
                                             value={imageName}
                                             onChange={(e) => setImageName(e.target.value)}
                                             placeholder="Enter image name"
-                                            required
+                                            
                                         />
                                     </div>
                                     <div className="mb-3">
@@ -416,7 +436,7 @@ function Gallery() {
                                             value={imageName}
                                             onChange={(e) => setImageName(e.target.value)}
                                             placeholder="Enter image name"
-                                            required
+                                            
                                         />
                                     </div>
                                     <div className="mb-3">

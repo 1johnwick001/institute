@@ -24,6 +24,10 @@ import ViewContactUs from '../pages/ContactUsForm/ViewContactUs'
 import Tabs from '../pages/tabs/Tabs'
 import FeedbackForm from '../pages/feedbackForm/FeedbackForm'
 import ViewFeedback from '../pages/feedbackForm/ViewFeedback'
+import FooterCategories from '../pages/footer/FooterCategories'
+import FooterDocFiles from '../pages/footer/footer Documnets/FooterDocs'
+import StudentEnquirey from '../pages/studentEnquirey/StudentEnquirey'
+import ViewStudentEnquirey from '../pages/studentEnquirey/ViewStudentEnq'
 
 
 function Allroutes() {
@@ -70,6 +74,15 @@ function Allroutes() {
 			{/* feedback  form */}
 			<Route path='/feedbackForm' element={isLoggedIn? <FeedbackForm /> : <Navigate to="/" />} />
 			<Route path='/viewFeedback/:id' element={isLoggedIn? <ViewFeedback /> : <Navigate to="/" />} />
+
+			{/* {footer path} */}
+			<Route path='/footerCateg' element={isLoggedIn? <FooterCategories /> : <Navigate to="/" />} />
+			<Route path='/footer-doc-files' element={isLoggedIn? <FooterDocFiles /> : <Navigate to="/" />} />
+
+
+			{/* student enquirey form */}
+			<Route path='/student-enquirey' element={isLoggedIn? <StudentEnquirey /> : <Navigate to="/" />} />
+			<Route path='/view-student-enquirey/:id' element={isLoggedIn? <ViewStudentEnquirey /> : <Navigate to="/" />} />
 			
 		</Routes>
 

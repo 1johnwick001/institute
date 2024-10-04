@@ -6,7 +6,6 @@ import Gallery from "../model/gallery.model.js";
 import TabsData from "../model/Tabs.models.js";
 
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -15,7 +14,7 @@ const uploadGallery = async (req, res) => {
     const { galleryName, category, mediaType, tab } = req.body;
     
     // Check if required fields are provided
-    if (!galleryName || !mediaType) {
+    if (!mediaType) {
       return res.status(400).json({
         code: 400,
         status: false,
@@ -59,7 +58,7 @@ const uploadGallery = async (req, res) => {
 
     // Create a new gallery document
     const galleryData = new Gallery({
-      galleryName,
+      galleryName :galleryName || null,
       mediaType,
       category: tabExists ? null : categoryExists._id, // Associate with category if no tab is provided
       tab: tabExists ? tabExists._id : null, // Associate with tab if provided
@@ -86,11 +85,19 @@ const uploadGallery = async (req, res) => {
   }
 };
 
-
 const getGalleryImage = async (req, res) => {
     try {
 
-        const images = await Gallery.find({}); //fetch all images from the database
+      const images = await Gallery.find({})
+      .populate('category', 'name') // Populate category name
+      .populate({
+          path: 'tab', // Populate tab
+          select: 'name', // Select the tab name
+          populate: {
+              path: 'category', // Populate category of the tab
+              select: 'name' // Only select the category name field
+          }
+      });
 
         if (images.length === 0) {
             return res.json({
@@ -115,39 +122,53 @@ const getGalleryImage = async (req, res) => {
             message: error.message,
         });
     }
-}
+};
 
 const editGallery = async (req, res) => {
   const id = req.params.id;
 
   const { galleryName, mediaType } = req.body;
-  let updatedFields = { galleryName, mediaType };
+
+  // Ensure mediaType is provided and valid
+  if (!mediaType || !['image', 'video'].includes(mediaType)) {
+    return res.status(400).json({ message: 'Invalid or missing mediaType' });
+  }
+
+  let updatedFields = {};
+  if (galleryName) updatedFields.galleryName = galleryName;
+  if (mediaType) updatedFields.mediaType = mediaType;
 
   // If a new file is uploaded, save its path in the DB
   if (req.file) {
-      const fileUrl = `${req.protocol}://${req.get('host')}/uploads/media/${req.file.filename}`;
-      updatedFields[mediaType === 'image' ? 'galleryImage' : 'galleryVideo'] = fileUrl;
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/media/${req.file.filename}`;
+    updatedFields[mediaType === 'image' ? 'galleryImage' : 'galleryVideo'] = fileUrl;
 
-      // Optional: Remove the old file
+    // Optional: Remove the old file
+    try {
       const currentItem = await Gallery.findById(id);
-      const oldFilePath = path.join(__dirname, '..', currentItem[mediaType === 'image' ? 'galleryImage' : 'galleryVideo']);
-      console.log('oldFilePath',oldFilePath);
-      
-      if (fs.existsSync(oldFilePath)) {
+      if (currentItem) {
+        const oldFilePath = path.join(__dirname, '..', currentItem[mediaType === 'image' ? 'galleryImage' : 'galleryVideo'].split('/uploads/media/')[1]);
+        console.log('oldFilePath', oldFilePath);
+
+        if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath); // Delete the old file
+        }
       }
+    } catch (err) {
+      console.error('Error removing old file:', err);
+    }
   }
 
   try {
-      const updatedItem = await Gallery.findByIdAndUpdate(id, updatedFields, { new: true });
+    const updatedItem = await Gallery.findByIdAndUpdate(id, updatedFields, { new: true });
 
-      if (!updatedItem) {
-          return res.status(404).json({ message: 'Item not found' });
-      }
+    if (!updatedItem) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
 
-      res.json({ message: 'Gallery item updated successfully', data: updatedItem });
+    res.json({ message: 'Gallery item updated successfully', data: updatedItem });
   } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -163,40 +184,47 @@ const deleteGalleryImage = async (req, res) => {
       return res.json({
         code: 404,
         status: false,
-        message: "Gallery not Found",
+        message: "Gallery not found",
       });
     }
 
-    // Check if galleryImage exists
-    if (!image.galleryImage) {
-      // Proceed to delete the image from the database even if galleryImage is not found
-      await Gallery.findByIdAndDelete(id);
-      return res.json({
-        code: 200,
-        status: true,
-        message: 'Gallery deleted successfully without unlinking the file',
-      });
-    }
+    // Check if galleryImage exists and is a local file path (not a third-party URL)
+    if (image.galleryImage && image.galleryImage.includes('/uploads/media/')) {
+      const oldFilePath = path.join('uploads/media', image.galleryImage.split('/uploads/media/')[1]);
 
-    // Construct the file path for deletion using galleryImage
-    const oldFilePath = path.join('uploads/media', image.galleryImage.split('/uploads/media/')[1]);
+      // Check if the file exists before trying to delete it
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlink(oldFilePath, async (err) => {
+          if (err) {
+            console.error("Error deleting old file:", err);
+          }
+          // Proceed to delete from the database even if unlink fails
+          await Gallery.findByIdAndDelete(id);
 
-    // Delete the old file if it exists
-    fs.unlink(oldFilePath, async (err) => {
-      if (err) {
-        console.error("Error deleting old file:", err);
-        // Even if unlink fails, proceed to delete from the database
+          return res.json({
+            code: 200,
+            status: true,
+            message: 'Gallery deleted successfully with file deletion',
+          });
+        });
+      } else {
+        // File does not exist, proceed with database deletion
+        await Gallery.findByIdAndDelete(id);
+        return res.json({
+          code: 200,
+          status: true,
+          message: 'Gallery deleted successfully, file not found for deletion',
+        });
       }
-
-      // Now delete the image from the database
+    } else {
+      // galleryImage does not exist or is from a third-party URL, proceed to delete the image from the database
       await Gallery.findByIdAndDelete(id);
-
       return res.json({
         code: 200,
         status: true,
-        message: 'Gallery deleted successfully',
+        message: 'Gallery deleted successfully without local file deletion',
       });
-    });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -206,6 +234,5 @@ const deleteGalleryImage = async (req, res) => {
     });
   }
 };
-
 
 export  {uploadGallery , getGalleryImage ,editGallery, deleteGalleryImage}

@@ -5,141 +5,139 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import API_BASE_URL from '../../config/Config';
 
-function SubSubCategories() {
+function FooterCategories() {
     const [showModal, setShowModal] = useState(false);
-    const [subSubCategoryName, setSubSubCategoryName] = useState('');
-    const [parentSubCategoryId, setParentSubCategoryId] = useState('');
-    const [subcategories, setSubcategories] = useState([]);
-    const [subSubcategories, setSubSubcategories] = useState([]);
+    const [footerCategoryName, setFooterCategoryName] = useState('');
+    const [footerCategoryType, setFooterCategoryType] = useState('');
+    const [footerCategories, setFooterCategories] = useState([]);
 
-
+    // ====== edit 
+    const [editingFooterCategoryId, setEditingFooterCategoryId] = useState(null);
+    const [editFooterCategoryName, setEditFooterCategoryName] = useState('');
+    const [editFooterCategoryType, setEditFooterCategoryType] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [editSubSubCategory, setEditSubSubCategory] = useState(null);
-    const [deletingSubSubCategoryId, setDeletingSubSubCategoryId] = useState(null);
-    const [editSubSubCategoryName, setEditSubSubCategoryName] = useState('');
 
-    const [type, setType] = useState('');
+    // ====== delete
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingFooterCategoryId, setDeletingFooterCategoryId] = useState(null);
 
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => {
         setShowModal(false);
-        setSubSubCategoryName('');
-        setParentSubCategoryId('');
+        setFooterCategoryName(''); // Reset input field
+        setFooterCategoryType('');
     };
 
-    const fetchSubcategories = async () => {
+    // Fetch Footer Categories
+    const fetchFooterCategories = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/get-categories`);
-            setSubcategories(response.data.data.flatMap(category => category.subcategories));
+            const response = await axios.get(`${API_BASE_URL}/getFooter-categories`);
+            if (response.data.status) {
+                setFooterCategories(response.data.data); // Ensure this is an array
+            }
         } catch (error) {
-            console.error('Error fetching subcategories:', error);
-        }
-    };
-
-    const fetchSubSubcategories = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/get-categories`);
-            setSubSubcategories(response.data.data.flatMap(category =>
-                category.subcategories.flatMap(subcategory => subcategory.subcategories)
-            ));
-        } catch (error) {
-            console.error('Error fetching sub-subcategories:', error);
+            console.error('Error fetching footer categories:', error);
         }
     };
 
     useEffect(() => {
-        fetchSubcategories();
-        fetchSubSubcategories();
+        fetchFooterCategories();
     }, []);
 
+    // Add Footer Category
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_BASE_URL}/create-category`, { name: subSubCategoryName, parentId: parentSubCategoryId, type  });
-            fetchSubSubcategories(); // Refresh the sub-subcategories list
+            const response = await axios.post(`${API_BASE_URL}/addFooter-categories`, { name: footerCategoryName, type: footerCategoryType });
+            fetchFooterCategories(); // Refresh the list after adding
             handleCloseModal();
         } catch (error) {
-            console.error('Error adding sub-subcategory:', error);
+            console.error('Error adding footer category:', error);
         }
     };
 
-    const handleEditModal = (subSubcategory) => {
-        setEditSubSubCategory(subSubcategory);
-        setEditSubSubCategoryName(subSubcategory.name);
+    // Edit Modal Handlers
+    const handleEditModal = (category) => {
+        setEditingFooterCategoryId(category._id);
+        setEditFooterCategoryName(category.name);
+        setEditFooterCategoryType(category.type);
         setShowEditModal(true);
     };
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
-        setEditSubSubCategory(null);
-        setEditSubSubCategoryName('');
+        setEditingFooterCategoryId(null);
+        setEditFooterCategoryName('');
+        setEditFooterCategoryType('');
     };
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`${API_BASE_URL}/update-category/${editSubSubCategory._id}`, { name: editSubSubCategoryName });
-            fetchSubSubcategories(); // Refresh the sub-subcategories list
+            await axios.put(`${API_BASE_URL}/editFooter-category/${editingFooterCategoryId}`, { name: editFooterCategoryName, type: editFooterCategoryType });
+            fetchFooterCategories(); // Refresh the list after updating
             handleCloseEditModal();
         } catch (error) {
-            console.error('Error editing sub-subcategory:', error);
+            console.error('Error updating footer category:', error);
         }
     };
 
-    const handleDeleteModal = (subSubcategoryId) => {
-        setDeletingSubSubCategoryId(subSubcategoryId);
+    // Delete Modal Handlers
+    const handleDeleteModal = (categoryId) => {
+        setDeletingFooterCategoryId(categoryId);
         setShowDeleteModal(true);
     };
 
     const handleCloseDeleteModal = () => {
         setShowDeleteModal(false);
-        setDeletingSubSubCategoryId(null);
+        setDeletingFooterCategoryId(null);
     };
 
     const handleConfirmDelete = async () => {
         try {
-            await axios.delete(`${API_BASE_URL}/delete-category/${deletingSubSubCategoryId}`);
-            fetchSubSubcategories(); // Refresh the sub-subcategories list
+            await axios.delete(`${API_BASE_URL}/deleteFooter-category/${deletingFooterCategoryId}`);
+            
+            // Remove the deleted category from the state without refetching the entire list
+            setFooterCategories(footerCategories.filter(category => category._id !== deletingFooterCategoryId));
+    
             handleCloseDeleteModal();
         } catch (error) {
-            console.error('Error deleting sub-subcategory:', error);
+            console.error('Error deleting footer category:', error);
         }
     };
-
     return (
         <>
             <Header />
             <Sidebar />
             <main id="main" className="main">
-                <Pagetitle page='Sub-Sub-Category' />
+                <Pagetitle page='Footer Categories' />
 
                 <section className="section">
                     <div className="d-flex justify-content-end mb-3">
-                        <button className='btn btn-primary' onClick={handleShowModal}>Add Sub-Sub-Category</button>
+                        <button className='btn btn-primary' onClick={handleShowModal}>Add Footer Category</button>
                     </div>
                     <table className="table table-bordered table-striped table-hover">
                         <thead className="thead-dark">
                             <tr className='table-dark'>
                                 <th scope="col">Sr No</th>
-                                <th scope="col">Parent Sub-Category</th>
-                                <th scope="col">Sub-Sub-Category Name</th>
+                                <th scope="col">Category Name</th>
+                                <th scope="col">Category Type</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {subSubcategories.map((subSubcategory, index) => (
-                                <tr key={subSubcategory._id}>
+                            {footerCategories.map((category, index) => (
+                                <tr key={category._id}>
                                     <th scope="row">{index + 1}</th>
-                                    <td>{subSubcategory.parent ? subSubcategory.parent.name : 'N/A'}</td>
-                                    <td>{subSubcategory.name}</td>
+                                    <td>{category.name}</td>
+                                    <td>{category.type}</td>
                                     <td>
-                                        <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subSubcategory)}>
+                                        <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
                                             <i className="fas fa-edit"></i> Edit
                                         </button>
-                                        {/* <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(subSubcategory._id)}>
+                                        <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
                                             <i className="fas fa-trash"></i> Delete
-                                        </button> */}
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -147,60 +145,43 @@ function SubSubCategories() {
                     </table>
                 </section>
 
-                {/* Add Sub-Sub-Category Modal */}
+                {/* Add Footer Category Modal */}
                 <div className={`modal fade ${showModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showModal ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header bg-info">
-                                <h5 className="modal-title">Add Sub-Sub-Category</h5>
+                                <h5 className="modal-title">Add Footer Category</h5>
                                 <button type="button" className="btn-close" onClick={handleCloseModal}></button>
                             </div>
                             <div className="modal-body">
                                 <form onSubmit={handleSubmit}>
                                     <div className="mb-3">
-                                        <label htmlFor="parentSubCategoryId" className="form-label">Parent Sub-Category</label>
-                                        <select
-                                            className="form-control"
-                                            id="parentSubCategoryId"
-                                            value={parentSubCategoryId}
-                                            onChange={(e) => setParentSubCategoryId(e.target.value)}
-                                            required
-                                        >
-                                            <option value="">Select Parent Sub-Category</option>
-                                            {subcategories.map(subcategory => (
-                                                <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="subSubCategoryName" className="form-label">Sub-Sub-Category Name</label>
+                                        <label htmlFor="footerCategoryName" className="form-label">Category Name</label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            id="subSubCategoryName"
-                                            value={subSubCategoryName}
-                                            onChange={(e) => setSubSubCategoryName(e.target.value)}
-                                            placeholder="Enter sub-sub-category name"
+                                            id="footerCategoryName"
+                                            value={footerCategoryName}
+                                            onChange={(e) => setFooterCategoryName(e.target.value)}
+                                            placeholder="Enter footer category name"
                                             required
                                         />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="type" className="form-label">Type</label>
+                                        <label htmlFor="footerCategoryType" className="form-label">Category Type</label>
                                         <select
                                             className="form-control"
-                                            id="type"
-                                            value={type}
-                                            onChange={(e) => setType(e.target.value)}
+                                            id="footerCategoryType"
+                                            value={footerCategoryType}
+                                            onChange={(e) => setFooterCategoryType(e.target.value)}
                                             required
                                         >
-                                            <option value="">Select Type</option>
+                                            <option value="">Select type</option>
                                             <option value="pdf">PDF</option>
-                                            <option value="text">Text</option>
-                                            <option value="both">Both</option>
+                                            <option value="link">Link</option>
+                                            <option value="page">Page</option>
                                         </select>
                                     </div>
-
-                                    <hr />
                                     <div>
                                         <button type="submit" className="btn btn-primary w-100">Submit</button>
                                     </div>
@@ -212,29 +193,43 @@ function SubSubCategories() {
 
                 {showModal && <div className="modal-backdrop fade show" onClick={handleCloseModal}></div>}
 
-                {/* Edit Sub-Sub-Category Modal */}
+                {/* Edit Footer Category Modal */}
                 <div className={`modal fade ${showEditModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showEditModal ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header bg-info">
-                                <h5 className="modal-title">Edit Sub-Sub-Category</h5>
+                                <h5 className="modal-title">Edit Footer Category</h5>
                                 <button type="button" className="btn-close" onClick={handleCloseEditModal}></button>
                             </div>
                             <div className="modal-body">
                                 <form onSubmit={handleEditSubmit}>
                                     <div className="mb-3">
-                                        <label htmlFor="editSubSubCategoryName" className="form-label">Sub-Sub-Category Name</label>
+                                        <label htmlFor="editFooterCategoryName" className="form-label">Category Name</label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            id="editSubSubCategoryName"
-                                            value={editSubSubCategoryName}
-                                            onChange={(e) => setEditSubSubCategoryName(e.target.value)}
-                                            placeholder="Enter sub-sub-category name"
+                                            id="editFooterCategoryName"
+                                            value={editFooterCategoryName}
+                                            onChange={(e) => setEditFooterCategoryName(e.target.value)}
+                                            placeholder="Enter footer category name"
                                             required
                                         />
                                     </div>
-                                    <hr />
+                                    <div className="mb-3">
+                                        <label htmlFor="editFooterCategoryType" className="form-label">Category Type</label>
+                                        <select
+                                            className="form-control"
+                                            id="editFooterCategoryType"
+                                            value={editFooterCategoryType}
+                                            onChange={(e) => setEditFooterCategoryType(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">Select type</option>
+                                            <option value="pdf">PDF</option>
+                                            <option value="link">Link</option>
+                                            <option value="page">Page</option>
+                                        </select>
+                                    </div>
                                     <div>
                                         <button type="submit" className="btn btn-primary w-100">Submit</button>
                                     </div>
@@ -246,16 +241,16 @@ function SubSubCategories() {
 
                 {showEditModal && <div className="modal-backdrop fade show" onClick={handleCloseEditModal}></div>}
 
-                {/* Delete Sub-Sub-Category Confirmation Modal */}
+                {/* Delete Footer Category Confirmation Modal */}
                 <div className={`modal fade ${showDeleteModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showDeleteModal ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header bg-danger">
-                                <h5 className="modal-title text-white">Confirm Deletion</h5>
+                                <h5 className="modal-title">Confirm Delete</h5>
                                 <button type="button" className="btn-close" onClick={handleCloseDeleteModal}></button>
                             </div>
                             <div className="modal-body">
-                                <p>Are you sure you want to delete this sub-sub-category?</p>
+                                <p>Are you sure you want to delete this category?</p>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={handleCloseDeleteModal}>Cancel</button>
@@ -269,7 +264,6 @@ function SubSubCategories() {
             </main>
         </>
     );
-
 }
 
-export default SubSubCategories;
+export default FooterCategories;

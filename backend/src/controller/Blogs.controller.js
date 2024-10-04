@@ -96,7 +96,15 @@ const getBlogs = async (req, res) => {
             });
         } else {
             // Fetch all blogs
-            const blogs = await Blog.find();
+            const blogs = await Blog.find().populate('category', 'name')
+            .populate({
+                path: 'tab', // Populate tab
+                select: 'name', // Select the tab name
+                populate: {
+                    path: 'category', // Populate category of the tab
+                    select: 'name' // Only select the category name field
+                }
+            });
 
             return res.status(200).json({
                 code: 200,

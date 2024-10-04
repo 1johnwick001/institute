@@ -240,12 +240,12 @@ const getNewsandEvents = async (req, res) => {
       
       // Fetch the images related to the "Excellent Placements" tab
       // Fetch other data associated with the category
-      const blogs = await Blog.find({ category: EventsCateg });
-      const banner = await Banner.find({ category: EventsCateg });
-      const gallery = await Gallery.find({ category: EventsCateg });
-      const docs = await DocFiles.find({ category: EventsCateg });
-      const factInfo = await FactData.find({ category: EventsCateg });
-      const bogData = await BOG.find({ category: EventsCateg });
+      const blogs = await Blog.find({ category: EventsCateg }).sort({createdAt:-1});
+      const banner = await Banner.find({ category: EventsCateg }).sort({createdAt:-1});
+      const gallery = await Gallery.find({ category: EventsCateg }).sort({createdAt:-1});
+      const docs = await DocFiles.find({ category: EventsCateg }).sort({createdAt:-1});
+      const factInfo = await FactData.find({ category: EventsCateg }).sort({createdAt:-1});
+      const bogData = await BOG.find({ category: EventsCateg }).sort({createdAt:-1});
 
       const Data = {
         blogs,

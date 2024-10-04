@@ -16,6 +16,8 @@ import { createApplicationForm,getApplicationForm ,viewApplicationById, deleteAp
 import { createContactUs, viewContactUs, deleteContactUs, getContacts } from "../controller/ContactUs.controller.js";
 import { createTab, deleteTab, getTabs, getTabsByCategory, updateTab } from "../controller/tabs.controller.js";
 import { createFeedback, deleteFeedback, getFeedBackForm, viewFeedbackById } from "../controller/feedback.controller.js";
+import { addFooterCategory, editFooterCategory, getActiveFooterCategories, softDeleteFooterCategory } from "../controller/footer.controller.js";
+import { createEnquiry, getEnquiryList, softDeleteEnquiry, viewEnquiryById } from "../controller/studentEnquirey.controller.js";
 
 
 const router = express.Router()
@@ -31,7 +33,7 @@ const storage = multer.diskStorage({
   
   // File filter to accept only images and videos
   const fileFilter = (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif|mp4|mkv|avi|wmv|mov|pdf|doc|docx|xls|xlsx|ppt|pptx/;
+    const fileTypes = /jpeg|jpg|png|gif|webp|mp4|mkv|avi|wmv|mov|pdf|doc|docx|xls|xlsx|ppt|pptx/;
     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileTypes.test(file.mimetype);
     
@@ -127,11 +129,20 @@ router.put('/api/edit-factsInfo/:id', editFactsInfo)
 router.delete('/api/delete-factsInfo/:id', deleteFactInfo)
 
 // =======BOG Crud ======
-router.post('/api/create-bog',upload.single('image'),createBog)
+router.post('/api/create-bog', upload.fields([
+  { name: 'image', maxCount: 1 },       // For the image file (single upload)
+  { name: 'pdfFile', maxCount: 1 }      // For the PDF file (single upload)
+]), createBog);
+
 router.get('/api/get-bog',getBog)
 router.get('/api/get-bog/:id',getBogById)
-router.put('/api/edit-bog/:id',upload.single('image'),editBog)
+
+router.put('/api/edit-bog/:id', upload.fields([
+  { name: 'image', maxCount: 1 },     // Handle the image upload
+  { name: 'pdfFile', maxCount: 1 }    // Handle the PDF upload
+]), editBog);
 router.delete('/api/delete-bog/:id',deleteBog)
+
 
 // =======instittue banner Crud ======
 router.post(
@@ -173,5 +184,17 @@ router.get('/api/get-placementData',getPlacementData)
 router.get('/api/get-eventsAndNews',getNewsandEvents)
 router.get('/api/get-MoU',MouCards)
 router.post('/api/get-data/:id',categoryData)
+
+// routes for footer
+router.get('/api/getFooter-categories', getActiveFooterCategories);
+router.post('/api/addFooter-categories',addFooterCategory);
+router.put('/api/editFooter-category/:id', editFooterCategory);
+router.delete('/api/deleteFooter-category/:id', softDeleteFooterCategory);
+
+// student enquirey
+router.get('/api/getStudent-enquirey/:id',viewEnquiryById);
+router.get('/api/enquiries',getEnquiryList);
+router.post('/api/createStudent-enquirey',createEnquiry);
+router.delete('/api/deleteStudent-enquiry/:id', softDeleteEnquiry);
 
 export default router

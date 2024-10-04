@@ -124,12 +124,12 @@ function Categories() {
                 <th scope="row">{index + 1}</th>
                 <td>{category.name}</td>
                 <td>
-                  {/* <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
+                  <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
                     <i className="fas fa-edit"></i> Edit
-                  </button> */}
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
-                    <i className="fas fa-trash"></i> Delete
                   </button>
+                  {/* <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
+                    <i className="fas fa-trash"></i> Delete
+                  </button> */}
                 </td>
               </tr>
             ))}

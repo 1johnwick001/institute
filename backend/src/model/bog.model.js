@@ -19,8 +19,14 @@ const bogMemberSchema = new mongoose.Schema({
     },
     tab: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Tab',
+        ref: 'TabsData',
         default: null
+    },
+    pdfFile: {
+        type: String  // Store the URL of the uploaded PDF
+    },
+    details: {
+        type: String  // This will store the text from the textarea
     }
     
 },{timestamps:true});

@@ -113,6 +113,12 @@ function Sidebar() {
                                 <span>Feedback Form Data</span>
                             </Link>
                         </li>
+                        <li >
+                            <Link to="/student-enquirey">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Student enquirey form data</span>
+                            </Link>
+                        </li>
                     </ul>
                 </li>
     
@@ -200,6 +206,40 @@ function Sidebar() {
                        
                     </ul>
                 </li>
+
+                {/* <li class="nav-heading">Footer</li>
+
+                <li className='nav-item'>
+                    <Link 
+                        to="#"
+                        className='nav-link collapsed'
+                        data-bs-target = '#home-footer-nav'
+                        data-bs-toggle='collapse'
+                    >
+                        <i className='bi bi-record2'></i>
+                        <span>Footer Section </span>
+                        <i className='bi bi-chevron-down ms-auto'></i>
+                    </Link>
+                    <ul id='home-footer-nav'
+                    className='nav-content collapse'
+                    data-bs-parent = '#sidebar-nav'
+                    >
+                        <li>
+                            <Link to="/footerCateg">
+                                <i className='bi bi-circle'></i>
+                                <span>Create Footer Categories</span>
+                            </Link>
+                        </li>
+
+                        <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/footer-doc-files">
+                        <i className='bi bi-file-pdf'></i>
+                        <span>Footer Doc Files</span>
+                    </Link>
+                </li>
+                       
+                    </ul>
+                </li> */}
 
             </ul>
         </aside>

@@ -10,82 +10,68 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const createBog = async (req, res) => {
-    try {
-      const { name, designation, companyName, category, tab } = req.body;
-  
-      // Check if the file is uploaded
-      const imageFile = req.file;
-      if (!imageFile) {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: 'Image file is missing',
-        });
-      }
-  
-      const imageLink = `${req.protocol}://${req.get('host')}/uploads/media/${imageFile.filename}`; // Assuming you're saving the file in 'uploads/media' directory
-  
-      if (!name) {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: 'Name is missing',
-        });
-      }
-  
-      const categoryExists = await Category.findById(category);
-      if (!categoryExists) {
-        return res.status(404).json({
-          code: 404,
-          status: false,
-          message: 'Category not found',
-        });
-      }
-  
-      let tabExists = null;
-      if (tab) {
-        tabExists = await TabsData.findById(tab);
-        if (!tabExists) {
-          return res.status(404).json({
-            code: 404,
-            status: false,
-            message: 'Tab not found',
-          });
-        }
-      }
-  
-      const bogData = new BOG({
-        name,
-        designation,
-        companyName,
-        imageLink, // Save the image link
-        category: tabExists ? null : categoryExists._id, // Associate with category if no tab is provided
-        tab: tabExists ? tabExists._id : null, // Associate with tab if provided
-      });
-  
-      await bogData.save();
-  
-      // Respond with full data
-      res.status(201).json({
-        code: 201,
-        status: true,
-        message: 'BOG data uploaded successfully',
-        data: bogData,
-      });
-    } catch (error) {
-      console.error('Error while creating BOG', error);
-      return res.status(500).json({
-        code: 500,
+  try {
+    const { name, designation, companyName, category, tab, details } = req.body;
+
+    // Access the uploaded files
+    const imageFile = req.files?.image ? req.files.image[0] : null;
+    const pdfFile = req.files?.pdfFile ? req.files.pdfFile[0] : null;
+
+    if (!imageFile) {
+      return res.status(400).json({
+        code: 400,
         status: false,
-        message: 'Error while creating BOG',
-        data: error.message,
+        message: 'Image file is missing',
       });
     }
+
+    // Construct the full URLs for the image and PDF files
+    const fullImageUrl = `${req.protocol}://${req.get('host')}/uploads/media/${imageFile.filename}`;
+    const fullPdfUrl = pdfFile ? `${req.protocol}://${req.get('host')}/uploads/media/${pdfFile.filename}` : null;
+
+    // Create BOG data with the absolute paths for image and PDF
+    const bogData = new BOG({
+      name,
+      designation,
+      companyName,
+      imageLink: fullImageUrl,   // Save the absolute path for the image
+      pdfFile: fullPdfUrl,       // Save the absolute path for the PDF
+      details: details || '',
+      category: tab ? null : category,
+      tab: tab || null,
+    });
+
+    await bogData.save();
+
+    // Send response with absolute paths
+    res.status(201).json({
+      code: 201,
+      status: true,
+      message: 'BOG data uploaded successfully',
+      data: bogData
+    });
+  } catch (error) {
+    console.error('Error while creating BOG:', error);
+    res.status(500).json({
+      code: 500,
+      status: false,
+      message: 'Error while creating BOG',
+      data: error.message,
+    });
+  }
 };
 
 const getBog = async (req,res) => {
     try {
-        const getbog = await BOG.find() 
+        const getbog = await BOG.find().populate('category', 'name') // Populate category name
+        .populate({
+            path: 'tab', // Populate tab
+            select: 'name', // Select the tab name
+            populate: {
+                path: 'category', // Populate category of the tab
+                select: 'name' // Only select the category name field
+            }
+        });
 
         if (getBog.length === 0) {
             return res.json({
@@ -110,7 +96,7 @@ const getBog = async (req,res) => {
             message: error.message,
         });
     }
-}
+};
 
 const getBogById = async (req, res) => {
     try {
@@ -141,75 +127,70 @@ const getBogById = async (req, res) => {
         });
     }
 };
- 
+
 const editBog = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { name, designation, companyName, imageLink } = req.body;
-      
-      // Check if the BOG entry exists
-      const bogdata = await BOG.findById(id);
-      
-      if (!bogdata) {
-        return res.status(404).json({
-          code: 404,
-          status: false,
-          message: "BOG not found",
-        });
-      }
-  
-      // If a new image file is uploaded, replace the old image
-      if (req.file) {
-        const newImageLink = `${req.protocol}://${req.get('host')}/uploads/media/${req.file.filename}`;
-        
-        // Unlink (delete) the old image if it exists
-        if (bogdata.imageLink) {
-          const oldImagePath = path.join(__dirname, '..', bogdata.imageLink.replace(`${req.protocol}://${req.get('host')}`, ''));
-          
-          // Check if the file exists and delete it
-          fs.access(oldImagePath, fs.constants.F_OK, (err) => {
-            if (!err) {
-              fs.unlink(oldImagePath, (unlinkErr) => {
-                if (unlinkErr) {
-                  console.error('Error deleting old image:', unlinkErr);
-                } else {
-                  console.log('Old image deleted successfully');
-                }
-              });
-            }
-          });
-        }
-  
-        bogdata.imageLink = newImageLink; // Use the new image link
-      } else {
-        bogdata.imageLink = imageLink || bogdata.imageLink; // Use existing image link if no new file is uploaded
-      }
-  
-      // Update other fields
-      bogdata.name = name || bogdata.name;
-      bogdata.designation = designation || bogdata.designation;
-      bogdata.companyName = companyName || bogdata.companyName;
-  
-      // Save the updated document
-      const updatedBog = await bogdata.save();
-  
-      // Send a success response
-      res.status(200).json({
-        code: 200,
-        status: true,
-        message: "BOG updated successfully",
-        data: updatedBog,
-      });
-    } catch (error) {
-      console.error('Error updating BOG:', error);
-      return res.status(500).json({
-        code: 500,
+  try {
+    const { id } = req.params;
+    const { name, designation, companyName, category, tab, details } = req.body;
+
+    // Find the existing BOG document by ID
+    const bogData = await BOG.findById(id);
+
+    if (!bogData) {
+      return res.status(404).json({
+        code: 404,
         status: false,
-        message: 'An error occurred while updating the BOG.',
+        message: 'BOG data not found.',
       });
     }
+
+    // Access the uploaded files
+    const imageFile = req.files?.image ? req.files.image[0] : null;
+    const pdfFile = req.files?.pdfFile ? req.files.pdfFile[0] : null;
+
+    // If new image file is uploaded, update the imageLink
+    if (imageFile) {
+      // Optionally, delete the old image file from disk if necessary
+      const fullImageUrl = `${req.protocol}://${req.get('host')}/uploads/media/${imageFile.filename}`;
+      bogData.imageLink = fullImageUrl;
+    }
+
+    // If new PDF file is uploaded, update the pdfFile
+    if (pdfFile) {
+      // Optionally, delete the old PDF file from disk if necessary
+      const fullPdfUrl = `${req.protocol}://${req.get('host')}/uploads/media/${pdfFile.filename}`;
+      bogData.pdfFile = fullPdfUrl;
+    }
+
+    // Update other fields
+    bogData.name = name || bogData.name;
+    bogData.designation = designation || bogData.designation;
+    bogData.companyName = companyName || bogData.companyName;
+    bogData.details = details || bogData.details;
+    bogData.category = tab ? null : category || bogData.category;
+    bogData.tab = tab || null;
+
+    // Save the updated BOG data
+    await bogData.save();
+
+    // Send response with updated data
+    res.status(200).json({
+      code: 200,
+      status: true,
+      message: 'BOG data updated successfully',
+      data: bogData
+    });
+  } catch (error) {
+    console.error('Error while updating BOG:', error);
+    res.status(500).json({
+      code: 500,
+      status: false,
+      message: 'Error while updating BOG',
+      data: error.message,
+    });
+  }
 };
-  
+
 const deleteBog = async (req, res) => {
 try {
     const { id } = req.params;

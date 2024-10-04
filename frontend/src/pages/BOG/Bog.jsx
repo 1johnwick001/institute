@@ -63,6 +63,22 @@ function Bog() {
             sortable: true,
         },
         {
+            name: 'Category Name',
+            selector: (row) => {
+                if (row.tab) {
+                    // If tab exists, show category of the tab and the tab name
+                    return (
+                        <>
+                            {row.tab.category ? row.tab.category.name : 'No Category'} - {row.tab.name}
+                        </>
+                    );
+                }
+                // Otherwise, show only the gallery category name
+                return row.category ? row.category.name : 'No Category';
+            },
+            sortable: true,
+        },
+        {
             name: ' Name',
             selector: (row) => row.name,
             sortable: true,
@@ -120,6 +136,8 @@ function Bog() {
                         highlightOnHover
                         striped
                         responsive
+                        paginationPerPage={40} // Default rows per page
+                        paginationRowsPerPageOptions={[10, 50, 100,200,500]}
                         customStyles={{
                             headCells: {
                                 style: {

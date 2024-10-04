@@ -13,6 +13,11 @@ function Tabs() {
     const [categories, setCategories] = useState([]); // State for categories
     const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
 
+    // for edit tabs
+    const [showEditModal, setShowEditModal] = useState(false); // For edit modal
+const [editTabName, setEditTabName] = useState(''); // Tab name being edited
+const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
+
     // Fetch tabs from backend
     const fetchTabs = async () => {
         try {
@@ -65,6 +70,23 @@ function Tabs() {
         }
     };
 
+    const handleEditTabData = async (e) => {
+        e.preventDefault();
+        const formData = { name: editTabName };
+    
+        try {
+            await axios.put(`${API_BASE_URL}/update-tabs/${selectedTab._id}`, formData, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            fetchTabs();  // Refresh the tabs
+            setShowEditModal(false);  // Close modal
+            setSelectedTab(null);  // Clear selected tab
+            setEditTabName('');  // Clear form input
+        } catch (error) {
+            console.error('Error updating tab:', error);
+        }
+    };
+
     useEffect(() => {
         fetchTabs();
         fetchCategories();
@@ -99,9 +121,14 @@ function Tabs() {
         {
             name: 'Action',
             cell: (row) => (
-                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(row._id)}>
-                    <i className="fas fa-trash"></i> Delete
-                </button>
+                <>
+                    {/* <button className="btn btn-primary btn-sm me-2" onClick={() => openEditModal(row)}>
+                    <i className="fas fa-edit"></i> Edit
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(row._id)}>
+                        <i className="fas fa-trash"></i> Delete
+                    </button> */}
+                </>
             ),
         },
     ];
@@ -109,6 +136,12 @@ function Tabs() {
     const openAddModal = () => {
         setTabName('');
         setShowAddModal(true);
+    };
+
+    const openEditModal = (tab) => {
+        setSelectedTab(tab);  // Set the selected tab for editing
+        setEditTabName(tab.name);  // Pre-fill the tab name
+        setShowEditModal(true);  // Open the modal
     };
 
     return (
@@ -201,6 +234,38 @@ function Tabs() {
                                     <hr />
                                     <div>
                                         <button type="submit" className="btn btn-primary w-100">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Edit Tab Modal */}
+                <div className={`modal fade ${showEditModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showEditModal ? 'block' : 'none' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header bg-info">
+                                <h5 className="modal-title">Edit Tab Data</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <form onSubmit={handleEditTabData}>
+                                    <div className="mb-3">
+                                        <label htmlFor="editTabName" className="form-label">Tab Name</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="editTabName"
+                                            value={editTabName}
+                                            onChange={(e) => setEditTabName(e.target.value)}
+                                            placeholder="Enter tab name"
+                                            required
+                                        />
+                                    </div>
+                                    <hr />
+                                    <div>
+                                        <button type="submit" className="btn btn-primary w-100">Update</button>
                                     </div>
                                 </form>
                             </div>
