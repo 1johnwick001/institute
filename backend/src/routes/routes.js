@@ -18,6 +18,9 @@ import { createTab, deleteTab, getTabs, getTabsByCategory, updateTab } from "../
 import { createFeedback, deleteFeedback, getFeedBackForm, viewFeedbackById } from "../controller/feedback.controller.js";
 import { addFooterCategory, editFooterCategory, getActiveFooterCategories, softDeleteFooterCategory } from "../controller/footer.controller.js";
 import { createEnquiry, getEnquiryList, softDeleteEnquiry, viewEnquiryById } from "../controller/studentEnquirey.controller.js";
+import { createContactUsAddress, deleteContactUsAddress, getAllContactUsAddresses, getContactUsAddressById, updateContactUsAddress } from "../controller/contactUsAddress.controller.js";
+import { CreateUrl, deleteUrlAddress, EditUrl, getUrlAddress } from "../controller/url.controller.js";
+import { createNewsEvent, deleteNewsEvent, getAllNewsEvents, getNewsEventById, updateNewsEvent } from "../controller/newsEvents.controller.js";
 
 
 const router = express.Router()
@@ -172,6 +175,13 @@ router.get('/api/getContactUsForm', getContacts)
 router.get('/api/getContactUsById/:id', viewContactUs)
 router.delete('/api/deleteContactForm/:id', deleteContactUs)
 
+// for cotactusAddress
+router.post('/api/contact-us-address', upload.single('icon'), createContactUsAddress);
+router.get('/api/get-contact-us-address', getAllContactUsAddresses);
+router.get('/api/contact-us-address/:id', getContactUsAddressById);
+router.put('/api/edit-contact-us-address/:id', upload.single('icon'), updateContactUsAddress);
+router.delete('/api/delete-contact-us-address/:id', deleteContactUsAddress);
+
 // feedback forms
 router.post('/api/create-feedback',createFeedback)
 router.get('/api/get-feedback',getFeedBackForm)
@@ -196,5 +206,19 @@ router.get('/api/getStudent-enquirey/:id',viewEnquiryById);
 router.get('/api/enquiries',getEnquiryList);
 router.post('/api/createStudent-enquirey',createEnquiry);
 router.delete('/api/deleteStudent-enquiry/:id', softDeleteEnquiry);
+
+// =======facts info Crud ======
+router.post('/api/create-urlAdd', CreateUrl)
+router.get('/api/get-urlAdd', getUrlAddress)
+router.put('/api/edit-urlAdd/:id', EditUrl)
+router.delete('/api/delete-urlAdd/:id', deleteUrlAddress)
+
+
+//  ============= news & Events crud ============= 
+router.post('/api/create-news-events', upload.array('images'), createNewsEvent);
+router.get('/api/news-events', getAllNewsEvents);
+router.get('/api/news-eventsbyid/:id', getNewsEventById);
+router.put('/api/edit-news-events/:id', updateNewsEvent);
+router.delete('/api/delete-news-events/:id', deleteNewsEvent);
 
 export default router

@@ -107,15 +107,15 @@ function Categories() {
       <Pagetitle page='Category' />
 
       <section className="section">
-        {/* <div className="d-flex justify-content-end mb-3">
+        <div className="d-flex justify-content-end mb-3">
           <button className='btn btn-primary' onClick={handleShowModal}>Add Category</button>
-        </div> */}
+        </div>
         <table className="table table-bordered table-striped table-hover">
           <thead className="thead-dark">
             <tr className='table-dark'>
               <th scope="col">Sr No</th>
               <th scope="col">Category Name</th>
-              <th scope="col">Action</th>
+              {/* <th scope="col">Action</th> */}
             </tr>
           </thead>
           <tbody>
@@ -123,14 +123,14 @@ function Categories() {
               <tr key={category._id}>
                 <th scope="row">{index + 1}</th>
                 <td>{category.name}</td>
-                <td>
+                {/* <td>
                   <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
                     <i className="fas fa-edit"></i> Edit
                   </button>
-                  {/* <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
+                  <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
                     <i className="fas fa-trash"></i> Delete
-                  </button> */}
-                </td>
+                  </button> 
+                </td> */}
               </tr>
             ))}
           </tbody>

@@ -28,11 +28,18 @@ import FooterCategories from '../pages/footer/FooterCategories'
 import FooterDocFiles from '../pages/footer/footer Documnets/FooterDocs'
 import StudentEnquirey from '../pages/studentEnquirey/StudentEnquirey'
 import ViewStudentEnquirey from '../pages/studentEnquirey/ViewStudentEnq'
+import ContactUsAddress from '../pages/ContactUsForm/ContactUsAddress'
+import EditContactUsAddress from '../pages/ContactUsForm/EditContactUsAddress'
+import Urls from '../pages/url/Urls'
+import NewsAndEvents from '../pages/newsAndEvents/NewsAndEvents'
+import GetNewsEvents from '../pages/newsAndEvents/getNewsEvents'
+import EditNewsEvents from '../pages/newsAndEvents/EditNewsEvents'
 
 
 function Allroutes() {
 
 	const isLoggedIn = localStorage.getItem("is_Admin_loggedIn") === 'true';
+
 	return (
 
 		<Routes>
@@ -71,6 +78,12 @@ function Allroutes() {
 			{/* contact us form */}
 			<Route path='/contactUSForm' element={isLoggedIn? <ContactUs /> : <Navigate to="/" />} />
 			<Route path='/viewContactUSForm/:id' element={isLoggedIn? <ViewContactUs /> : <Navigate to="/" />} />
+
+			{/* Contact us address form */}
+			<Route path='/contactUSAddressForm' element={isLoggedIn? <ContactUsAddress /> : <Navigate to="/" />} />
+			<Route path='/edit-contact-us-address/:id' element={isLoggedIn? <EditContactUsAddress /> : <Navigate to="/" />} />
+			
+
 			{/* feedback  form */}
 			<Route path='/feedbackForm' element={isLoggedIn? <FeedbackForm /> : <Navigate to="/" />} />
 			<Route path='/viewFeedback/:id' element={isLoggedIn? <ViewFeedback /> : <Navigate to="/" />} />
@@ -83,6 +96,12 @@ function Allroutes() {
 			{/* student enquirey form */}
 			<Route path='/student-enquirey' element={isLoggedIn? <StudentEnquirey /> : <Navigate to="/" />} />
 			<Route path='/view-student-enquirey/:id' element={isLoggedIn? <ViewStudentEnquirey /> : <Navigate to="/" />} />
+
+			<Route path='/urls' element={isLoggedIn? <Urls /> : <Navigate to="/" />} />
+
+			<Route path='/getnewsAndEvents' element={isLoggedIn? <GetNewsEvents /> : <Navigate to="/" />} />
+			<Route path='/newsAndEvents' element={isLoggedIn? <NewsAndEvents /> : <Navigate to="/" />} />
+			<Route path='/editNewsEvents/:id' element={isLoggedIn? <EditNewsEvents /> : <Navigate to="/" />} />
 			
 		</Routes>
 

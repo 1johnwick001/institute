@@ -122,12 +122,12 @@ const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
             name: 'Action',
             cell: (row) => (
                 <>
-                    {/* <button className="btn btn-primary btn-sm me-2" onClick={() => openEditModal(row)}>
+                    <button className="btn btn-primary btn-sm me-2" onClick={() => openEditModal(row)}>
                     <i className="fas fa-edit"></i> Edit
                     </button>
                     <button className="btn btn-danger btn-sm" onClick={() => handleDelete(row._id)}>
                         <i className="fas fa-trash"></i> Delete
-                    </button> */}
+                    </button>
                 </>
             ),
         },

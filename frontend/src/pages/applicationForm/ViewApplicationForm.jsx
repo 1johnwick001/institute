@@ -7,6 +7,8 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { Row, Col } from 'react-bootstrap';
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
+
 
 function ViewApplicationForm() {
     const { id } = useParams();  // Get the ID from the URL
@@ -96,11 +98,13 @@ function ViewApplicationForm() {
                                 <Col md={4}><strong>Qualified Exam in state / National:</strong> {application.nationalStateLevelExamination?.qualifiedExamName || 'N/A'}</Col>
                                 <Col md={4}><strong>Qualifying Year:</strong> {application.nationalStateLevelExamination?.qualifyingYear || 'N/A'}</Col>
                                 <Col md={4}>
-                                    <strong>Resume:</strong>
-                                    <Button variant="btn btn-info" href={application.resume} target="_blank">
-                                        View Resume
-                                    </Button>
-                                </Col>
+  <strong>Resume:</strong>
+  <Button variant="btn btn-info" 
+          href={`${API_BASE_IMAGE_URL}/${application.resume}`} 
+          target="_blank">
+    View Resume
+  </Button>
+</Col>
                             </Row>
                         </Card.Body>
                     </Card>

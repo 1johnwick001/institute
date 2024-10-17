@@ -12,7 +12,7 @@ import TabsData from "../model/Tabs.models.js";
 
 const createCategory = async (req, res) => {
   try {
-    const { name, parentId, type ,instituteId  } = req.body;
+    const { name, parentId, type, instituteId, url } = req.body;
 
     if (!name) {
       return res.status(400).json({
@@ -48,13 +48,26 @@ const createCategory = async (req, res) => {
       }
 
       // Check if type is valid
-      const validTypes = ['pdf', 'text', 'both'];
+      const validTypes = ['pdf', 'text', 'link', 'both'];
       if (!validTypes.includes(type)) {
         return res.status(400).json({
           code: 400,
           status: false,
-          message: 'Invalid type. Allowed types are pdf, text, both',
+          message: 'Invalid type. Allowed types are pdf, text, link, both',
         });
+      }
+
+      // If type is 'link', url is required
+      if (type === 'link') {
+        if (!url) {
+          return res.status(400).json({
+            code: 400,
+            status: false,
+            message: 'URL is required when type is link',
+          });
+        }
+
+        
       }
     }
 
@@ -69,7 +82,15 @@ const createCategory = async (req, res) => {
       });
     }
 
-    const category = new Category({ name, slug, parent: parentId || null, level, type ,instituteId: instituteId ||  null });
+    const category = new Category({
+      name,
+      slug,
+      parent: parentId || null,
+      level,
+      type,
+      url: type === 'link' ? url : undefined,  // Include url if type is 'link'
+      instituteId: instituteId || null,
+    });
 
     await category.save();
 
@@ -89,6 +110,7 @@ const createCategory = async (req, res) => {
     });
   }
 };
+
 
 const getCategories = async (req, res) => {
 try {

@@ -180,6 +180,20 @@ function Sidebar() {
                     </Link>
                 </li>
 
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/contactUSAddressForm">
+                        <i className='bi bi-map'></i>
+                        <span>Contact Us Addresses</span>
+                    </Link>
+                </li>
+
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/getnewsAndEvents">
+                        <i className='bi bi-newspaper'></i>
+                        <span>News and Events</span>
+                    </Link>
+                </li>
+
                 <li class="nav-heading">Landing Page </li>
 
                 <li className='nav-item'>

@@ -6,8 +6,12 @@ import API_BASE_URL from '../../config/Config';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
 
-function DocFiles() {
-  const [showModal, setShowModal] = useState(false);
+
+
+
+function Urls() {
+
+    const [showModal, setShowModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentDocId, setCurrentDocId] = useState(null);
   const [categories, setCategories] = useState([]); // State for categories
@@ -23,10 +27,9 @@ function DocFiles() {
   const [docFile, setDocFile] = useState(null); // State for document file
 
   const [data, setData] = useState([]); // State for fetched data
-  // const [uploading, setUploading] = useState(false);
 
-  // Fetch categories from backend
-  useEffect(() => {
+// Fetch categories from backend
+useEffect(() => {
     fetchCategories();
     fetchData();
   }, []);
@@ -70,7 +73,7 @@ function DocFiles() {
   // Fetch document data
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/get-doc`);
+      const response = await axios.get(`${API_BASE_URL}/get-urlAdd`);
       setData(response.data.data);
     } catch (error) {
       console.error('Error fetching document files:', error);
@@ -85,32 +88,30 @@ function DocFiles() {
 
     // for editing 
     const editFormData = new FormData();
-    editFormData.append('fileName', docName);
-    if (docFile) editFormData.append('file', docFile);
+    editFormData.append('urlAddress', docName);
 
     try {
       let response;
       if (isEditMode && currentDocId) {
         response = await axios.put(
-          `${API_BASE_URL}/edit-doc/${currentDocId}`,
+          `${API_BASE_URL}/edit-urlAdd/${currentDocId}`,
           editFormData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data', // Correct content type for file uploads
+              'Content-Type': 'application/json', // Correct content type for file uploads
             },
           }
         );
       } else {
         const formData = new FormData();
-        formData.append('fileName', docName);
+        formData.append('urlAddress', docName);
         
-        if (docFile) formData.append('file', docFile);
         formData.append('category', selectedCategory);
         formData.append('tab', selectedTab); // Adding the tab if selected
 
-        response = await axios.post(`${API_BASE_URL}/upload-doc`, formData, {
+        response = await axios.post(`${API_BASE_URL}/create-urlAdd`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data', // Correct content type for file uploads
+            'Content-Type': 'application/json', // Correct content type for file uploads
           },
         });
       }
@@ -146,7 +147,7 @@ function DocFiles() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/delete-doc/${docToDelete}`);
+      await axios.delete(`${API_BASE_URL}/delete-urlAdd/${docToDelete}`);
       fetchData(); // Refresh data after successful deletion
       setShowDeleteModal(false);
     } catch (error) {
@@ -166,68 +167,47 @@ function DocFiles() {
     setIsEditMode(false); // Reset edit mode
     setCurrentDocId(null); // Reset current document ID
   };
-
-
-  const columns = [
-    {
-      name: 'Sr.No.',
-      selector: (row, index) => index + 1,
-      sortable: true,
-      width: '90px',
-    },
-    {
-      name: 'Category Name',
-      selector: (row) => {
-          if (row.tab) {
-              // If tab exists, show category of the tab and the tab name
-              return (
-                  <>
-                      {row.tab.category ? row.tab.category.name : 'No Category'} - {row.tab.name}
-                  </>
-              );
-          }
-          // Otherwise, show only the gallery category name
-          return row.category ? row.category.name : 'No Category';
+  
+const columns = [
+        {
+          name: 'Sr.No.',
+          selector: (row, index) => index + 1,
+          sortable: true,
+        },
+        {
+          name: 'Category Name',
+          selector: (row) => row.category ? row.category.name : 'No Category',
+          
       },
-      sortable: true,
-  },
-    {
-      name: 'Document Name',
-      selector: (row) => row.fileName,
-      sortable: true,
-    },
-    {
-      width: '90px',
-      name: 'Files',
-      cell: (row) => (
-        <i class="bi bi-filetype-pdf"></i>
-      ),
-    },
-
-    {
-      name: 'Actions',
-      cell: (row) => (
-        <>
-          <button
-            className="btn btn-warning btn-sm me-2"
-            onClick={() => handleEditClick(row)}
-          >
-            <i className="bi bi-pencil"></i>
-          </button>
-          <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row._id)}>
-            <i className="bi bi-trash"></i>
-          </button>
-        </>
-      ),
-    },
-  ];
-
+        {
+          name: 'url Address',
+          selector: (row) => row.urlAddress,
+          sortable: true,
+        },
+        
+        {
+          name: 'Actions',
+          cell: (row) => (
+            <>
+              <button
+                className="btn btn-warning btn-sm me-2"
+                onClick={() => handleEditClick(row)}
+              >
+                <i className="bi bi-pencil"></i>
+              </button>
+              <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row._id)}>
+                <i className="bi bi-trash"></i>
+              </button>
+            </>
+          ),
+        },
+];
   return (
     <>
-      <Header />
-      <Sidebar />
+        <Header />
+        <Sidebar />
       <main id="main" className="main">
-        <Pagetitle page="Document Files" />
+        <Pagetitle page="URL Address" />
         <section className="section">
           <div className="d-flex justify-content-end mb-3">
             <button
@@ -341,44 +321,18 @@ function DocFiles() {
 
                 <div className="mb-3">
                   <label htmlFor="docName" className="form-label">
-                    Document Name
+                    URL Address
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    id="docName"
+                    id="urlAddress"
                     value={docName}
                     onChange={(e) => setDocName(e.target.value)}
                     required
                   />
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="docFile" className="form-label">
-                    Document File
-                  </label>
-                  <input
-                    type="file"
-                    className="form-control"
-                    id="docFile"
-                    onChange={(e) => setDocFile(e.target.files[0])}
-
-                    required={!isEditMode}
-                  />
-                  {/* <IKUpload
-                      className='form-control'
-                      fileName={docName}
-                      folder='/docfiles'
-                      onError={(err) => console.error("Error uploading image", err)}
-                      onSuccess={(res) => {
-                          console.log("Upload successful, doc URL:", res.url);
-                          setDocFile(res.url);
-                          setUploading(false);
-                      }}
-                      required
-                      onUploadStart={() => setUploading(true)}
-                  /> */}
-                </div>
-
+                
                 <button type="submit" className="btn btn-primary w-100" >
                   {isEditMode ? 'Update Document' : 'Save Document'}
                 </button>
@@ -429,10 +383,8 @@ function DocFiles() {
 
       {/* Modal backdrop */}
       {showDeleteModal && <div className="modal-backdrop fade show"></div>}
-
-
     </>
-  );
+  )
 }
 
-export default DocFiles;
+export default Urls

@@ -20,6 +20,7 @@ function SubCategories() {
 
 
 	const [categoryType, setCategoryType] = useState('')
+	const [categoryUrl, setCategoryUrl] = useState('');
 
 
 
@@ -56,11 +57,19 @@ function SubCategories() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post(`${API_BASE_URL}/create-category`, { name: categoryName, parentId, type: categoryType, });
-			fetchSubcategories(); // Refresh the subcategories list
-			handleCloseModal();
+		  const requestData = {
+			name: categoryName,
+			parentId,
+			type: categoryType,
+			// Include the URL if the category type is 'link'
+			...(categoryType === 'link' && { url: categoryUrl }),
+		  };
+	  
+		  const response = await axios.post(`${API_BASE_URL}/create-category`, requestData);
+		  fetchSubcategories(); // Refresh the subcategories list
+		  handleCloseModal();
 		} catch (error) {
-			console.error('Error adding subcategory:', error);
+		  console.error('Error adding subcategory:', error);
 		}
 	};
 
@@ -124,7 +133,7 @@ function SubCategories() {
 					<th scope="col">Sr No</th>
 					<th scope="col">Parent Category</th>
 					<th scope="col">Sub-Category Name</th>
-					<th scope="col">Action</th>
+					{/* <th scope="col">Action</th> */}
 				  </tr>
 				</thead>
 				<tbody>
@@ -134,12 +143,12 @@ function SubCategories() {
 					  <td>{subcategory.parent ? subcategory.parent.name : 'N/A'}</td>
 					  <td>{subcategory.name}</td>
 					  <td>
-						{/* <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subcategory)}>
+						<button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subcategory)}>
 						  <i className="fas fa-edit"></i> Edit
 						</button>
 						<button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(subcategory._id)}>
 						  <i className="fas fa-trash"></i> Delete
-						</button> */}
+						</button>
 					  </td>
 					</tr>
 				  ))}
@@ -185,20 +194,42 @@ function SubCategories() {
 						/>
 					  </div>
 					  <div className="mb-3">
-                <label htmlFor="categoryType" className="form-label">Type</label>
-                <select
-                  className="form-control"
-                  id="categoryType"
-                  value={categoryType}
-                  onChange={(e) => setCategoryType(e.target.value)}
-                  required
-                >
-                  <option value="">Select Type</option>
-                  <option value="pdf">PDF</option>
-                  <option value="text">Text</option>
-                  <option value="both">Both</option>
-                </select>
-              </div>
+  <label htmlFor="categoryType" className="form-label">Type</label>
+  <select
+    className="form-control"
+    id="categoryType"
+    value={categoryType}
+    onChange={(e) => {
+      setCategoryType(e.target.value);
+      // Reset URL when type changes
+      if (e.target.value !== 'link') {
+        setCategoryUrl('');
+      }
+    }}
+    required
+  >
+    <option value="">Select Type</option>
+    <option value="pdf">PDF</option>
+    <option value="text">Text</option>
+    <option value="link">Link</option>
+    <option value="both">Both</option>
+  </select>
+</div>
+
+{categoryType === 'link' && (
+  <div className="mb-3">
+    <label htmlFor="categoryUrl" className="form-label">URL</label>
+    <input
+      type="url"
+      className="form-control"
+      id="categoryUrl"
+      value={categoryUrl}
+      onChange={(e) => setCategoryUrl(e.target.value)}
+      placeholder="Enter the URL"
+      required
+    />
+  </div>
+)}
 					  
 					  <hr />
 					  <div>

@@ -196,6 +196,7 @@ function SubSubCategories() {
                                             <option value="">Select Type</option>
                                             <option value="pdf">PDF</option>
                                             <option value="text">Text</option>
+                                            <option value="link">Link</option>
                                             <option value="both">Both</option>
                                         </select>
                                     </div>

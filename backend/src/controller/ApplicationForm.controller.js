@@ -27,7 +27,7 @@ const createApplicationForm = async (req, res) => {
   
       // Normalize path to use forward slashes, which is safer for URLs
       const normalizedResumePath = path.posix.join('uploads/media', path.basename(resumePath));
-      const resumeFullUrl = `${baseUrl}/${normalizedResumePath}`;
+      // const resumeFullUrl = `${baseUrl}/${normalizedResumePath}`;
   
       const newApplication = new Application({
         postAppliedFor,
@@ -57,7 +57,7 @@ const createApplicationForm = async (req, res) => {
           industry: workExperience?.industry || 0,
           research: workExperience?.research || 0,
         } : {},
-        resume: resumeFullUrl
+        resume: normalizedResumePath
       });
   
       await newApplication.save();

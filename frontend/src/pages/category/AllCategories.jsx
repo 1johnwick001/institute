@@ -56,7 +56,7 @@ function AllCategories() {
               <tr className='table-dark'>
                 <th scope="col">Category</th>
                 <th scope="col">Sub-Category</th>
-                <th scope="col">Action</th>
+                {/* <th scope="col">Action</th> */}
               </tr>
             </thead>
             <tbody>
@@ -96,11 +96,11 @@ function AllCategories() {
                         <span>No Sub-Categories</span>
                       )}
                     </td>
-                    <td>
+                    {/* <td>
                       <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(category._id)}>
                         <i className="fas fa-trash"></i> Delete
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 </React.Fragment>
               ))}

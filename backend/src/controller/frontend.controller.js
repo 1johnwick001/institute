@@ -7,6 +7,7 @@ import FactData from "../model/factInfo.model.js";
 import DocFiles from "../model/document.model.js";
 import BOG from "../model/bog.model.js";
 import TabsData from "../model/Tabs.models.js";
+import URL from "../model/Url.model.js";
 
 const landingPage = async(req,res) => {
     try {
@@ -97,13 +98,13 @@ const categoryData = async (req, res) => {
       const tabs = await TabsData.find({ category: id });
 
       // Fetch other data associated with the category
-      const blogs = await Blog.find({ category: id });
-      const banner = await Banner.find({ category: id });
-      const gallery = await Gallery.find({ category: id });
-      const docs = await DocFiles.find({ category: id });
-      const factInfo = await FactData.find({ category: id });
-      const bogData = await BOG.find({ category: id });
-
+      const blogs = await Blog.find({ category: id }).sort({ createdAt : -1});
+      const banner = await Banner.find({ category: id }).sort({ createdAt : -1});
+      const gallery = await Gallery.find({ category: id }).sort({ createdAt : -1});
+      const docs = await DocFiles.find({ category: id }).sort({ createdAt : -1});
+      const factInfo = await FactData.find({ category: id }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ category: id }).sort({ createdAt : -1});
+      const urlfields = await URL.find({category: id})
       // Compile the associated data for the category
       associatedData = {
         category: {
@@ -120,15 +121,16 @@ const categoryData = async (req, res) => {
         docs,
         factInfo,
         BOG: bogData,
+        url : urlfields
       };
     } else if (tab) {
       // If a tab is found, fetch data associated with the tab's ID
-      const blogs = await Blog.find({ tab: tab._id });
-      const banner = await Banner.find({ tab: tab._id });
-      const gallery = await Gallery.find({ tab: tab._id });
-      const docs = await DocFiles.find({ tab: tab._id });
-      const factInfo = await FactData.find({ tab: tab._id });
-      const bogData = await BOG.find({ tab: tab._id });
+      const blogs = await Blog.find({ tab: tab._id }).sort({ createdAt : -1});
+      const banner = await Banner.find({ tab: tab._id }).sort({ createdAt : -1});
+      const gallery = await Gallery.find({ tab: tab._id }).sort({ createdAt : -1});
+      const docs = await DocFiles.find({ tab: tab._id }).sort({ createdAt : -1});
+      const factInfo = await FactData.find({ tab: tab._id }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ tab: tab._id }).sort({ createdAt : -1});
 
       // Compile the associated data for the tab
       associatedData = {
@@ -142,15 +144,16 @@ const categoryData = async (req, res) => {
       };
     } else if (institute) {
       // If an institute is found, fetch categories associated with this institute
-      const categories = await Category.find({ instituteId: institute._id });
+      const categories = await Category.find({ instituteId: institute._id }).sort({ createdAt : -1});
 
       // Fetch other data associated with the institute
-      const blogs = await Blog.find({ instituteId: institute._id });
-      const banner = await Banner.find({ instituteId: institute._id });
-      const gallery = await Gallery.find({ instituteId: institute._id });
-      const docs = await DocFiles.find({ instituteId: institute._id });
-      const factInfo = await FactData.find({ instituteId: institute._id });
-      const bogData = await BOG.find({ instituteId: institute._id });
+      const blogs = await Blog.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const banner = await Banner.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const gallery = await Gallery.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const docs = await DocFiles.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const factInfo = await FactData.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const urlfields = await URL.find({category: id})
 
       // Compile the associated data for the institute
       associatedData = {
@@ -166,6 +169,7 @@ const categoryData = async (req, res) => {
         docs,
         factInfo,
         BOG: bogData,
+        url : urlfields
       };
     }
 
@@ -180,7 +184,6 @@ const categoryData = async (req, res) => {
   }
 };
 
-
 const getPlacementData = async (req, res) => {
   try {
       // Find the category with name 'Placements Data'
@@ -193,15 +196,19 @@ const getPlacementData = async (req, res) => {
           });
       }
 
+      // Fetch tabs associated with this category
+      const tabs = await TabsData.find({ category: placementCategData });
       // Fetch other data associated with the category
-      const blogs = await Blog.find({ category: placementCategData });
-      const banner = await Banner.find({ category: placementCategData });
-      const gallery = await Gallery.find({ category: placementCategData });
-      const docs = await DocFiles.find({ category: placementCategData });
-      const factInfo = await FactData.find({ category: placementCategData });
-      const bogData = await BOG.find({ category: placementCategData });
+      
+      const blogs = await Blog.find({ category: placementCategData }).sort({ createdAt : -1});
+      const banner = await Banner.find({ category: placementCategData }).sort({ createdAt : -1});
+      const gallery = await Gallery.find({ category: placementCategData }).sort({ createdAt : -1});
+      const docs = await DocFiles.find({ category: placementCategData }).sort({ createdAt : -1});
+      const factInfo = await FactData.find({ category: placementCategData }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ category: placementCategData }).sort({ createdAt : -1});
 
       const DATA = {
+        tabs,
         blogs,
         banner,
         gallery,
@@ -240,12 +247,12 @@ const getNewsandEvents = async (req, res) => {
       
       // Fetch the images related to the "Excellent Placements" tab
       // Fetch other data associated with the category
-      const blogs = await Blog.find({ category: EventsCateg }).sort({createdAt:-1});
-      const banner = await Banner.find({ category: EventsCateg }).sort({createdAt:-1});
-      const gallery = await Gallery.find({ category: EventsCateg }).sort({createdAt:-1});
-      const docs = await DocFiles.find({ category: EventsCateg }).sort({createdAt:-1});
-      const factInfo = await FactData.find({ category: EventsCateg }).sort({createdAt:-1});
-      const bogData = await BOG.find({ category: EventsCateg }).sort({createdAt:-1});
+      const blogs = await Blog.find({ category: EventsCateg }).sort({createdAt:-1}).sort({ createdAt : -1});
+      const banner = await Banner.find({ category: EventsCateg }).sort({createdAt:-1}).sort({ createdAt : -1});
+      const gallery = await Gallery.find({ category: EventsCateg }).sort({createdAt:-1}).sort({ createdAt : -1});
+      const docs = await DocFiles.find({ category: EventsCateg }).sort({createdAt:-1}).sort({ createdAt : -1});
+      const factInfo = await FactData.find({ category: EventsCateg }).sort({createdAt:-1}).sort({ createdAt : -1});
+      const bogData = await BOG.find({ category: EventsCateg }).sort({createdAt:-1}).sort({ createdAt : -1});
 
       const Data = {
         blogs,
@@ -286,12 +293,12 @@ const MouCards = async (req, res) => {
       }
 
       // Fetch related data associated with the category's _id
-      const blogs = await Blog.find({ category: MouCard._id });
-      const banner = await Banner.find({ category: MouCard._id });
-      const gallery = await Gallery.find({ category: MouCard._id });
-      const docs = await DocFiles.find({ category: MouCard._id });
-      const factInfo = await FactData.find({ category: MouCard._id });
-      const bogData = await BOG.find({ category: MouCard._id });
+      const blogs = await Blog.find({ category: MouCard._id }).sort({ createdAt : -1});
+      const banner = await Banner.find({ category: MouCard._id }).sort({ createdAt : -1});
+      const gallery = await Gallery.find({ category: MouCard._id }).sort({ createdAt : -1});
+      const docs = await DocFiles.find({ category: MouCard._id }).sort({ createdAt : -1});
+      const factInfo = await FactData.find({ category: MouCard._id }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ category: MouCard._id }).sort({ createdAt : -1});
 
       // Combine the associated data
       const associatedData = {

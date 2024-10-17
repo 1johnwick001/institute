@@ -21,13 +21,16 @@ const categorySchema = new mongoose.Schema ({
       ref: 'InstituteBanner',
       default:null
     },
+    url: {
+      type: String,     
+    },
     level: {
         type: Number,
         default: 0
     },   
     type: {
         type: String,
-        enum: ['pdf', 'text', 'both'],
+        enum: ['pdf', 'text', 'link' ,'both'],
         required: function() {
           return this.level > 0;
         },

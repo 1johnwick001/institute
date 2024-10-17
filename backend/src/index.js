@@ -28,7 +28,7 @@ app.use(express.urlencoded({
     limit: '50mb'
 }));
 
-const allowedOrigins = ['http://localhost:3000', 'http://122.160.154.127'];
+const allowedOrigins = ['http://localhost:3000', 'http://122.160.154.127' , 'http://dashboard.apponedemo.top'];
 
 app.use(cors({
     origin: function (origin, callback) {

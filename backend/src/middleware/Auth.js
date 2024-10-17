@@ -13,7 +13,7 @@ const Auth = async (req,res,next) => {
             req.userId = user.id 
         } else {
             res.status(401).json({
-                message:"XXX UNAUTHORIZED USER XXX"
+                message:"XXX===XXX UNAUTHORIZED USER XXX===XXX"
             })
         }
         next()
@@ -21,7 +21,7 @@ const Auth = async (req,res,next) => {
     } catch (error) {
         console.log("error in token middleware",error);
         res.status(401).json({
-            message:"Unauthorized User"
+            message:"Error while verifying user token"
         });
     };
 }

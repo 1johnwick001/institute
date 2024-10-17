@@ -23,14 +23,14 @@ const registerAdmin = async(req,res) => {
         const exisitingUser = await Admin.findOne({email})
 
         if (exisitingUser) {
-            return res.status(209).json({
+            return res.status(409).json({
                 code:209,
                 status:false,
                 message:"EMAIL ALREADY REGISTERED!!!",
             })
         }
         else if (password.length < 4) {
-            return res.status(209).json({
+            return res.status(409).json({
                 code:209,
                 status:false,
                 message:"password must be 4 charaacter long",
@@ -51,8 +51,7 @@ const registerAdmin = async(req,res) => {
         return res.status(500).json({
             code : 500,
             status:false,
-            message:"Error wjile registering admin",
-            data:{}
+            message:"Error while registering admin",
         })
     }
 }
@@ -81,7 +80,7 @@ const loginAdmin = async(req,res) => {
             return res.status(404).json({
                 code:404,
                 status:false,
-                message:"XXX INCORRECT PASSWORD XXX"
+                message:"XXX---XXX INCORRECT PASSWORD XXX---XXX"
             })
         }
 
