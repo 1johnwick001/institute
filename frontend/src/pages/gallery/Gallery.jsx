@@ -5,6 +5,7 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
 function Gallery() {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -215,13 +216,13 @@ function Gallery() {
             cell: (row) => (
                 row.mediaType === 'image' ? (
                     <img
-                        src={row.galleryImage}
+                        src={`${API_BASE_IMAGE_URL}/${row.galleryImage}`}
                         alt={row.galleryName}
                         style={{ width: '75px', height: '75px', borderRadius: '35px' }}
                     />
                 ) : row.mediaType === 'video' ? (
                     <video
-                        src={row.galleryVideo}
+                        src={`${API_BASE_IMAGE_URL}/${row.galleryVideo}`}
                         alt={row.galleryName}
                         style={{ width: '90px', height: '85px', borderRadius: '35px' }}
                         controls
@@ -443,13 +444,13 @@ function Gallery() {
                                         <label className="form-label">Current Media:</label>
                                         {mediaType === 'image' && currentImageUrl ? (
                                             <img
-                                                src={currentImageUrl}
+                                                src={`${API_BASE_IMAGE_URL}/${currentImageUrl}`}
                                                 alt="Current"
                                                 style={{ maxWidth: '80px', height: '80px' }}
                                             />
                                         ) : mediaType === 'video' && currentVideoUrl ? (
                                             <video
-                                                src={currentVideoUrl}
+                                                src={`${API_BASE_IMAGE_URL}/${currentVideoUrl}`}
                                                 style={{ maxWidth: '80px', height: '80px' }}
                                                 controls
                                             />

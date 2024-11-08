@@ -14,7 +14,7 @@ const createBlog = async (req, res) => {
     try {
       const { title, content, category, tab } = req.body;
 
-      const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` : null;
+      const fileUrl = req.file ? req.file.path.replace(/\\/g, '/') : null;
   
       if (!title || !content || !category) {
         return res.status(400).json({
@@ -44,9 +44,7 @@ const createBlog = async (req, res) => {
           });
         }
       }
-  
-
-      
+        
       const newBlog = new Blog({
         title,
         content,
@@ -129,9 +127,7 @@ const editBlog = async (req, res) => {
         const { content, title } = req.body;
 
         // Get the new image URL if a file is uploaded
-        const images = req.file 
-            ? `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}` 
-            : null;
+        const images = req.file ? req.file.path.replace(/\\/g, '/'): null;
 
         // Validate that at least one field is provided
         if (!title && !content ) {
@@ -200,8 +196,9 @@ const deleteBlog = async (req, res) => {
 
         // Delete the image file from the filesystem
         if (blogToDelete.images) {
-            const imageFileName = blogToDelete.images.split('/').pop(); // Extract the filename
-            const imagePath = path.join(__dirname, 'uploads/media', imageFileName); // Adjusted path
+            const imageFileName = blogToDelete.images
+            
+            const imagePath =  imageFileName; // Adjusted path
 
             // Directly attempt to delete the file
             fs.unlink(imagePath, (err) => {

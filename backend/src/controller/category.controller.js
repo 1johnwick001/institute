@@ -144,7 +144,7 @@ try {
     code: 200,
     status: true,
     data: hierarchicalCategories,
-    });
+  });
 } catch (error) {
     console.error('Error while fetching categories', error);
     return res.status(500).json({

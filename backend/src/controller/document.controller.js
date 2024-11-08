@@ -10,7 +10,7 @@ const createDoc = async (req, res) => {
     const { category, fileName, tab } = req.body;
 
     // Handle the file URL, ensuring it's set to null if no file is uploaded
-    const fileUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/docs/${req.file.filename}` : null;
+    const fileUrl = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
     // Check if the category exists
     let categoryExists = null;
@@ -112,8 +112,8 @@ const editDoc = async (req, res) => {
     // If a new file is uploaded, update the file URL
     if (req.file) {
       // Update with new file details
-      const { filename, mimetype } = req.file;
-      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/docs/${filename}`;
+      const { mimetype } = req.file;
+      const fileUrl = req.file.path.replace(/\\/g, '/') ;
       updatedFields.fileUrl = fileUrl;
       updatedFields.fileType = mimetype; // Update the file type if needed
     }
@@ -133,43 +133,44 @@ const editDoc = async (req, res) => {
 };
 
 const deleteDoc = async (req, res) => {
-    try {
-      const { id } = req.params; // Document ID from URL
-  
-      // Find the document by ID
-      const document = await DocFiles.findById(id);
-  
-      if (!document) {
-        return res.status(404).json({ message: "Document not found." });
-      }
-  
-      // Check if fileUrl exists and is a valid string before deleting the file from disk
-      if (document.fileUrl && typeof document.fileUrl === 'string') {
-        const fileName = document.fileUrl.split('/uploads/docs/')[1];
-        
-        // Check if fileName exists and is valid
-        if (fileName) {
-          const oldFilePath = path.join('uploads/docs', fileName);
-  
-          // Attempt to delete the file from the file system
-          fs.unlink(oldFilePath, (err) => {
-            if (err) {
-              console.error("Error deleting file from disk:", err);
-              // Log error but proceed with deleting the document from the DB
-            }
-          });
-        }
-      }
-  
-      // Remove the document from the database
-      await DocFiles.findByIdAndDelete(id);
-  
-      // Respond with success
-      res.status(200).json({ message: "Document deleted successfully." });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      res.status(500).json({ message: "Internal server error." });
+  try {
+    const { id } = req.params; // Document ID from URL
+
+    // Find the document by ID
+    const document = await DocFiles.findById(id);
+
+    if (!document) {
+      return res.status(404).json({ message: "Document not found." });
     }
+
+    // Check if fileUrl exists and is a valid string before deleting the file from disk
+    if (document.fileUrl && typeof document.fileUrl === 'string') {
+      const fileName = document.fileUrl;
+      
+      // Check if fileName exists and is valid
+      if (fileName) {
+        
+        const oldFilePath =  fileName;
+
+        // Attempt to delete the file from the file system
+        fs.unlink(oldFilePath, (err) => {
+          if (err) {
+            console.error("Error deleting file from disk:", err);
+            // Log error but proceed with deleting the document from the DB
+          }
+        });
+      }
+    }
+
+    // Remove the document from the database
+    await DocFiles.findByIdAndDelete(id);
+
+    // Respond with success
+    res.status(200).json({ message: "Document deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting document:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
 };
 
 export { createDoc , getDoc , editDoc , deleteDoc}

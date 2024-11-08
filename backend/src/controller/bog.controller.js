@@ -25,17 +25,17 @@ const createBog = async (req, res) => {
       });
     }
 
-    // Construct the full URLs for the image and PDF files
-    const fullImageUrl = `${req.protocol}://${req.get('host')}/uploads/media/${imageFile.filename}`;
-    const fullPdfUrl = pdfFile ? `${req.protocol}://${req.get('host')}/uploads/media/${pdfFile.filename}` : null;
+    // Construct the relative paths for the image and PDF files
+    const relativeImagePath = `uploads/media/${imageFile.filename}`;
+    const relativePdfPath = pdfFile ? `uploads/media/${pdfFile.filename}` : null;
 
-    // Create BOG data with the absolute paths for image and PDF
+    // Create BOG data with the relative paths for image and PDF
     const bogData = new BOG({
       name,
       designation,
       companyName,
-      imageLink: fullImageUrl,   // Save the absolute path for the image
-      pdfFile: fullPdfUrl,       // Save the absolute path for the PDF
+      imageLink: relativeImagePath,   // Save the relative path for the image
+      pdfFile: relativePdfPath,       // Save the relative path for the PDF
       details: details || '',
       category: tab ? null : category,
       tab: tab || null,
@@ -43,7 +43,7 @@ const createBog = async (req, res) => {
 
     await bogData.save();
 
-    // Send response with absolute paths
+    // Send response with relative paths
     res.status(201).json({
       code: 201,
       status: true,
@@ -131,7 +131,7 @@ const getBogById = async (req, res) => {
 const editBog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, designation, companyName, category, tab, details } = req.body;
+    const { name, designation, companyName, details } = req.body;
 
     // Find the existing BOG document by ID
     const bogData = await BOG.findById(id);
@@ -148,18 +148,14 @@ const editBog = async (req, res) => {
     const imageFile = req.files?.image ? req.files.image[0] : null;
     const pdfFile = req.files?.pdfFile ? req.files.pdfFile[0] : null;
 
-    // If new image file is uploaded, update the imageLink
+    // If new image file is uploaded, update the imageLink with relative path
     if (imageFile) {
-      // Optionally, delete the old image file from disk if necessary
-      const fullImageUrl = `${req.protocol}://${req.get('host')}/uploads/media/${imageFile.filename}`;
-      bogData.imageLink = fullImageUrl;
+      bogData.imageLink = `uploads/media/${imageFile.filename}`;
     }
 
-    // If new PDF file is uploaded, update the pdfFile
+    // If new PDF file is uploaded, update the pdfFile with relative path
     if (pdfFile) {
-      // Optionally, delete the old PDF file from disk if necessary
-      const fullPdfUrl = `${req.protocol}://${req.get('host')}/uploads/media/${pdfFile.filename}`;
-      bogData.pdfFile = fullPdfUrl;
+      bogData.pdfFile = `uploads/media/${pdfFile.filename}`;
     }
 
     // Update other fields
@@ -167,8 +163,7 @@ const editBog = async (req, res) => {
     bogData.designation = designation || bogData.designation;
     bogData.companyName = companyName || bogData.companyName;
     bogData.details = details || bogData.details;
-    bogData.category = tab ? null : category || bogData.category;
-    bogData.tab = tab || null;
+
 
     // Save the updated BOG data
     await bogData.save();
@@ -192,57 +187,57 @@ const editBog = async (req, res) => {
 };
 
 const deleteBog = async (req, res) => {
-try {
-    const { id } = req.params;
-
-    // Find the BOG entry by ID
-    const bogdata = await BOG.findById(id);
-
-    if (!bogdata) {
-    return res.status(404).json({
-        code: 404,
-        status: false,
-        message: "BOG data not found",
-    });
-    }
-
-    // Check if there's an image to delete
-    if (bogdata.imageLink) {
-    const imagePath = path.join(__dirname, '..', bogdata.imageLink.replace(`${req.protocol}://${req.get('host')}`, ''));
-
-    // Check if the image file exists and delete it
-    fs.access(imagePath, fs.constants.F_OK, (err) => {
-        if (!err) {
-        fs.unlink(imagePath, (unlinkErr) => {
-            if (unlinkErr) {
-            console.error('Error deleting image:', unlinkErr);
-            } else {
-            console.log('Image deleted successfully');
-            }
-        });
-        } else {
-        console.log('Image file not found:', imagePath);
-        }
-    });
-    }
-
-    // Delete the BOG entry from the database
-    await BOG.findByIdAndDelete(id);
-
-    return res.json({
-    code: 200,
-    status: true,
-    message: 'BOG data and associated image deleted successfully',
-    });
-
-} catch (error) {
-    console.error('Error while deleting BOG data:', error);
-    return res.status(500).json({
-    code: 500,
-    status: false,
-    message: 'An error occurred while deleting the BOG data.',
-    });
-}
+  try {
+      const { id } = req.params;
+  
+      // Find the BOG entry by ID
+      const bogdata = await BOG.findById(id);
+  
+      if (!bogdata) {
+      return res.status(404).json({
+          code: 404,
+          status: false,
+          message: "BOG data not found",
+      });
+      }
+  
+      // Check if there's an image to delete
+      if (bogdata.imageLink) {
+      const imagePath = bogdata.imageLink;
+  
+      // Check if the image file exists and delete it
+      fs.access(imagePath, fs.constants.F_OK, (err) => {
+          if (!err) {
+          fs.unlink(imagePath, (unlinkErr) => {
+              if (unlinkErr) {
+              console.error('Error deleting image:', unlinkErr);
+              } else {
+              console.log('Image deleted successfully');
+              }
+          });
+          } else {
+          console.log('Image file not found:', imagePath);
+          }
+      });
+      }
+  
+      // Delete the BOG entry from the database
+      await BOG.findByIdAndDelete(id);
+  
+      return res.json({
+      code: 200,
+      status: true,
+      message: 'BOG data and associated image deleted successfully',
+      });
+  
+  } catch (error) {
+      console.error('Error while deleting BOG data:', error);
+      return res.status(500).json({
+      code: 500,
+      status: false,
+      message: 'An error occurred while deleting the BOG data.',
+      });
+  }
 };
 
 export {createBog ,getBog, getBogById , editBog , deleteBog}

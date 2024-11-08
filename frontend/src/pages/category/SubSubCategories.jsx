@@ -124,7 +124,7 @@ function SubSubCategories() {
                                 <th scope="col">Sr No</th>
                                 <th scope="col">Parent Sub-Category</th>
                                 <th scope="col">Sub-Sub-Category Name</th>
-                                <th scope="col">Action</th>
+                                {/* <th scope="col">Action</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -133,14 +133,14 @@ function SubSubCategories() {
                                     <th scope="row">{index + 1}</th>
                                     <td>{subSubcategory.parent ? subSubcategory.parent.name : 'N/A'}</td>
                                     <td>{subSubcategory.name}</td>
-                                    <td>
-                                        <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subSubcategory)}>
+                                    {/* <td> */}
+                                        {/* <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subSubcategory)}>
                                             <i className="fas fa-edit"></i> Edit
-                                        </button>
+                                        </button> */}
                                         {/* <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(subSubcategory._id)}>
                                             <i className="fas fa-trash"></i> Delete
                                         </button> */}
-                                    </td>
+                                    {/* </td> */}
                                 </tr>
                             ))}
                         </tbody>

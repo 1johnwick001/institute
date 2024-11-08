@@ -9,7 +9,7 @@ const Auth = async (req,res,next) => {
 
         if (token) {
             token = token.split(" ")[1]
-            let user = jwt.verify(token,process.env.JWT_SECRE_KEY)
+            let user = jwt.verify(token,process.env.JWT_SECRET_KEY)
             req.userId = user.id 
         } else {
             res.status(401).json({

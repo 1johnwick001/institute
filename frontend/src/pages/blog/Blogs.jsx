@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DataTable from 'react-data-table-component';  // Import DataTable
 import API_BASE_URL from '../../config/Config';
+
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DeleteModal from './DeleteModal';
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
 function Blogs() {
     const [blogs, setBlogs] = useState([]);
@@ -74,7 +76,7 @@ function Blogs() {
         },
         {
             name: 'Image',
-            selector: row => row.images ? <img src={row.images} alt="Blog" style={{ width: '75px', height: '75px', borderRadius: '35px' }} /> : 'No image',
+            selector: row => row.images ? <img src={`${API_BASE_IMAGE_URL}/${row.images}`}  alt="Blog" style={{ width: '75px', height: '75px', borderRadius: '35px' }} /> : 'No image',
             width: '150px',
         },
         {

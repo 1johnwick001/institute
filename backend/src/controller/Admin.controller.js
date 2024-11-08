@@ -109,4 +109,63 @@ const loginAdmin = async(req,res) => {
 
 }
 
-export  {registerAdmin, loginAdmin}
+const updateAdmin = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+        const adminId = req.userId; //   middleware that sets req.adminId from the login token
+
+        // Find the admin by ID
+        const admin = await Admin.findById(adminId);
+        if (!admin) {
+            return res.status(404).json({
+                code: 404,
+                status: false,
+                message: "Admin not found"
+            });
+        }
+
+        // Update email if provided
+        if (email) {
+            // Check if the new email is already in use
+            const existingAdmin = await Admin.findOne({ email });
+            if (existingAdmin) {
+                return res.status(400).json({
+                    code: 400,
+                    status: false,
+                    message: "Email is already in use"
+                });
+            }
+            admin.email = email;
+        }
+
+        // Update password if provided
+        if (newPassword) {
+            // Hash the new password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            admin.password = hashedPassword;
+        }
+
+        // Save the updated admin
+        await admin.save();
+
+        return res.status(200).json({
+            code: 200,
+            status: true,
+            message: "Admin updated successfully",
+            data: {
+                email: admin.email,
+                // You can include other fields if necessary
+            }
+        });
+
+    } catch (error) {
+        console.error("Error while updating admin", error);
+        return res.status(500).json({
+            code: 500,
+            status: false,
+            message: "Server side error while updating admin",
+        });
+    }
+};
+
+export  {registerAdmin, loginAdmin, updateAdmin}

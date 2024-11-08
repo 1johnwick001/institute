@@ -131,7 +131,7 @@ function Dashboard() {
 				  <div className="col-xxl-3 col-md-6">
 					<div className="card info-card application-card">
 					  <div className="card-body">
-						<h5 className="card-title"><span>Total Application Forms Submitted</span></h5>
+						<h5 className="card-title"><span> Application Forms Submitted</span></h5>
 						<div className="d-flex align-items-center">
 						  <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
 							<i className="bi bi-clipboard-data" />
@@ -144,6 +144,23 @@ function Dashboard() {
 					</div>
 				  </div>
 				  {/* End Total Application Forms data*/}
+				  {/* Total Events & News  */}
+				  <div className="col-xxl-3 col-md-6">
+					<div className="card info-card newspaper-card">
+					  <div className="card-body">
+						<h5 className="card-title"><span>Total Events & News </span></h5>
+						<div className="d-flex align-items-center">
+						  <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
+							<i className="bi bi-newspaper" />
+						  </div>
+						  <div className="ps-3  ">
+							<h6>{dashboardStats.totalApplicationForms}</h6>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  {/* End Total Events & News  data*/}
 				</div>
 			  </div>
 		  </section>

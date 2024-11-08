@@ -34,6 +34,10 @@ import Urls from '../pages/url/Urls'
 import NewsAndEvents from '../pages/newsAndEvents/NewsAndEvents'
 import GetNewsEvents from '../pages/newsAndEvents/getNewsEvents'
 import EditNewsEvents from '../pages/newsAndEvents/EditNewsEvents'
+import BgBannerList from '../pages/bgbanner/BgBannerList'
+import CreateBgBanner from '../pages/bgbanner/CreateBgBanner'
+import EditBgBanner from '../pages/bgbanner/EditBgBanner'
+import UpdateAdmin from '../pages/UpdateAdmin'
 
 
 function Allroutes() {
@@ -44,6 +48,9 @@ function Allroutes() {
 
 		<Routes>
 			<Route path='/' element={<Login />} />
+			<Route path='/update' element={<UpdateAdmin />} />
+
+
 			<Route path='/home' element={isLoggedIn? <Home /> : <Navigate to="/" />} />
 			{/* =========== Document section ================= */}
 			<Route path='/doc-files' element={isLoggedIn? < DocFiles/> : <Navigate to="/" />} />
@@ -102,6 +109,10 @@ function Allroutes() {
 			<Route path='/getnewsAndEvents' element={isLoggedIn? <GetNewsEvents /> : <Navigate to="/" />} />
 			<Route path='/newsAndEvents' element={isLoggedIn? <NewsAndEvents /> : <Navigate to="/" />} />
 			<Route path='/editNewsEvents/:id' element={isLoggedIn? <EditNewsEvents /> : <Navigate to="/" />} />
+
+			<Route path='/bgBanners-list' element={isLoggedIn? <BgBannerList /> : <Navigate to="/" />} />
+			<Route path='/create-bgBanner' element={isLoggedIn? <CreateBgBanner /> : <Navigate to="/" />} />
+			<Route path='/edit-bgBanner/:id' element={isLoggedIn? <EditBgBanner /> : <Navigate to="/" />} />
 			
 		</Routes>
 

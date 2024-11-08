@@ -51,12 +51,12 @@ function Avatar() {
         <li>
             <hr className='dropdown-divider' />
         </li>
-        {/* <li>
-            <a className='dropdown-item d-flex align-items-center' href="#">
+        <li>
+            <a className='dropdown-item d-flex align-items-center' href="/update">
             <i className='bi bi-gear'></i>
-            <span>Account settings</span>
+            <span>Update Admin Credentials</span>
             </a>
-        </li> */}
+        </li>
         <li>
             <hr className='dropdown-divider' />
         </li>

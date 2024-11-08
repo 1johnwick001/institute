@@ -1217,6 +1217,11 @@ h6 {
   background: #dad7cd;
 }
 
+.dashboard .newspaper-card .card-icon {
+  color: #ffe5d9;
+  background: #f4acb7;
+}
+
 /* Activity */
 .dashboard .activity {
   font-size: 14px;

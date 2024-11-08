@@ -5,6 +5,7 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import API_BASE_URL from '../../config/Config';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
 function DocFiles() {
   const [showModal, setShowModal] = useState(false);
@@ -200,8 +201,15 @@ function DocFiles() {
       width: '90px',
       name: 'Files',
       cell: (row) => (
-        <i class="bi bi-filetype-pdf"></i>
-      ),
+        <a 
+          href={`${API_BASE_IMAGE_URL}/${row.fileUrl}`} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          onClick={(e) => e.stopPropagation()}
+        >
+          <i className="bi bi-eye"></i>
+        </a>
+      )
     },
 
     {

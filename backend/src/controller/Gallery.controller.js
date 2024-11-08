@@ -42,6 +42,7 @@ const uploadGallery = async (req, res) => {
 
     // Check if the tab exists, if provided
     let tabExists = null;
+
     if (tab) {
       tabExists = await TabsData.findById(tab);
       if (!tabExists) {
@@ -54,7 +55,7 @@ const uploadGallery = async (req, res) => {
     }
 
     // Use multer to save the file and create the file URL
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/media/${req.file.filename}`;
+    const fileUrl = `uploads/media/${req.file.filename}`;
 
     // Create a new gallery document
     const galleryData = new Gallery({
@@ -140,14 +141,14 @@ const editGallery = async (req, res) => {
 
   // If a new file is uploaded, save its path in the DB
   if (req.file) {
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/media/${req.file.filename}`;
+    const fileUrl = `uploads/media/${req.file.filename}`;
     updatedFields[mediaType === 'image' ? 'galleryImage' : 'galleryVideo'] = fileUrl;
 
     // Optional: Remove the old file
     try {
       const currentItem = await Gallery.findById(id);
       if (currentItem) {
-        const oldFilePath = path.join(__dirname, '..', currentItem[mediaType === 'image' ? 'galleryImage' : 'galleryVideo'].split('/uploads/media/')[1]);
+        const oldFilePath = currentItem[mediaType === 'image' ? 'galleryImage' : 'galleryVideo'];
         console.log('oldFilePath', oldFilePath);
 
         if (fs.existsSync(oldFilePath)) {
@@ -189,8 +190,8 @@ const deleteGalleryImage = async (req, res) => {
     }
 
     // Check if galleryImage exists and is a local file path (not a third-party URL)
-    if (image.galleryImage && image.galleryImage.includes('/uploads/media/')) {
-      const oldFilePath = path.join('uploads/media', image.galleryImage.split('/uploads/media/')[1]);
+    if (image.galleryImage) {
+      const oldFilePath = image.galleryImage;
 
       // Check if the file exists before trying to delete it
       if (fs.existsSync(oldFilePath)) {

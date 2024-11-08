@@ -21,6 +21,7 @@ import { createEnquiry, getEnquiryList, softDeleteEnquiry, viewEnquiryById } fro
 import { createContactUsAddress, deleteContactUsAddress, getAllContactUsAddresses, getContactUsAddressById, updateContactUsAddress } from "../controller/contactUsAddress.controller.js";
 import { CreateUrl, deleteUrlAddress, EditUrl, getUrlAddress } from "../controller/url.controller.js";
 import { createNewsEvent, deleteNewsEvent, getAllNewsEvents, getNewsEventById, updateNewsEvent } from "../controller/newsEvents.controller.js";
+import { createbgbanner, deleteBgBanner, getBgBanner, getBgBannerById, updateBgBanner } from "../controller/BackgroundBanner.controller.js";
 
 
 const router = express.Router()
@@ -118,6 +119,13 @@ router.get('/api/banner', getBanner)
 router.put('/api/edit-banner/:id',upload.single('bannerImage'), editBanner);
 router.delete('/api/delete-banner/:id', deleteBanner);
 
+// =======Background banner  Crud ======
+router.post('/api/create-bgbanner',upload.single('image'), createbgbanner);
+router.get('/api/get-bgbanner',getBgBanner);
+router.get('/api/get-bgbannerbyId/:id',getBgBannerById);
+router.put('/api/update-bgbanner/:id', upload.single('image'), updateBgBanner);
+router.delete('/api/delete-bgbanner/:id', deleteBgBanner);
+
 // =======Blogs Crud ======
 
 router.post('/api/create-blog',upload.single('images'), createBlog )
@@ -195,19 +203,19 @@ router.get('/api/get-eventsAndNews',getNewsandEvents)
 router.get('/api/get-MoU',MouCards)
 router.post('/api/get-data/:id',categoryData)
 
-// routes for footer
+// ====== routes for footer =========
 router.get('/api/getFooter-categories', getActiveFooterCategories);
 router.post('/api/addFooter-categories',addFooterCategory);
 router.put('/api/editFooter-category/:id', editFooterCategory);
 router.delete('/api/deleteFooter-category/:id', softDeleteFooterCategory);
 
-// student enquirey
+// ======= student enquirey ========
 router.get('/api/getStudent-enquirey/:id',viewEnquiryById);
 router.get('/api/enquiries',getEnquiryList);
 router.post('/api/createStudent-enquirey',createEnquiry);
 router.delete('/api/deleteStudent-enquiry/:id', softDeleteEnquiry);
 
-// =======facts info Crud ======
+// ========= facts info Crud ========
 router.post('/api/create-urlAdd', CreateUrl)
 router.get('/api/get-urlAdd', getUrlAddress)
 router.put('/api/edit-urlAdd/:id', EditUrl)

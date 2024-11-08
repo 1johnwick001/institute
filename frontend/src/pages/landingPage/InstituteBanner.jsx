@@ -5,6 +5,7 @@ import Header from '../../components/Header/Header';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
 
 function InstituteBanner() {
@@ -150,7 +151,7 @@ function InstituteBanner() {
       name: 'Institute Image',
       cell: (row) => (
         <img
-          src={row.instituteImage}
+          src={`${API_BASE_IMAGE_URL}/${row.instituteImage}`}
           alt={row.instituteName}
           style={{ width: '55px', height: '45px', borderRadius: '15px' }}
         />
@@ -160,7 +161,7 @@ function InstituteBanner() {
       name: 'Institute Icon',
       cell: (row) => (
         <img
-          src={row.instituteIcon}
+          src={`${API_BASE_IMAGE_URL}/${row.instituteIcon}`}
           alt={row.instituteName}
           style={{ width: '45px', height: '45px', borderRadius: '25px' }}
         />
@@ -283,7 +284,7 @@ function InstituteBanner() {
                       <label className="form-label">Current Institute Image</label>
                       <div>
                         <img
-                          src={currentImageURL}
+                          src={`${API_BASE_IMAGE_URL}/${currentImageURL}`}
                           alt="Current Institute"
                           style={{ width: '55px', height: '55px', borderRadius: '35px' }}
                         />
@@ -294,7 +295,7 @@ function InstituteBanner() {
                       <label className="form-label">Current Institute Icon</label>
                       <div>
                         <img
-                          src={currentIconURL}
+                          src={`${API_BASE_IMAGE_URL}/${currentIconURL}`}
                           alt="Current Icon"
                           style={{ width: '55px', height: '55px', borderRadius: '35px' }}
                         />
@@ -325,7 +326,7 @@ function InstituteBanner() {
                     id="instituteIcon"
                     onChange={(e) => setInstituteIcon(e.target.files[0])}
                     accept="image/*"
-                    required={!isEditMode}  // Required only in add mode
+                    // required={!isEditMode}  // Required only in add mode
                   />
                 </div>
                 <div className="mb-3">

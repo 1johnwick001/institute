@@ -6,76 +6,76 @@ import fs from "fs"
 
 
 const uploadBanner = async (req, res) => {
-    try {
-      const { bannerName, category , mediaType , tab } = req.body;
-  
-      if (!bannerName) {
-        return res.status(400).json({
-          code: 400,
-          status: false,
-          message: "Please upload a banner image or video",
-        });
-      }
+  try {
+    const { bannerName, category , mediaType , tab } = req.body;
 
-      if (!req.file) {
-        return res.json({
-            code:400,
-            status:false,
-            message:"please upload an banner image",
-        })
+    if (!bannerName) {
+      return res.status(400).json({
+        code: 400,
+        status: false,
+        message: "Please upload a banner image or video",
+      });
     }
 
-    const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
-  
-      // Check if the category exists
-      const categoryExists = await Category.findById(category);
-      if (!categoryExists) {
+    if (!req.file) {
+      return res.json({
+          code:400,
+          status:false,
+          message:"please upload an banner image",
+      })
+  }
+
+  const fileUrl = req.file.path.replace(/\\/g, '/');
+
+    // Check if the category exists
+    const categoryExists = await Category.findById(category);
+    if (!categoryExists) {
+      return res.status(404).json({
+        code: 404,
+        status: false,
+        message: "Category not found",
+      });
+    }
+
+    let tabExists = null;
+    if (tab) {
+      tabExists = await TabsData.findById(tab);
+      if (!tabExists) {
         return res.status(404).json({
           code: 404,
           status: false,
-          message: "Category not found",
+          message: 'Tab not found',
         });
       }
-
-      let tabExists = null;
-      if (tab) {
-        tabExists = await TabsData.findById(tab);
-        if (!tabExists) {
-          return res.status(404).json({
-            code: 404,
-            status: false,
-            message: 'Tab not found',
-          });
-        }
-      }
-  
-  
-      // Save the banner data to the database
-      const BannerData = new Banner({
-        bannerName,
-        mediaType,
-        bannerImage:fileUrl,
-        category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
-        tab: tabExists ? tabExists._id : null, // Associate with tab if provided
-      });
-  
-      await BannerData.save();
-  
-      
-      return res.status(201).json({
-        code: 201,
-        status: true,
-        message: 'Banner media uploaded successfully',
-        data: BannerData,
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        code: 500,
-        status: false,
-        message: error.message,
-      });
     }
+
+
+    // Save the banner data to the database
+    const BannerData = new Banner({
+      bannerName,
+      mediaType,
+      bannerImage:fileUrl,
+      category: tabExists ? null : categoryExists._id, // Only associate with category if no tab is provided
+      tab: tabExists ? tabExists._id : null, // Associate with tab if provided
+    });
+
+    await BannerData.save();
+
+    
+    return res.status(201).json({
+      code: 201,
+      status: true,
+      message: 'Banner media uploaded successfully',
+      data: BannerData,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      status: false,
+      message: error.message,
+    });
+  }
 };
 
 const getBanner = async (req, res) => {
@@ -128,7 +128,7 @@ const editBanner = async (req, res) => {
     // If a new file is uploaded, delete the previous file and update the file URL
     if (req.file) {
       // Extract old file path
-      const oldFilePath = path.join('uploads/media', banner.bannerImage.split('/uploads/media/')[1]);
+      const oldFilePath = banner.bannerImage;
 
       // Delete the old file if it exists
       if (fs.existsSync(oldFilePath)) {
@@ -140,7 +140,8 @@ const editBanner = async (req, res) => {
       }
 
       // Update with the new file URL
-      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/media/${req.file.filename}`;
+      const fileUrl = req.file.path.replace(/\\/g, '/');
+
       updatedFields.bannerImage = fileUrl;
     }
 
@@ -190,7 +191,7 @@ const deleteBanner = async (req, res) => {
     }
 
     // Get the image file path from the banner's image URL
-    const oldFilePath = path.join('uploads/media', banner.bannerImage.split('/uploads/media/')[1]);
+    const oldFilePath = banner.bannerImage;
 
     // Delete the old image file from the server
     if (fs.existsSync(oldFilePath)) {

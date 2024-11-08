@@ -1,6 +1,5 @@
 import Application from "../model/applicationForm.model.js";
 import fs from 'fs';
-import path from 'path';
 
 const createApplicationForm = async (req, res) => {
     try {
@@ -16,20 +15,7 @@ const createApplicationForm = async (req, res) => {
         return res.status(400).json({ message: "Resume file is required" });
       }
   
-      const uploadDir = path.join(path.resolve(), 'uploads/media');
-  
-      // Create the uploads/media folder if it doesn't exist
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true }); // Creates the directory recursively
-      }
-  
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-  
-      // Normalize path to use forward slashes, which is safer for URLs
-      const normalizedResumePath = path.posix.join('uploads/media', path.basename(resumePath));
-      // const resumeFullUrl = `${baseUrl}/${normalizedResumePath}`;
-  
-      const newApplication = new Application({
+     const newApplication = new Application({
         postAppliedFor,
         department,
         firstName,
@@ -57,7 +43,7 @@ const createApplicationForm = async (req, res) => {
           industry: workExperience?.industry || 0,
           research: workExperience?.research || 0,
         } : {},
-        resume: normalizedResumePath
+        resume: resumePath
       });
   
       await newApplication.save();
@@ -144,6 +130,22 @@ const deleteApplicationForm = async (req,res) => {
     
         if (!document) {
           return res.status(404).json({ message: "Document not found." });
+        }
+
+        const fileName = document.resume;
+      
+        // Check if fileName exists and is valid
+        if (fileName) {
+          
+          const oldFilePath =  fileName;
+
+          // Attempt to delete the file from the file system
+          fs.unlink(oldFilePath, (err) => {
+            if (err) {
+              console.error("Error deleting file from disk:", err);
+              // Log error but proceed with deleting the document from the DB
+            }
+          });
         }
     
         // Remove the document from the database

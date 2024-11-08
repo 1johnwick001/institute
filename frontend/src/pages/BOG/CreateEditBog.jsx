@@ -5,7 +5,7 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import API_BASE_URL from "../../config/Config";
-
+import API_BASE_IMAGE_URL from "../../config/ImageConfig";
 
 
 
@@ -89,35 +89,36 @@ const [details, setDetails] = useState('');    // State for details
     e.preventDefault();
     try {
       const formData = new FormData();
-    formData.append('category', selectedCategory);
-    formData.append('name', name);
-    formData.append('designation', designation);
-    formData.append('companyName', companyName);
-    formData.append('tab', selectedTab);
-    formData.append('details', details);  // Add the details
-
-    if (imageFile) {
-      formData.append('image', imageFile);  // Attach the selected image file
-    }
-
-    if (pdfFile) {
-      formData.append('pdfFile', pdfFile);  // Attach the selected PDF file
-    }
-
-
+      formData.append('category', selectedCategory);
+      formData.append('name', name);
+      formData.append('designation', designation);
+      formData.append('companyName', companyName);
+      formData.append('tab', selectedTab);
+      formData.append('details', details);  // Add the details
+  
+      if (imageFile) {
+        formData.append('image', imageFile);  // Attach the selected image file
+      }
+  
+      if (pdfFile) {
+        formData.append('pdfFile', pdfFile);  // Attach the selected PDF file
+      }
+  
       const EditformData = new FormData();
+      
       EditformData.append('name', name);
       EditformData.append('designation', designation);
       EditformData.append('companyName', companyName);
-
+      EditformData.append('details', details); // Add the details
+  
       if (imageFile) {
         EditformData.append('image', imageFile);  // Attach the selected file
       }
-
+  
       if (pdfFile) {
         EditformData.append('pdfFile', pdfFile);  // Attach the selected PDF file
       }
-
+  
       if (bogId) {
         await axios.put(`${API_BASE_URL}/edit-bog/${bogId}`, EditformData, {
           headers: { 'Content-Type': 'multipart/form-data' }
@@ -188,7 +189,7 @@ const [details, setDetails] = useState('');    // State for details
                   <label htmlFor="imageFile" className="form-label">Cards Image Field</label>
                   {imageLink && (
                     <div className="mb-3">
-                      <img src={imageLink} alt="BOG" style={{ width: '50px', height: '50px' }} />
+                      <img src={`${API_BASE_IMAGE_URL}/${imageLink}`} alt="BOG" style={{ width: '50px', height: '50px' }} />
                     </div>
                   )}
                   <input

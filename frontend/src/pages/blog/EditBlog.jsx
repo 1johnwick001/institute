@@ -6,9 +6,8 @@ import Pagetitle from '../../components/pagetitle/Pagetitle';
 import SunEditor from 'suneditor-react';
 import axios from 'axios';
 import API_BASE_URL from '../../config/Config';
-import { IKUpload } from 'imagekitio-react';
 import TestSunEditorJsx from './Editor';
-
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
 function EditBlog() {
   const { id } = useParams(); // Get the blog ID from the URL
@@ -128,7 +127,7 @@ function EditBlog() {
                   {existingImage && !image && (
                     <div className="mt-2">
                       <p>Current Image:</p>
-                      <img src={existingImage} alt="Blog" style={{ width: '100px' }} />
+                      <img src={`${API_BASE_IMAGE_URL}/${existingImage}`} alt="Blog" style={{ width: '100px' }} />
                     </div>
                   )}
                 </div>

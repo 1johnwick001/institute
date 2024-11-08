@@ -5,6 +5,7 @@ import Sidebar from '../components/sidebar/Sidebar';
 import Pagetitle from '../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../config/Config';
+import API_BASE_IMAGE_URL from '../config/ImageConfig';
 
 
 function Banner() {
@@ -189,13 +190,13 @@ const handleCategoryChange = (e) => {
             cell: (row) => (
                 row.mediaType === 'image' ? (
                     <img
-                        src={row.bannerImage}
+                        src={`${API_BASE_IMAGE_URL}/${row.bannerImage}`}
                         alt={row.bannerName}
                         style={{ width: '55px', height: '55px',  }}
                     />
                 ) : (
                     <video
-                        src={row.bannerVideo}
+                        src={`${API_BASE_IMAGE_URL}/${row.bannerVideo}`}
                         alt={row.bannerName}
                         style={{ width: '55px', height: '55px',  }}
                     />
@@ -392,13 +393,13 @@ const handleCategoryChange = (e) => {
                                         
                                         {mediaType === 'image' && currentImageUrl ? (
                                             <img
-                                                src={currentImageUrl}
+                                                src={`${API_BASE_IMAGE_URL}/${currentImageUrl}`}
                                                 alt="Current"
                                                 style={{ maxWidth: '65px', height: '65px' }}
                                             />
                                         ) :  (
                                             <video
-                                                src={currentVideoUrl}
+                                                src={`${API_BASE_IMAGE_URL}/${currentVideoUrl}`}
                                                 style={{ maxWidth: '65px', height: '65px' }}
                                                 controls
                                             />

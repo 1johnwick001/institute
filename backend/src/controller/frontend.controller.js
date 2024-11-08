@@ -103,7 +103,7 @@ const categoryData = async (req, res) => {
       const gallery = await Gallery.find({ category: id }).sort({ createdAt : -1});
       const docs = await DocFiles.find({ category: id }).sort({ createdAt : -1});
       const factInfo = await FactData.find({ category: id }).sort({ createdAt : -1});
-      const bogData = await BOG.find({ category: id }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ category: id })
       const urlfields = await URL.find({category: id})
       // Compile the associated data for the category
       associatedData = {
@@ -130,8 +130,7 @@ const categoryData = async (req, res) => {
       const gallery = await Gallery.find({ tab: tab._id }).sort({ createdAt : -1});
       const docs = await DocFiles.find({ tab: tab._id }).sort({ createdAt : -1});
       const factInfo = await FactData.find({ tab: tab._id }).sort({ createdAt : -1});
-      const bogData = await BOG.find({ tab: tab._id }).sort({ createdAt : -1});
-
+      const bogData = await BOG.find({ tab: tab._id })
       // Compile the associated data for the tab
       associatedData = {
         tab,
@@ -152,7 +151,7 @@ const categoryData = async (req, res) => {
       const gallery = await Gallery.find({ instituteId: institute._id }).sort({ createdAt : -1});
       const docs = await DocFiles.find({ instituteId: institute._id }).sort({ createdAt : -1});
       const factInfo = await FactData.find({ instituteId: institute._id }).sort({ createdAt : -1});
-      const bogData = await BOG.find({ instituteId: institute._id }).sort({ createdAt : -1});
+      const bogData = await BOG.find({ instituteId: institute._id })
       const urlfields = await URL.find({category: id})
 
       // Compile the associated data for the institute

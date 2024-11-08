@@ -39,7 +39,7 @@ const createNewsEvent = async (req, res) => {
 // Get all News/Events
 const getAllNewsEvents = async (req, res) => {
     try {
-      const newsEvents = await NewsEvent.find();
+      const newsEvents = await NewsEvent.find().sort({ createdAt : -1});
 
       return res.status(200).json({
         data:newsEvents
@@ -93,8 +93,6 @@ const updateNewsEvent = async (req, res) => {
         });
     }
 };
-
-
 
 // Delete Controller
 const deleteNewsEvent = async (req, res) => {

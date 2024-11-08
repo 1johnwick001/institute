@@ -6,6 +6,8 @@ import API_BASE_URL from '../../config/Config';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const CreateNewsEvent = () => {
@@ -13,7 +15,9 @@ const CreateNewsEvent = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [images, setImages] = useState(['']); // Initialize with one empty input
-
+  
+  const navigate = useNavigate();
+  
   const handleImageChange = (index, e) => {
     const newImages = [...images];
     newImages[index] = e.target.files[0]; // Save selected file
@@ -47,7 +51,11 @@ const CreateNewsEvent = () => {
       const response = await axios.post(`${API_BASE_URL}/create-news-events`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      console.log('News/Event created', response.data);
+      if (response.status === 201) {
+        navigate('/getnewsAndEvents');
+      } else {
+        console.error('Error creating blog');
+      }
     } catch (error) {
       console.error('Error creating news/event', error);
     }
@@ -84,7 +92,19 @@ const CreateNewsEvent = () => {
             </div>
             <div className="mb-3">
             <label className="form-label">Title</label>
-            <SunEditor onChange={setTitle} />
+            <SunEditor onChange={setTitle}
+            setOptions={{
+              // Set height if needed
+              buttonList: [
+                ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],  // Text styling buttons
+                ['font', 'fontSize', 'formatBlock','fontColor', 'textStyle', 'paragraphStyle', 'hiliteColor'],  // Font and format options
+                ['fullScreen', 'showBlocks', 'codeView']
+                // ['align', 'horizontalRule', 'list', 'table']  
+              ],
+            }}
+            setDefaultStyle="font-size:18px;"
+            height='15vh'
+            />
             </div>
             <div className="mb-3">
             <label className="form-label">Images</label>

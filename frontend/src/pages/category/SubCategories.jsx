@@ -142,14 +142,14 @@ function SubCategories() {
 					  <th scope="row">{index + 1}</th>
 					  <td>{subcategory.parent ? subcategory.parent.name : 'N/A'}</td>
 					  <td>{subcategory.name}</td>
-					  <td>
+					  {/* <td>
 						<button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subcategory)}>
 						  <i className="fas fa-edit"></i> Edit
 						</button>
 						<button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(subcategory._id)}>
 						  <i className="fas fa-trash"></i> Delete
 						</button>
-					  </td>
+					  </td> */}
 					</tr>
 				  ))}
 				</tbody>

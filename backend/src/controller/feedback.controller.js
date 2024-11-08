@@ -49,7 +49,7 @@ const getFeedBackForm = async (req,res) => {
             message:"error while fetching feedback form data"
         })
     }
-}
+};
 
 const viewFeedbackById = async (req,res) => {
     try {
@@ -79,7 +79,7 @@ const viewFeedbackById = async (req,res) => {
             message: error.message,
         });
     }
-}
+};
 
 // Delete Feedback by ID
 const deleteFeedback = async (req, res) => {

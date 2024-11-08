@@ -44,6 +44,7 @@ const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
     const handleDelete = async (id) => {
         try {
             await axios.delete(`${API_BASE_URL}/delete-tab/${id}`);
+            alert('tab deleted successfully')
             fetchTabs(); // Refresh the tabs after deletion
         } catch (error) {
             console.error('Error deleting tab:', error);
@@ -107,11 +108,13 @@ const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
             name: 'Sr. No.',
             selector: (row, index) => index + 1,
             sortable: true,
+            
         },
         {
             name: 'Tabs Name',
             selector: (row) => row.name,
             sortable: true,
+            
         },
         {
             name: 'Tabs Category',

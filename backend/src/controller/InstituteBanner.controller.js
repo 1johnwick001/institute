@@ -17,18 +17,10 @@ const createInstBanner = async (req, res) => {
       });
     }
 
-    // Check if a file is uploaded
-    if (!req.file) {
-      return res.status(400).json({
-        code: 400,
-        status: false,
-        message: "Please upload a banner image.",
-      });
-    }
 
     // Construct the file URL
-    const fileUrl = `${req.protocol}://${req.get('host')}/${req.file.path.replace(/\\/g, '/')}`;
-    const instituteIconUrl = `${req.protocol}://${req.get('host')}/${req.files.instituteIcon[0].path.replace(/\\/g, '/')}`;
+    const fileUrl = req.files?.instituteImage ? req.files.instituteImage[0].path.replace(/\\/g, '/') : null;
+    const instituteIconUrl = req.files?.instituteIcon ? req.files.instituteIcon[0].path.replace(/\\/g, '/') : null;
 
     // Create new instance of InstituteBanner
     const instBannerData = new InstituteBanner({
@@ -115,14 +107,14 @@ const editInstBanner = async (req, res) => {
     // Handle instituteImage (banner image)
     if (req.files && req.files['instituteImage']) {
       const file = req.files['instituteImage'][0];
-      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/media/${file.filename}`;
+      const fileUrl = `uploads/media/${file.filename}`;
       updatedFields.instituteImage = fileUrl;
     }
 
     // Handle instituteIcon (logo)
     if (req.files && req.files['instituteIcon']) {
       const iconFile = req.files['instituteIcon'][0];
-      const iconUrl = `${req.protocol}://${req.get("host")}/uploads/media/${iconFile.filename}`;
+      const iconUrl = `uploads/media/${iconFile.filename}`;
       updatedFields.instituteIcon = iconUrl;
     }
 
@@ -172,11 +164,23 @@ const deleteInstBanner = async (req, res) => {
     }
 
     // Extract the old file path from the instituteImage
-    const oldFilePath = path.join('uploads/media', instBanner.instituteImage.split('/uploads/media/')[1]);
+    const oldFilePath = instBanner.instituteImage;
 
     // Delete the old file if it exists
     if (fs.existsSync(oldFilePath)) {
       fs.unlink(oldFilePath, (err) => {
+        if (err) {
+          console.error("Error deleting old file:", err);
+        }
+      });
+    }
+
+    // Extract the old file path from the instituteImage
+    const oldFilePathIcon = instBanner.instituteIcon;
+
+    // Delete the old file if it exists
+    if (fs.existsSync(oldFilePathIcon)) {
+      fs.unlink(oldFilePathIcon, (err) => {
         if (err) {
           console.error("Error deleting old file:", err);
         }

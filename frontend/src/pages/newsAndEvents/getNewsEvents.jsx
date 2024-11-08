@@ -87,7 +87,7 @@ function GetNewsEvents() {
             selector: row => row.images && row.images.length > 0 
                 ? <img src={`${API_BASE_IMAGE_URL}/${row.images[0]}`} alt="News/Event" style={{ width: '55px', height: '55px' }} /> 
                 : 'No image',
-            width: '150px',
+            
         },
         {
             name: 'Action',
@@ -115,7 +115,7 @@ function GetNewsEvents() {
                     <div className="d-flex justify-content-end mb-3">
                         <button className='btn btn-primary'
                         onClick={()=>navigate('/newsAndEvents')}
-                        >Add BOG 
+                        >Add News & Events
                         </button>
                     </div>
                     <DataTable

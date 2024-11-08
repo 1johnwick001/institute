@@ -5,6 +5,7 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DataTable from 'react-data-table-component';
 import API_BASE_URL from '../../config/Config';
+import API_BASE_IMAGE_URL from "../../config/ImageConfig"
 import { useNavigate } from 'react-router-dom';
 
 function Bog() {
@@ -95,7 +96,7 @@ function Bog() {
         },
         {
             name: 'Image',
-            selector: row => row.imageLink ? <img src={row.imageLink} alt="Bog" style={{ width: '55px', height: '55px'}} /> : 'No image',
+            selector: row => row.imageLink ? <img src={`${API_BASE_IMAGE_URL}/${row.imageLink}`} alt="Bog" style={{ width: '55px', height: '55px'}} /> : 'No image',
             width: '150px',
         },
         {

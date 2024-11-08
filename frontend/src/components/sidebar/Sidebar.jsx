@@ -13,12 +13,56 @@ function Sidebar() {
                     </Link>
                 </li>
 
+                <li class="nav-heading">Landing Page </li>
+
                 <li className='nav-item'>
-                    <Link className='nav-link collapsed' to="/doc-files">
-                        <i className='bi bi-file-pdf'></i>
-                        <span>Doc Files</span>
+                    <Link 
+                        to="#"
+                        className='nav-link collapsed'
+                        data-bs-target = '#home-page-nav'
+                        data-bs-toggle='collapse'
+                    >
+                        <i className='bi bi-houses'></i>
+                        <span>Home Page Section </span>
+                        <i className='bi bi-chevron-down ms-auto'></i>
                     </Link>
+                    <ul id='home-page-nav'
+                    className='nav-content collapse'
+                    data-bs-parent = '#sidebar-nav'
+                    >
+
+                        <li className='nav-item'>
+                            <Link className='nav-link collapsed' to="/banner">
+                                <i className='bi bi-flag-fill'></i>
+                                <span>Banner</span>
+                            </Link>
+                        </li>
+                        <li className='nav-item'>
+                            <Link className='nav-link collapsed' to='/bgBanners-list'>
+                                <i className='bi bi-flag-fill'></i>
+                                <span>Background-Banner</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/institute-banner">
+                                <i className='bi bi-circle'></i>
+                                <span>Create Institute Banners</span>
+                            </Link>
+                        </li>
+
+                        <li className='nav-item'>
+                            <Link className='nav-link collapsed' to="/fact-info">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Fact Numbers</span>
+                            </Link>
+                        </li>
+
+                        
+                       
+                    </ul>
                 </li>
+
+                
     
                 <li className='nav-item'>
                     <Link 
@@ -78,6 +122,70 @@ function Sidebar() {
                 </li>
     
                 
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/doc-files">
+                        <i className='bi bi-file-pdf'></i>
+                        <span>Doc Files</span>
+                    </Link>
+                </li>
+
+                
+    
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/gallery">
+                        <i className='bi bi-floppy'></i>
+                        <span>Gallery</span>
+                    </Link>
+                </li>
+
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/getnewsAndEvents">
+                        <i className='bi bi-newspaper'></i>
+                        <span>News and Events</span>
+                    </Link>
+                </li>
+    
+                
+    
+                <li className='nav-item'>
+                    <Link 
+                        to="#"
+                        className='nav-link collapsed'
+                        data-bs-target = '#blog-nav'
+                        data-bs-toggle='collapse'
+                    >
+                        <i className='bi bi-menu-button-wide'></i>
+                        <span>Blog Section</span>
+                        <i className='bi bi-chevron-down ms-auto'></i>
+                    </Link>
+                    <ul id='blog-nav'
+                    className='nav-content collapse'
+                    data-bs-parent = '#sidebar-nav'
+                    >
+                        <li>
+                            <Link to="/blogs-list">
+                                <i className='bi bi-circle'></i>
+                                <span>Blogs List</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/create-blog">
+                                <i className='bi bi-circle'></i>
+                                <span>Create Blog</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </li>
+
+                
+
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/bog-details">
+                        <i className='bi bi-person-vcard'></i>
+                        <span>Cards/Faculty/Bog</span>
+                    </Link>
+                </li>
+
                 
 
                 <li className='nav-item'>
@@ -121,64 +229,6 @@ function Sidebar() {
                         </li>
                     </ul>
                 </li>
-    
-                <li className='nav-item'>
-                    <Link className='nav-link collapsed' to="/gallery">
-                        <i className='bi bi-floppy'></i>
-                        <span>Gallery</span>
-                    </Link>
-                </li>
-    
-                <li className='nav-item'>
-                    <Link className='nav-link collapsed' to="/banner">
-                        <i className='bi bi-flag-fill'></i>
-                        <span>Banner</span>
-                    </Link>
-                </li>
-    
-                <li className='nav-item'>
-                    <Link 
-                        to="#"
-                        className='nav-link collapsed'
-                        data-bs-target = '#blog-nav'
-                        data-bs-toggle='collapse'
-                    >
-                        <i className='bi bi-menu-button-wide'></i>
-                        <span>Blog Section</span>
-                        <i className='bi bi-chevron-down ms-auto'></i>
-                    </Link>
-                    <ul id='blog-nav'
-                    className='nav-content collapse'
-                    data-bs-parent = '#sidebar-nav'
-                    >
-                        <li>
-                            <Link to="/blogs-list">
-                                <i className='bi bi-circle'></i>
-                                <span>Blogs List</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/create-blog">
-                                <i className='bi bi-circle'></i>
-                                <span>Create Blog</span>
-                            </Link>
-                        </li>
-                    </ul>
-                </li>
-
-                <li className='nav-item'>
-                    <Link className='nav-link collapsed' to="/fact-info">
-                        <i className='bi bi-info-circle'></i>
-                        <span>Fact Numbers</span>
-                    </Link>
-                </li>
-
-                <li className='nav-item'>
-                    <Link className='nav-link collapsed' to="/bog-details">
-                        <i className='bi bi-person-vcard'></i>
-                        <span>Cards/Faculty/Bog</span>
-                    </Link>
-                </li>
 
                 <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/contactUSAddressForm">
@@ -187,39 +237,7 @@ function Sidebar() {
                     </Link>
                 </li>
 
-                <li className='nav-item'>
-                    <Link className='nav-link collapsed' to="/getnewsAndEvents">
-                        <i className='bi bi-newspaper'></i>
-                        <span>News and Events</span>
-                    </Link>
-                </li>
-
-                <li class="nav-heading">Landing Page </li>
-
-                <li className='nav-item'>
-                    <Link 
-                        to="#"
-                        className='nav-link collapsed'
-                        data-bs-target = '#home-page-nav'
-                        data-bs-toggle='collapse'
-                    >
-                        <i className='bi bi-houses'></i>
-                        <span>Home Page Section </span>
-                        <i className='bi bi-chevron-down ms-auto'></i>
-                    </Link>
-                    <ul id='home-page-nav'
-                    className='nav-content collapse'
-                    data-bs-parent = '#sidebar-nav'
-                    >
-                        <li>
-                            <Link to="/institute-banner">
-                                <i className='bi bi-circle'></i>
-                                <span>Create Institute Banners</span>
-                            </Link>
-                        </li>
-                       
-                    </ul>
-                </li>
+                
 
                 {/* <li class="nav-heading">Footer</li>
 
