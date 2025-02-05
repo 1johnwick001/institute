@@ -6,6 +6,7 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DeleteModal from '../blog/DeleteModal';
 import { useNavigate } from 'react-router-dom';
+import { CSVLink } from 'react-csv';
 
 
 function FeedbackForm() {
@@ -94,6 +95,34 @@ function FeedbackForm() {
         },
     ];
 
+    // Prepare CSV data with parameters and ratings in a single column each
+    const csvData = formData.flatMap((item) => 
+        item.ratings.map((rating, ratingIndex) => ({
+            srNo: ratingIndex === 0 ? formData.indexOf(item) + 1 : '', // Only show Sr. No. for the first rating
+            userName: ratingIndex === 0 ? item.userName : '', // Only show User Name for the first rating
+            formType: ratingIndex === 0 ? item.formType : '', // Only show Form Type for the first rating
+            email: ratingIndex === 0 ? item.email : '', // Only show Email for the first rating
+            Branch: ratingIndex === 0 ? item.Branch : '', // Only show Branch for the first rating
+            Year: ratingIndex === 0 ? item.Year : '', // Only show Year for the first rating
+            mobileNo: ratingIndex === 0 ? item.mobileNo : '', // Only show Mobile No for the first rating
+            parameter: rating.parameter,
+            rating: rating.rating
+        }))
+    );
+
+    // Define headers for the CSV file
+    const csvHeaders = [
+        { label: "Sr. No.", key: "srNo" },
+        { label: "User Name", key: "userName" },
+        { label: "TYPE", key: "formType" },
+        { label: "Email", key: "email" },
+        { label: "Branch", key: "Branch" },
+        { label: "Year", key: "Year" },
+        { label: "Mobile No", key: "mobileNo" },
+        { label: "Parameter", key: "parameter" },
+        { label: "Rating", key: "rating" }
+    ];
+
   return (
     <>
     <Header/>
@@ -101,6 +130,17 @@ function FeedbackForm() {
     <main id="main" className="main">
             <Pagetitle page='Feedback Form Data' />
             <section className='section'>
+                <div className="text-end mb-3"> {/* Aligns the button to the right */}
+                    <CSVLink
+                        data={csvData}
+                        headers={csvHeaders}
+                        filename="feedback_data.csv"
+                        target="_blank"
+                        className="btn btn-info" // Ensure the button has the correct styling
+                    >
+                        Download Excel
+                    </CSVLink>
+                </div>
                 
                 {/* datatables for blogs */}
                     <DataTable

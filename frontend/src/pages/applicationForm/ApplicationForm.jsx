@@ -6,12 +6,13 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DeleteModal from '../blog/DeleteModal';
 import { useNavigate } from 'react-router-dom';
-
+import { CSVLink } from 'react-csv';
+import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
 
 
 function ApplicationForm() {
-    const [formData, setFormData] = useState([]);
+const [formData, setFormData] = useState([]);
 const [showModal, setShowModal] = useState(false);
 const [selectedApplication, setSelectedApplication] = useState(null);
 
@@ -51,6 +52,25 @@ const navigate = useNavigate();
             console.error('Error:', error);
         }
     };
+
+    // Prepare CSV data
+    const csvData = formData.flatMap((item, index) => ({
+        srNo: index + 1,
+        firstName: item.firstName || 'N/A',
+        lastName: item.surname || 'N/A',
+        phoneNo: item.cellNo || 'N/A',
+        appliedFor: item.postAppliedFor || 'N/A',
+        email: item.emailAddress || 'N/A',
+        ugYearOfPassing: item.educationalQualification.ug?.yearOfPassing || 'N/A',
+        ugPercentage: item.educationalQualification.ug?.passingPercentage || 'N/A',
+        ugDivision: item.educationalQualification.ug?.divisionOfPassing || 'N/A',
+        pgYearOfPassing: item.educationalQualification.pg?.yearOfPassing || 'N/A',
+        pgPercentage: item.educationalQualification.pg?.passingPercentage || 'N/A',
+        pgDivision: item.educationalQualification.pg?.divisionOfPassing || 'N/A',
+        qualifiedExam: item.nationalStateLevelExamination?.qualifiedExamName || 'N/A',
+        qualifyingYear: item.nationalStateLevelExamination?.qualifyingYear || 'N/A',
+        resume: `${API_BASE_IMAGE_URL}/${item.resume}` || 'N/A',
+    }));
 
     const columns = [
         {
@@ -111,6 +131,33 @@ const navigate = useNavigate();
         <main id="main" className="main">
             <Pagetitle page='Application Form Data' />
             <section className='section'>
+
+            <div className="text-end mb-3"> {/* Aligns the button to the right */}
+                <CSVLink
+                    data={csvData}
+                    headers={[
+                        { label: "Sr. No.", key: "srNo" },
+                        { label: "First Name", key: "firstName" },
+                        { label: "Last Name", key: "lastName" },
+                        { label: "Phone No.", key: "phoneNo" },
+                        { label: "Applied For", key: "appliedFor" },
+                        { label: "Email", key: "email" },
+                        { label: "UG Year of Passing", key: "ugYearOfPassing" },
+                        { label: "UG Percentage", key: "ugPercentage" },
+                        { label: "UG Division", key: "ugDivision" },
+                        { label: "PG Year of Passing", key: "pgYearOfPassing" },
+                        { label: "PG Percentage", key: "pgPercentage" },
+                        { label: "PG Division", key: "pgDivision" },
+                        { label: "Qualified Exam", key: "qualifiedExam" },
+                        { label: "Qualifying Year", key: "qualifyingYear" },
+                        { label: "Resume", key: "resume" },
+                    ]}
+                    filename="application_data.csv"
+                    className="btn btn-success"
+                >
+                    Download Excel
+                </CSVLink>
+            </div>
                 
                 {/* datatables for blogs */}
                     <DataTable

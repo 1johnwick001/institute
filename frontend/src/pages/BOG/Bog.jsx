@@ -9,54 +9,46 @@ import API_BASE_IMAGE_URL from "../../config/ImageConfig"
 import { useNavigate } from 'react-router-dom';
 
 function Bog() {
-
     const navigate = useNavigate();
-    
-    const [data , setData] = useState([])
-
+    const [data , setData] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [factsIdToDelete, setFactsIdToDelete] = useState(null);
+    const [searchQuery, setSearchQuery] = useState(''); // Search query state
 
     useEffect(() => {
         fetchData();
-      }, []);
+    }, []);
 
-      // Function to fetch data
     const fetchData = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/get-bog`);
             setData(response.data.data);
-            
         } catch (error) {
-           alert(error.message)
+            alert(error.message);
         }
     };
 
-        // Function to handle delete button click
-  const handleDeleteClick = (id) => {
-    setFactsIdToDelete(id);
-    setShowDeleteModal(true);
-  };
+    const handleDeleteClick = (id) => {
+        setFactsIdToDelete(id);
+        setShowDeleteModal(true);
+    };
 
-  // Function to handle delete confirmation
-  const handleDeleteConfirmation = async () => {
-    try {
-      await axios.delete(`${API_BASE_URL}/delete-bog/${factsIdToDelete}`);
-      fetchData(); // Refresh data after successful deletion
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.error('Error while deleting data', error);
-      alert(error.message)
-    }
-  };
+    const handleDeleteConfirmation = async () => {
+        try {
+            await axios.delete(`${API_BASE_URL}/delete-bog/${factsIdToDelete}`);
+            fetchData(); // Refresh data after successful deletion
+            setShowDeleteModal(false);
+        } catch (error) {
+            console.error('Error while deleting data', error);
+            alert(error.message);
+        }
+    };
 
-  // Function to handle delete cancellation
-  const handleDeleteCancellation = () => {
-    setShowDeleteModal(false);
-  };
+    const handleDeleteCancellation = () => {
+        setShowDeleteModal(false);
+    };
 
     const columns = [
-
         {
             name: 'Sr. No.',
             selector: (row, index) => index + 1,
@@ -67,14 +59,12 @@ function Bog() {
             name: 'Category Name',
             selector: (row) => {
                 if (row.tab) {
-                    // If tab exists, show category of the tab and the tab name
                     return (
                         <>
                             {row.tab.category ? row.tab.category.name : 'No Category'} - {row.tab.name}
                         </>
                     );
                 }
-                // Otherwise, show only the gallery category name
                 return row.category ? row.category.name : 'No Category';
             },
             sortable: true,
@@ -85,12 +75,17 @@ function Bog() {
             sortable: true,
         },
         {
-            name: ' designation',
+            name: 'Designation',
             selector: (row) => row.designation,
             sortable: true,
         },
         {
-            name: ' Company Name',
+            name: 'Position',
+            selector: (row) => row.designation_position,
+            sortable: true,
+        },
+        {
+            name: 'Company Name',
             selector: (row) => row.companyName,
             sortable: true,
         },
@@ -114,6 +109,10 @@ function Bog() {
         },
     ];
 
+    // Filter data based on the search query
+    const filteredData = data.filter(item => 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <>
@@ -121,98 +120,89 @@ function Bog() {
         <Sidebar/>
         <main id="main" className="main">
             <Pagetitle page='BOG Section' />
-                <section className='section'>
-                    <div className="d-flex justify-content-end mb-3">
-                        <button className='btn btn-primary'
-                        onClick={()=>navigate('/create-edit')}
-                        >Add BOG 
-                        </button>
-                    </div>
-                    <DataTable
-                        className='data-table'
-                        columns={columns}
-                        data={data}
-                        pagination
-                        persistTableHead
-                        highlightOnHover
-                        striped
-                        responsive
-                        paginationPerPage={40} // Default rows per page
-                        paginationRowsPerPageOptions={[10, 50, 100,200,500]}
-                        customStyles={{
-                            headCells: {
-                                style: {
-                                    backgroundColor: '#343a40', // Dark background
-                                    color: '#fff', // White text
-                                    fontSize: '18px', // Font size
-                                    padding: '5px', // Padding
-                                },
-                            },
-
-                            rows: {
-                                style: {
-                                    backgroundColor: '#fff', // Light background for rows
-                                    color: '#343a40',
-                                    fontSize: '17px'
-                                },
-                            },
-                            pagination: {
-                                style: {
-                                    border: '1px solid #413f3f', // Border for pagination
-                                    backgroundColor: 'white',
-                                    color: '#343a40', // Background color for pagination
-                                    fontSize: '16px'
-                                },
-                            },
-                        }}
-                    />
-                </section>
-                        {/* Delete Confirmation Modal */}
-            <div
-                className={`modal fade ${showDeleteModal ? 'show' : ''}`}
-                tabIndex="-1"
-                style={{ display: showDeleteModal ? 'block' : 'none' }}
-            >
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                <div className="modal-content">
-                    <div className="modal-header bg-danger">
-                    <h5 className="modal-title">Confirm Delete</h5>
-                    <button
-                        type="button"
-                        className="btn-close"
-                        onClick={handleDeleteCancellation}
-                        aria-label="close"
-                    >
-                        <span aria-hidden="true"> &times;</span>
+            <section className='section'>
+                <div className="d-flex justify-content-end mb-3">
+                    <button className='btn btn-primary' onClick={()=>navigate('/create-edit')}>
+                        Add BOG
                     </button>
-                    </div>
-                    <div className="modal-body">
-                    Are you sure you want to delete this Info?
-                    </div>
-                    <div className="modal-footer">
-                    <button
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={handleDeleteConfirmation}
-                    >
-                        Yes, Delete
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={handleDeleteCancellation}
-                    >
-                        Cancel
-                    </button>
-                    </div>
                 </div>
+                {/* Search Field */}
+                <div className="mb-3">
+                    <input 
+                        type="text" 
+                        className="form-control"
+                        placeholder="Search by Name"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <DataTable
+                    className='data-table'
+                    columns={columns}
+                    data={filteredData} // Use filtered data
+                    pagination
+                    persistTableHead
+                    highlightOnHover
+                    striped
+                    responsive
+                    paginationPerPage={40} // Default rows per page
+                    paginationRowsPerPageOptions={[10, 50, 100, 200, 500]}
+                    customStyles={{
+                        headCells: {
+                            style: {
+                                backgroundColor: '#343a40',
+                                color: '#fff',
+                                fontSize: '18px',
+                                padding: '5px',
+                            },
+                        },
+                        rows: {
+                            style: {
+                                backgroundColor: '#fff',
+                                color: '#343a40',
+                                fontSize: '17px'
+                            },
+                        },
+                        pagination: {
+                            style: {
+                                border: '1px solid #413f3f',
+                                backgroundColor: 'white',
+                                color: '#343a40',
+                                fontSize: '16px'
+                            },
+                        },
+                    }}
+                />
+            </section>
+            {/* Delete Confirmation Modal */}
+            <div className={`modal fade ${showDeleteModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showDeleteModal ? 'block' : 'none' }}>
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header bg-danger">
+                            <h5 className="modal-title">Confirm Delete</h5>
+                            <button type="button" className="btn-close" onClick={handleDeleteCancellation} aria-label="close">
+                                <span aria-hidden="true"> &times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            Are you sure you want to delete this Info?
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-danger" onClick={handleDeleteConfirmation}>
+                                Yes, Delete
+                            </button>
+                            <button type="button" className="btn btn-secondary" onClick={handleDeleteCancellation}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             {/* Modal backdrop */}
             {showDeleteModal && <div className="modal-backdrop fade show"></div>}
         </main>
     </>
-  )
+  );
 }
 
-export default Bog
+export default Bog;

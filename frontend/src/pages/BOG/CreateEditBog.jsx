@@ -21,6 +21,7 @@ function CreateEditBog() {
   const [imageLink, setImageLink] = useState('');
   const [pdfFile, setPdfFile] = useState(null);  // State for PDF file
 const [details, setDetails] = useState('');    // State for details
+const [position, setPosition] = useState('');    // State for position
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -77,6 +78,7 @@ const [details, setDetails] = useState('');    // State for details
             setCompany(bogData.companyName || '');
             setImageLink(bogData.imageLink || '');
             setDetails(bogData.details || '');
+            setPosition(bogData.position || '');
           }
         })
         .catch(error => {
@@ -95,6 +97,7 @@ const [details, setDetails] = useState('');    // State for details
       formData.append('companyName', companyName);
       formData.append('tab', selectedTab);
       formData.append('details', details);  // Add the details
+      formData.append('designation_position', position);  // Add the position
   
       if (imageFile) {
         formData.append('image', imageFile);  // Attach the selected image file
@@ -110,6 +113,7 @@ const [details, setDetails] = useState('');    // State for details
       EditformData.append('designation', designation);
       EditformData.append('companyName', companyName);
       EditformData.append('details', details); // Add the details
+      EditformData.append('designation_position', position); // Add the position
   
       if (imageFile) {
         EditformData.append('image', imageFile);  // Attach the selected file
@@ -239,6 +243,17 @@ const [details, setDetails] = useState('');    // State for details
                     value={details}
                     onChange={(e) => setDetails(e.target.value)}
                     placeholder="Enter details"
+                  />
+                </div>
+                <hr />
+                <div className="mb-3">
+                  <label htmlFor="details" className="form-label">Position</label>
+                  <textarea
+                    className="form-control"
+                    id="position"
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    placeholder="Enter Position No. of the field"
                   />
                 </div>
                 <hr />

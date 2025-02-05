@@ -13,7 +13,52 @@ function Sidebar() {
                     </Link>
                 </li>
 
-                <li class="nav-heading">Landing Page </li>
+                
+                <li className="nav-heading">HR / Forms Data Section </li>
+                <li className='nav-item'>
+                    <Link 
+                        to="#"
+                        className='nav-link collapsed'
+                        data-bs-target = '#enquirey-nav'
+                        data-bs-toggle='collapse'
+                    >
+                        <i className='bi bi-menu-button-wide'></i>
+                        <span>HR Section</span>
+                        <i className='bi bi-chevron-down ms-auto'></i>
+                    </Link>
+                    <ul id='enquirey-nav'
+                    className='nav-content collapse'
+                    data-bs-parent = '#sidebar-nav'
+                    >
+                        <li >
+                            <Link to="/application-form">
+                                    <i className='bi bi-info-circle'></i>
+                                    <span>Application Forms Data</span>
+                            </Link>
+                        </li>
+                        <li >
+                            <Link to="/contactUSForm">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Contact us Form Data</span>
+                            </Link>
+                        </li>
+                        <li >
+                            <Link to="/feedbackForm">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Feedback Form Data</span>
+                            </Link>
+                        </li>
+                        <li >
+                            <Link to="/student-enquirey">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Student enquirey form data</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li className="nav-heading">Landing Page </li>
 
                 <li className='nav-item'>
                     <Link 
@@ -54,6 +99,12 @@ function Sidebar() {
                             <Link className='nav-link collapsed' to="/fact-info">
                                 <i className='bi bi-info-circle'></i>
                                 <span>Fact Numbers</span>
+                            </Link>
+                        </li>
+                        <li className='nav-item'>
+                            <Link className='nav-link collapsed' to="/settings">
+                                <i className='bi bi-info-circle'></i>
+                                <span>Settings</span>
                             </Link>
                         </li>
 
@@ -139,6 +190,13 @@ function Sidebar() {
                 </li>
 
                 <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/getMultipleImages">
+                        <i className='bi bi-floppy'></i>
+                        <span>Multiple Images</span>
+                    </Link>
+                </li>
+
+                <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/getnewsAndEvents">
                         <i className='bi bi-newspaper'></i>
                         <span>News and Events</span>
@@ -188,47 +246,7 @@ function Sidebar() {
 
                 
 
-                <li className='nav-item'>
-                    <Link 
-                        to="#"
-                        className='nav-link collapsed'
-                        data-bs-target = '#enquirey-nav'
-                        data-bs-toggle='collapse'
-                    >
-                        <i className='bi bi-menu-button-wide'></i>
-                        <span>Enquirey Section</span>
-                        <i className='bi bi-chevron-down ms-auto'></i>
-                    </Link>
-                    <ul id='enquirey-nav'
-                    className='nav-content collapse'
-                    data-bs-parent = '#sidebar-nav'
-                    >
-                        <li >
-                            <Link to="/application-form">
-                                    <i className='bi bi-info-circle'></i>
-                                    <span>Application Form Data</span>
-                            </Link>
-                        </li>
-                        <li >
-                            <Link to="/contactUSForm">
-                                <i className='bi bi-info-circle'></i>
-                                <span>Contact us Form Data</span>
-                            </Link>
-                        </li>
-                        <li >
-                            <Link to="/feedbackForm">
-                                <i className='bi bi-info-circle'></i>
-                                <span>Feedback Form Data</span>
-                            </Link>
-                        </li>
-                        <li >
-                            <Link to="/student-enquirey">
-                                <i className='bi bi-info-circle'></i>
-                                <span>Student enquirey form data</span>
-                            </Link>
-                        </li>
-                    </ul>
-                </li>
+                
 
                 <li className='nav-item'>
                     <Link className='nav-link collapsed' to="/contactUSAddressForm">

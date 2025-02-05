@@ -115,7 +115,7 @@ function Categories() {
             <tr className='table-dark'>
               <th scope="col">Sr No</th>
               <th scope="col">Category Name</th>
-              {/* <th scope="col">Action</th> */}
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -123,14 +123,14 @@ function Categories() {
               <tr key={category._id}>
                 <th scope="row">{index + 1}</th>
                 <td>{category.name}</td>
-                {/* <td>
+                <td>
                   <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(category)}>
                     <i className="fas fa-edit"></i> Edit
                   </button>
                   <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(category._id)}>
                     <i className="fas fa-trash"></i> Delete
                   </button> 
-                </td> */}
+                </td>
               </tr>
             ))}
           </tbody>

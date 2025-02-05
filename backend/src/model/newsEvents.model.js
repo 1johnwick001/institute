@@ -7,16 +7,16 @@ const NewsEventSchema = new mongoose.Schema({
   },
   date: {
     type: String,
-    default: null,  // Optional, default value can be null
+    default: null,
   },
   time: {
     type: String,
-    default: null,  // Optional, default value can be null
+    default: null,
   },
   images: [
     {
       type: String,
-      default: [],  // Optional, default value can be an empty array
+      default: [],
     },
   ],
 }, { timestamps: true });

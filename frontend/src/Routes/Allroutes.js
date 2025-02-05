@@ -38,6 +38,13 @@ import BgBannerList from '../pages/bgbanner/BgBannerList'
 import CreateBgBanner from '../pages/bgbanner/CreateBgBanner'
 import EditBgBanner from '../pages/bgbanner/EditBgBanner'
 import UpdateAdmin from '../pages/UpdateAdmin'
+import ListMultipleImages from '../pages/multipleImages/List'
+import CreateNewsEvent from '../pages/multipleImages/Create'
+import CreateMultiple from '../pages/multipleImages/Create'
+import EditMultipleImagesInformation from '../pages/multipleImages/Edit'
+import ListSettings from '../pages/settings/List'
+import CreateSettings from '../pages/settings/Create'
+import EditSettings from '../pages/settings/Update'
 
 
 function Allroutes() {
@@ -110,9 +117,17 @@ function Allroutes() {
 			<Route path='/newsAndEvents' element={isLoggedIn? <NewsAndEvents /> : <Navigate to="/" />} />
 			<Route path='/editNewsEvents/:id' element={isLoggedIn? <EditNewsEvents /> : <Navigate to="/" />} />
 
+			<Route path='/getMultipleImages' element={isLoggedIn? <ListMultipleImages /> : <Navigate to="/" />} />
+			<Route path='/createMultipleImages' element={isLoggedIn? <CreateMultiple /> : <Navigate to="/" />} />
+			<Route path='/editMultipleImages/:id' element={isLoggedIn? <EditMultipleImagesInformation /> : <Navigate to="/" />} />
+
 			<Route path='/bgBanners-list' element={isLoggedIn? <BgBannerList /> : <Navigate to="/" />} />
 			<Route path='/create-bgBanner' element={isLoggedIn? <CreateBgBanner /> : <Navigate to="/" />} />
 			<Route path='/edit-bgBanner/:id' element={isLoggedIn? <EditBgBanner /> : <Navigate to="/" />} />
+
+			<Route path='/settings' element={isLoggedIn? <ListSettings /> : <Navigate to="/" />} />
+			<Route path='/create-settings' element={isLoggedIn? <CreateSettings /> : <Navigate to="/" />} />
+			<Route path='/edit-settings/:id' element={isLoggedIn? <EditSettings /> : <Navigate to="/" />} />
 			
 		</Routes>
 
