@@ -17,6 +17,11 @@
     box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
     background-color: #fff;
   }
+ 
+.sidebar-top {
+    padding: 1rem;
+    top: 0;
+}
   
   @media (max-width: 1199px) {
     .sidebar {

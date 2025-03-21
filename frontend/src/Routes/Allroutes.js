@@ -45,6 +45,9 @@ import EditMultipleImagesInformation from '../pages/multipleImages/Edit'
 import ListSettings from '../pages/settings/List'
 import CreateSettings from '../pages/settings/Create'
 import EditSettings from '../pages/settings/Update'
+import ListLegal from '../pages/legalDocs/List'
+import CreateLegal from '../pages/legalDocs/Create'
+import EditLegal from '../pages/legalDocs/Edit'
 
 
 function Allroutes() {
@@ -128,6 +131,10 @@ function Allroutes() {
 			<Route path='/settings' element={isLoggedIn? <ListSettings /> : <Navigate to="/" />} />
 			<Route path='/create-settings' element={isLoggedIn? <CreateSettings /> : <Navigate to="/" />} />
 			<Route path='/edit-settings/:id' element={isLoggedIn? <EditSettings /> : <Navigate to="/" />} />
+
+			<Route path='/create-legal-docs' element={isLoggedIn? <CreateLegal /> : <Navigate to="/" />} />
+			<Route path='/list-docs' element={isLoggedIn? <ListLegal /> : <Navigate to="/" />} />
+			<Route path='/edit-legal-docs/:id/prashant' element={isLoggedIn? <EditLegal /> : <Navigate to="/" />} />
 			
 		</Routes>
 

@@ -23,6 +23,9 @@ function SubCategories() {
 	const [categoryUrl, setCategoryUrl] = useState('');
 
 
+	const [searchQuery, setSearchQuery] = useState(''); // Search query state
+
+
 
 	const handleShowModal = () => setShowModal(true);
 	const handleCloseModal = () => {
@@ -116,6 +119,11 @@ function SubCategories() {
 		}
 	};
 
+	    // Filter data based on the search query
+		const filteredData = subcategories.filter(item => 
+			item.name.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+
 	return (
 		<>
 		  <Header />
@@ -127,6 +135,16 @@ function SubCategories() {
 			  <div className="d-flex justify-content-end mb-3">
 				<button className='btn btn-primary' onClick={handleShowModal}>Add Sub-Category</button>
 			  </div>
+			  {/* Search Field */}
+			  <div className="mb-3">
+                    <input 
+                        type="text" 
+                        className="form-control"
+                        placeholder="Search by Sub-Category Name"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
 			  <table className="table table-bordered table-striped table-hover">
 				<thead className="thead-dark">
 				  <tr className='table-dark'>
@@ -137,22 +155,28 @@ function SubCategories() {
 				  </tr>
 				</thead>
 				<tbody>
-				  {subcategories.map((subcategory, index) => (
-					<tr key={subcategory._id}>
-					  <th scope="row">{index + 1}</th>
-					  <td>{subcategory.parent ? subcategory.parent.name : 'N/A'}</td>
-					  <td>{subcategory.name}</td>
-					  <td>
-						<button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subcategory)}>
-						  <i className="fas fa-edit"></i> Edit
-						</button>
-						<button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(subcategory._id)}>
-						  <i className="fas fa-trash"></i> Delete
-						</button>
-					  </td>
-					</tr>
-				  ))}
-				</tbody>
+                        {filteredData.length > 0 ? (
+                            filteredData.map((subcategory, index) => (
+                                <tr key={subcategory._id}>
+                                    <th scope="row">{index + 1}</th>
+                                    <td>{subcategory.parent ? subcategory.parent.name : 'N/A'}</td>
+                                    <td>{subcategory.name}</td>
+                                    <td>
+                                        <button className="btn btn-warning btn-sm m-2" onClick={() => handleEditModal(subcategory)}>
+                                            <i className="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => handleDeleteModal(subcategory._id)}>
+                                            <i className="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4" className="text-center">No subcategories found</td>
+                            </tr>
+                        )}
+                    </tbody>
 			  </table>
 			</section>
 	  

@@ -8,16 +8,14 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const CreateNewsEvent = () => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [images, setImages] = useState(['']); // Initialize with one empty input
-  
+  const [images, setImages] = useState([]); // Initialize as an empty array
+
   const navigate = useNavigate();
-  
+
   const handleImageChange = (index, e) => {
     const newImages = [...images];
     newImages[index] = e.target.files[0]; // Save selected file
@@ -25,7 +23,7 @@ const CreateNewsEvent = () => {
   };
 
   const addImageField = () => {
-    setImages([...images, '']); // Add a new empty input
+    setImages([...images, null]); // Add a new null entry for the new input
   };
 
   const removeImageField = (index) => {
@@ -36,7 +34,7 @@ const CreateNewsEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('title', title); // Append title (HTML format from SunEditor)
+    formData.append('title', title);
     formData.append('date', date);
     formData.append('time', time);
 
@@ -63,79 +61,76 @@ const CreateNewsEvent = () => {
 
   return (
     <>
-    <Header/>
-    <Sidebar/>
-    <main id="main" className="main">
-    <Pagetitle page='News And Events' />
+      <Header />
+      <Sidebar />
+      <main id="main" className="main">
+        <Pagetitle page='News And Events' />
         <div className="container mt-5">
-        
-        <form onSubmit={handleSubmit} className="bg-light p-4 rounded shadow">
+          <form onSubmit={handleSubmit} className="bg-light p-4 rounded shadow">
             <div className="mb-3">
-            <label className="form-label">Date</label>
-            <input 
+              <label className="form-label">Date</label>
+              <input 
                 type="date" 
                 className="form-control" 
                 value={date} 
                 onChange={(e) => setDate(e.target.value)} 
                 required 
-            />
+              />
             </div>
             <div className="mb-3">
-            <label className="form-label">Time</label>
-            <input 
+              <label className="form-label">Time</label>
+              <input 
                 type="text"
                 className="form-control" 
                 value={time} 
                 onChange={(e) => setTime(e.target.value)} 
                 required 
-            />
+              />
             </div>
             <div className="mb-3">
-            <label className="form-label">Title</label>
-            <SunEditor onChange={setTitle}
-            setOptions={{
-              // Set height if needed
-              buttonList: [
-                ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],  // Text styling buttons
-                ['font', 'fontSize', 'formatBlock','fontColor', 'textStyle', 'paragraphStyle', 'hiliteColor'],  // Font and format options
-                ['fullScreen', 'showBlocks', 'codeView']
-                // ['align', 'horizontalRule', 'list', 'table']  
-              ],
-            }}
-            setDefaultStyle="font-size:18px;"
-            height='15vh'
-            />
+              <label className="form-label">Title</label>
+              <SunEditor 
+                onChange={setTitle}
+                setOptions={{
+                  buttonList: [
+                    ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
+                    ['font', 'fontSize', 'formatBlock', 'fontColor', 'textStyle', 'paragraphStyle', 'hiliteColor'],
+                    ['fullScreen', 'showBlocks', 'codeView']
+                  ],
+                }}
+                setDefaultStyle="font-size:18px;"
+                height='15vh'
+              />
             </div>
             <div className="mb-3">
-            <label className="form-label">Images</label>
-            {images.map((image, index) => (
+              <label className="form-label">Images</label>
+              {images.map((image, index) => (
                 <div className="input-group mb-2" key={index}>
-                <input
+                  <input
                     type="file"
                     className="form-control"
                     onChange={(e) => handleImageChange(index, e)}
-                />
-                <button 
+                  />
+                  <button 
                     type="button" 
                     className="btn btn-danger" 
                     onClick={() => removeImageField(index)}
-                >
+                  >
                     Remove
-                </button>
+                  </button>
                 </div>
-            ))}
-            <button 
+              ))}
+              <button 
                 type="button" 
                 className="btn btn-primary" 
                 onClick={addImageField}
-            >
-                Add Another Image
-            </button>
+              >
+                Add Another Image </button>
             </div>
             <button type="submit" className="btn btn-success">Submit</button>
-        </form>
+          </form>
         </div>
-    </main>
+      </main>
     </>
   );
 };

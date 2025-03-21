@@ -26,6 +26,8 @@ function DocFiles() {
   const [data, setData] = useState([]); // State for fetched data
   // const [uploading, setUploading] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState(''); // Search query state
+
   // Fetch categories from backend
   useEffect(() => {
     fetchCategories();
@@ -168,6 +170,11 @@ function DocFiles() {
     setCurrentDocId(null); // Reset current document ID
   };
 
+  // Filter data based on the search query
+  const filteredData = data.filter(item => 
+    item.fileName.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
   const columns = [
     {
@@ -248,11 +255,21 @@ function DocFiles() {
               Add Doc Files
             </button>
           </div>
+          {/* Search Field */}
+          <div className="mb-3">
+                        <input 
+                            type="text" 
+                            className="form-control"
+                            placeholder="Search by Document Name"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
 
           <DataTable
             className="data-table"
             columns={columns}
-            data={data}
+            data={filteredData}
             pagination
             persistTableHead
             highlightOnHover

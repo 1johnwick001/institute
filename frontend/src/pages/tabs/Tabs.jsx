@@ -18,6 +18,8 @@ function Tabs() {
 const [editTabName, setEditTabName] = useState(''); // Tab name being edited
 const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
 
+const [searchQuery, setSearchQuery] = useState(''); // Search query state
+
     // Fetch tabs from backend
     const fetchTabs = async () => {
         try {
@@ -136,6 +138,11 @@ const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
         },
     ];
 
+    // Filter data based on the search query
+    const filteredData = tabs.filter(item => 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     const openAddModal = () => {
         setTabName('');
         setShowAddModal(true);
@@ -158,18 +165,28 @@ const [selectedTab, setSelectedTab] = useState(null); // Currently selected tab
                     <div className="d-flex justify-content-end mb-3">
                         <button className='btn btn-primary' onClick={openAddModal}>Add Tabs</button>
                     </div>
+                    {/* Search Field */}
+                    <div className="mb-3">
+                        <input 
+                            type="text" 
+                            className="form-control"
+                            placeholder="Search by Tab Name"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                     {/* Integrating the Data Table */}
                     <DataTable
                         className='data-table'
                         columns={columns}
-                        data={tabs}
+                        data={filteredData}
                         pagination
                         persistTableHead
                         highlightOnHover
                         striped
                         responsive
-                        paginationPerPage={50} // Default rows per page
-                        paginationRowsPerPageOptions={[10, 20, 50, 100]} // Custom pagination options
+                        paginationPerPage={100} // Default rows per page
+                        paginationRowsPerPageOptions={[10, 25, 50, 75,250,500]} // Custom pagination options
                         customStyles={{
                             headCells: {
                                 style: {

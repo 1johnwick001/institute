@@ -15,6 +15,8 @@ function Blogs() {
     const [selectedBlogId, setSelectedBlogId] = useState(null);
     const navigate = useNavigate(); 
 
+    const [searchQuery, setSearchQuery] = useState(''); // Search query state
+
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
@@ -38,6 +40,8 @@ function Blogs() {
         const plainText = content.replace(/<[^>]+>/g, ''); // Remove HTML tags
         return plainText.length > length ? `${plainText.substring(0, length)}...` : plainText;
     };
+
+    
 
     // Function to handle edit
     const handleEdit = (id) => {
@@ -67,6 +71,10 @@ function Blogs() {
         navigate('/create-blog');
     };
 
+    // Filter data based on the search query
+    const filteredData = blogs.filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     // Define DataTable columns
     const columns = [
         {
@@ -140,11 +148,21 @@ function Blogs() {
                     <div className="d-flex justify-content-end mb-3">
                         <button className='btn btn-info' onClick={handleCreate}>Create Blog Post</button>
                     </div>
+                    {/* Search Field */}
+                    <div className="mb-3">
+                        <input 
+                            type="text" 
+                            className="form-control"
+                            placeholder="Search by Title Of The Blog"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                     {/* DataTable for Blogs */}
                     <DataTable
                     className='data-table'
                         columns={columns}
-                        data={blogs}
+                        data={filteredData}
                         pagination
                         highlightOnHover
                         persistTableHead

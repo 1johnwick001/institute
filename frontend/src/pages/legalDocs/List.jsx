@@ -6,22 +6,19 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Pagetitle from '../../components/pagetitle/Pagetitle';
 import DeleteModal from '../blog/DeleteModal';
 import { useNavigate } from 'react-router-dom';
-import { CSVLink } from 'react-csv';
-import API_BASE_IMAGE_URL from '../../config/ImageConfig';
 
+function ListLegal() {
 
-
-function ApplicationForm() {
-const [formData, setFormData] = useState([]);
-const [showModal, setShowModal] = useState(false);
-const [selectedApplication, setSelectedApplication] = useState(null);
-
-const navigate = useNavigate();
+    const [formData, setFormData] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState(null);
+    
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/getApplicationForm`);
+                const response = await fetch(`${API_BASE_URL}/get-legal-docs`);
                 if (response.ok) {
                     const data = await response.json();
                     setFormData(data.data);
@@ -36,9 +33,15 @@ const navigate = useNavigate();
         fetchBlogs();
     }, []);
 
+    // Function to truncate content
+    const truncateContent = (content, length) => {
+        const plainText = content.replace(/<[^>]+>/g, ''); // Remove HTML tags
+        return plainText.length > length ? `${plainText.substring(0, length)}...` : plainText;
+    };
+
     const handleDelete = async (applicationId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/deleteApplicationForm/${applicationId}`, {
+            const response = await fetch(`${API_BASE_URL}/delete-legal-docs/${applicationId}`, {
                 method: 'DELETE',
             });
     
@@ -53,50 +56,25 @@ const navigate = useNavigate();
         }
     };
 
-    // Prepare CSV data
-    const csvData = formData.flatMap((item, index) => ({
-        srNo: index + 1,
-        firstName: item.firstName || 'N/A',
-        lastName: item.surname || 'N/A',
-        phoneNo: item.cellNo || 'N/A',
-        appliedFor: item.postAppliedFor || 'N/A',
-        email: item.emailAddress || 'N/A',
-        ugYearOfPassing: item.educationalQualification.ug?.yearOfPassing || 'N/A',
-        ugPercentage: item.educationalQualification.ug?.passingPercentage || 'N/A',
-        ugDivision: item.educationalQualification.ug?.divisionOfPassing || 'N/A',
-        pgYearOfPassing: item.educationalQualification.pg?.yearOfPassing || 'N/A',
-        pgPercentage: item.educationalQualification.pg?.passingPercentage || 'N/A',
-        pgDivision: item.educationalQualification.pg?.divisionOfPassing || 'N/A',
-        qualifiedExam: item.nationalStateLevelExamination?.qualifiedExamName || 'N/A',
-        qualifyingYear: item.nationalStateLevelExamination?.qualifyingYear || 'N/A',
-        resume: `${API_BASE_IMAGE_URL}/${item.resume}` || 'N/A',
-    }));
-
     const columns = [
         {
-            name: 'Sr. No.',
+            name: '#',
             selector: (row, index) => index + 1,
-            width: '80px',
+            width: '50px',
         },   
         {
-            name: 'First Name',
-            selector: row => row.firstName
+            name: ' Name',
+            selector: row => row.title
         },
         {
-            name: 'Last Name',
-            selector: row => row.surname
+            name: ' content',
+            selector: row => <div dangerouslySetInnerHTML={{ __html: truncateContent(row.content, 150) }} />,
+            wrap:true
+            
         },
         {
-            name: 'Phone No.',
-            selector: row => row.cellNo
-        },
-        {
-            name: 'Applied For',
-            selector: row => row.postAppliedFor
-        },
-        {
-            name: 'Email',
-            selector: row => row.emailAddress
+            name: ' Document Type',
+            selector: row => row.documentType,
         },
         {
             name: 'Actions',
@@ -104,9 +82,9 @@ const navigate = useNavigate();
                 <>
                     <button
                         className="btn btn-info btn-sm"
-                        onClick={() => navigate(`/view-application-form/${row._id}`)}
+                        onClick={() => navigate(`/edit-legal-docs/${row._id}/prashant`)}
                     >
-                        <i className="bi bi-eye"></i>
+                        <i className="bi bi-pencil"></i>
                     </button>
                     <button
                     className="btn btn-danger btn-sm"
@@ -123,41 +101,19 @@ const navigate = useNavigate();
         },
     ];
 
-
   return (
     <>
         <Header/>
         <Sidebar/>
         <main id="main" className="main">
-            <Pagetitle page='Application Form Data' />
+            <Pagetitle page='Students Enquiry Form' />
             <section className='section'>
-
-            <div className="text-end mb-3"> {/* Aligns the button to the right */}
-                <CSVLink
-                    data={csvData}
-                    headers={[
-                        { label: "Sr. No.", key: "srNo" },
-                        { label: "First Name", key: "firstName" },
-                        { label: "Last Name", key: "lastName" },
-                        { label: "Phone No.", key: "phoneNo" },
-                        { label: "Applied For", key: "appliedFor" },
-                        { label: "Email", key: "email" },
-                        { label: "UG Year of Passing", key: "ugYearOfPassing" },
-                        { label: "UG Percentage", key: "ugPercentage" },
-                        { label: "UG Division", key: "ugDivision" },
-                        { label: "PG Year of Passing", key: "pgYearOfPassing" },
-                        { label: "PG Percentage", key: "pgPercentage" },
-                        { label: "PG Division", key: "pgDivision" },
-                        { label: "Qualified Exam", key: "qualifiedExam" },
-                        { label: "Qualifying Year", key: "qualifyingYear" },
-                        { label: "Resume", key: "resume" },
-                    ]}
-                    filename="application_data.csv"
-                    className="btn btn-success"
-                >
-                    Download Excel
-                </CSVLink>
-            </div>
+                <div className="d-flex justify-content-end mb-3">
+                        <button className='btn btn-primary'
+                        onClick={()=>navigate('/create-legal-docs')}
+                        >Add Legal Docs
+                        </button>
+                </div>
                 
                 {/* datatables for blogs */}
                     <DataTable
@@ -170,8 +126,6 @@ const navigate = useNavigate();
                             responsive
                             striped
                             pointerOnHover
-                            paginationPerPage={50} // Default rows per page
-                            paginationRowsPerPageOptions={[10, 50, 100, 500, 900]}
                         customStyles={{
                             headCells: {
                                 style: {
@@ -215,4 +169,4 @@ const navigate = useNavigate();
   )
 }
 
-export default ApplicationForm
+export default ListLegal

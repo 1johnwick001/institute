@@ -244,8 +244,13 @@ function Sidebar() {
                     </Link>
                 </li>
 
-                
 
+                <li className='nav-item'>
+                    <Link className='nav-link collapsed' to="/list-docs">
+                        <i className='bi bi-info-square'></i>
+                        <span>Legal Documents</span>
+                    </Link>
+                </li>
                 
 
                 <li className='nav-item'>

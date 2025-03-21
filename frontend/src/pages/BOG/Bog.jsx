@@ -145,8 +145,8 @@ function Bog() {
                     highlightOnHover
                     striped
                     responsive
-                    paginationPerPage={40} // Default rows per page
-                    paginationRowsPerPageOptions={[10, 50, 100, 200, 500]}
+                    paginationPerPage={100} // Default rows per page
+                    paginationRowsPerPageOptions={[10, 50, 100, 350, 500]}
                     customStyles={{
                         headCells: {
                             style: {

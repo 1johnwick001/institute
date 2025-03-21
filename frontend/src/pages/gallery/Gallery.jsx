@@ -28,6 +28,8 @@ function Gallery() {
 
     const [currentImageUrl, setCurrentImageUrl] = useState('');
 
+    const [searchQuery, setSearchQuery] = useState(''); // Search query state
+
     // const [uploading, setUploading] = useState(false);
 
     // Fetch images from backend
@@ -180,6 +182,14 @@ function Gallery() {
         setSelectedImage(item);  // Store the item to be used in the edit function
         setShowEditModal(true);
     };
+
+
+    // Filter data based on the search query
+    const filteredData = images.filter(item => {
+        const galleryName = item.galleryName ? item.galleryName.toLowerCase() : '';
+        return galleryName.includes(searchQuery.toLowerCase());
+    });
+
     // Columns configuration for the data table
     const columns = [
         {
@@ -273,19 +283,29 @@ function Gallery() {
                             Add Gallery Items
                         </button>
                     </div>
+                    {/* Search Field */}
+                    <div className="mb-3">
+                        <input 
+                            type="text" 
+                            className="form-control"
+                            placeholder="Search by Title Of The Blog"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
 
                     <DataTable
                         className='data-table'
                         columns={columns}
-                        data={images}
+                        data={filteredData}
                         pagination
                         persistTableHead
                         highlightOnHover
                         striped
                         responsive
                         pointerOnHover
-                        paginationPerPage={50} // Default rows per page
-                        paginationRowsPerPageOptions={[10, 50, 100,200,500]}
+                        paginationPerPage={100} // Default rows per page
+                        paginationRowsPerPageOptions={[10, 50, 150,250,500,1000]}
                         customStyles={{
                             headCells: {
                                 style: {

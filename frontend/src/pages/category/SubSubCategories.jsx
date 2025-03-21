@@ -21,6 +21,8 @@ function SubSubCategories() {
 
     const [type, setType] = useState('');
 
+    const [searchQuery, setSearchQuery] = useState(''); // Search query state
+
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => {
         setShowModal(false);
@@ -107,6 +109,11 @@ function SubSubCategories() {
         }
     };
 
+    // Filter data based on the search query
+		const filteredData = subSubcategories.filter(item => 
+			item.name.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+
     return (
         <>
             <Header />
@@ -118,6 +125,16 @@ function SubSubCategories() {
                     <div className="d-flex justify-content-end mb-3">
                         <button className='btn btn-primary' onClick={handleShowModal}>Add Sub-Sub-Category</button>
                     </div>
+                    {/* Search Field */}
+			    <div className="mb-3">
+                    <input 
+                        type="text" 
+                        className="form-control"
+                        placeholder="Search by Sub-Sub-Category Name"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
                     <table className="table table-bordered table-striped table-hover">
                         <thead className="thead-dark">
                             <tr className='table-dark'>
@@ -128,7 +145,8 @@ function SubSubCategories() {
                             </tr>
                         </thead>
                         <tbody>
-                            {subSubcategories.map((subSubcategory, index) => (
+                        {filteredData.length > 0 ? (
+                            filteredData.map((subSubcategory, index) => (
                                 <tr key={subSubcategory._id}>
                                     <th scope="row">{index + 1}</th>
                                     <td>{subSubcategory.parent ? subSubcategory.parent.name : 'N/A'}</td>
@@ -142,8 +160,13 @@ function SubSubCategories() {
                                         </button>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4" className="text-center">No sub-subcategories found</td>
+                            </tr>
+                        )}
+                    </tbody>
                     </table>
                 </section>
 
