@@ -121,6 +121,8 @@ function StudentEnquirey() {
                             responsive
                             striped
                             pointerOnHover
+                            paginationPerPage={100} // Default rows per page
+                            paginationRowsPerPageOptions={[10, 50, 150,250,500,1000]}
                         customStyles={{
                             headCells: {
                                 style: {

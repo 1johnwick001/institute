@@ -8,7 +8,11 @@ import API_BASE_URL from '../../config/Config';
 function Categories() {
 	const [showModal, setShowModal] = useState(false);
 	const [categoryName, setCategoryName] = useState('');
+	const [isFooter, setIsFooter] = useState(false);
 	const [categories, setCategories] = useState([]);
+
+  const [categoryType, setCategoryType] = useState('')
+  const [categoryUrl, setCategoryUrl] = useState('');
 
 	// ====== edit 
 	const [editingCategoryId, setEditingCategoryId] = useState(null);
@@ -23,6 +27,7 @@ function Categories() {
 	const handleCloseModal = () => {
 		setShowModal(false);
 		setCategoryName(''); // Reset input field
+    setIsFooter(false);
 	};
 
 	const fetchCategories = async () => {
@@ -44,7 +49,12 @@ function Categories() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post(`${API_BASE_URL}/create-category`, { name: categoryName });
+			const response = await axios.post(`${API_BASE_URL}/create-category`, {
+        name: categoryName,
+        is_footer_category: isFooter,
+        type: categoryType,
+        url: categoryType === 'link' ? categoryUrl : null, // Send URL only if type is 'link'
+      });
 			// Fetch categories again to include the newly added category
 			fetchCategories();
 			handleCloseModal();
@@ -159,6 +169,56 @@ function Categories() {
                     required
                   />
                 </div>
+                <div className="mb-3 form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="isFooterCategory"
+                    checked={isFooter}
+                    onChange={(e) => setIsFooter(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="isFooterCategory">
+                    Is Footer Category?
+                  </label>
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="categoryType" className="form-label">Type</label>
+                    <select
+                      className="form-control"
+                      id="categoryType"
+                      value={categoryType}
+                      onChange={(e) => {
+                        setCategoryType(e.target.value);
+                        // Reset URL when type changes
+                        if (e.target.value !== 'link') {
+                          setCategoryUrl('');
+                        }
+                      }}
+                      required
+                    >
+                      <option value="">Select Type</option>
+                      <option value="pdf">PDF</option>
+                      <option value="text">Text</option>
+                      <option value="link">Link</option>
+                      <option value="both">Both</option>
+                    </select>
+                  </div>
+
+                  {categoryType === 'link' && (
+                    <div className="mb-3">
+                      <label htmlFor="categoryUrl" className="form-label">URL</label>
+                      <input
+                        type="url"
+                        className="form-control"
+                        id="categoryUrl"
+                        value={categoryUrl}
+                        onChange={(e) => setCategoryUrl(e.target.value)}
+                        placeholder="Enter the URL"
+                        required
+                      />
+                    </div>
+                  )}
                 <hr />
                 <div>
                   <button type="submit" className="btn btn-primary w-100">Submit</button>
@@ -216,7 +276,7 @@ function Categories() {
             <div className="modal-body">
               <h4>Are you sure you want to delete this category?</h4>
               <hr></hr>
-              <h6>!!!Deleting this will also delete all the data related to this category including categories, tabs!!!</h6>
+              <h6>!!!Deleting this will also delete all the data related to this category including sub-categories, tabs!!!</h6>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={handleCloseDeleteModal}>Cancel</button>

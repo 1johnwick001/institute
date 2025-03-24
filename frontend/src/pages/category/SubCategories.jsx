@@ -21,6 +21,7 @@ function SubCategories() {
 
 	const [categoryType, setCategoryType] = useState('')
 	const [categoryUrl, setCategoryUrl] = useState('');
+	const [isFooter, setIsFooter] = useState(false);
 
 
 	const [searchQuery, setSearchQuery] = useState(''); // Search query state
@@ -31,6 +32,7 @@ function SubCategories() {
 	const handleCloseModal = () => {
 		setShowModal(false);
 		setCategoryName('');
+		setIsFooter(false);
 		setParentId('');
 	};
 
@@ -62,6 +64,7 @@ function SubCategories() {
 		try {
 		  const requestData = {
 			name: categoryName,
+			is_footer_category: isFooter,
 			parentId,
 			type: categoryType,
 			// Include the URL if the category type is 'link'
@@ -205,7 +208,7 @@ function SubCategories() {
 						  ))}
 						</select>
 					  </div>
-					  <div className="mb-3">
+					<div className="mb-3">
 						<label htmlFor="categoryName" className="form-label">Sub-Category Name</label>
 						<input
 						  type="text"
@@ -216,44 +219,56 @@ function SubCategories() {
 						  placeholder="Enter sub-category name"
 						  required
 						/>
-					  </div>
+					</div>
+					<div className="mb-3 form-check">
+						<input
+							type="checkbox"
+							className="form-check-input"
+							id="isFooterCategory"
+							checked={isFooter}
+							onChange={(e) => setIsFooter(e.target.checked)}
+						/>
+						<label className="form-check-label" htmlFor="isFooterCategory">
+							Is Footer Category?
+						</label>
+					</div>
 					  <div className="mb-3">
-  <label htmlFor="categoryType" className="form-label">Type</label>
-  <select
-    className="form-control"
-    id="categoryType"
-    value={categoryType}
-    onChange={(e) => {
-      setCategoryType(e.target.value);
-      // Reset URL when type changes
-      if (e.target.value !== 'link') {
-        setCategoryUrl('');
-      }
-    }}
-    required
-  >
-    <option value="">Select Type</option>
-    <option value="pdf">PDF</option>
-    <option value="text">Text</option>
-    <option value="link">Link</option>
-    <option value="both">Both</option>
-  </select>
-</div>
+						<label htmlFor="categoryType" className="form-label">Type</label>
+						<select
+							className="form-control"
+							id="categoryType"
+							value={categoryType}
+							onChange={(e) => {
+							setCategoryType(e.target.value);
+							// Reset URL when type changes
+							if (e.target.value !== 'link') {
+								setCategoryUrl('');
+							}
+							}}
+							required
+						>
+							<option value="">Select Type</option>
+							<option value="pdf">PDF</option>
+							<option value="text">Text</option>
+							<option value="link">Link</option>
+							<option value="both">Both</option>
+						</select>
+						</div>
 
-{categoryType === 'link' && (
-  <div className="mb-3">
-    <label htmlFor="categoryUrl" className="form-label">URL</label>
-    <input
-      type="url"
-      className="form-control"
-      id="categoryUrl"
-      value={categoryUrl}
-      onChange={(e) => setCategoryUrl(e.target.value)}
-      placeholder="Enter the URL"
-      required
-    />
-  </div>
-)}
+						{categoryType === 'link' && (
+						<div className="mb-3">
+							<label htmlFor="categoryUrl" className="form-label">URL</label>
+							<input
+							type="url"
+							className="form-control"
+							id="categoryUrl"
+							value={categoryUrl}
+							onChange={(e) => setCategoryUrl(e.target.value)}
+							placeholder="Enter the URL"
+							required
+							/>
+						</div>
+						)}
 					  
 					  <hr />
 					  <div>
